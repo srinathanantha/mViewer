@@ -45,6 +45,20 @@ Detailed documentation on mViewer features & usage can be found at http://imagin
 
 ## Developer Notes
 
+### How to contribute to Imaginea / mViewer ?
+    1) Fork Imaginea / mViewer
+    2) Clone your forked mViewer repository locally
+    3) We use Intellij IDEA for development. So to setup with intellij 
+       a) Create mViewer as a maven project using "Import project from external module".
+       b) Apply Imaginea code styles/formatting settings to avoid un-wanted diffs with spaces in pull requests.
+         - Download https://github.com/downloads/Imaginea/mViewer/settings.jar and use import settings option to apply it.
+         - Make sure to format the code using ctr + alt + l before committing code.
+         - When committing code, if see a popup regarding different line separators used in project, 
+           then click 'Leave unchanged'.        
+       c) Configure a Tomcat Server locally in intellij to run/debug mViewer.
+    4) You can send a pull request to mViewer master branch with your features/enhancements/fixes.
+          
+
 ### How to Build using maven ?
 
 >

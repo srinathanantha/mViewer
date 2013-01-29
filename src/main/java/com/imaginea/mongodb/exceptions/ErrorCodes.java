@@ -86,4 +86,7 @@ public interface ErrorCodes {
     String PASSWORD_IS_EMPTY = "PASSWORD_IS_EMPTY";
     String KEYS_EMPTY = "KEYS_EMPTY";
     String INDEX_EMPTY = "INDEX_EMPTY";
+
+    //Aggregation
+    String INVALID_AGGREGATE_COMMAND = "INVALID_AGGREGATE_COMMAND";
 }
