@@ -287,7 +287,7 @@ public class QueryExecutor {
     private static JSONObject constructResponse(boolean isEditable, long size, List docs) throws JSONException {
         JSONObject result = new JSONObject();
         result.put("documents", docs);
-        result.put("count", docs.size());
+        result.put("count", size);
         result.put("editable", isEditable);
         return result;
     }
