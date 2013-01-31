@@ -27,13 +27,13 @@ package com.imaginea.mongodb.services;
 
 import com.imaginea.mongodb.controllers.BaseController;
 import com.imaginea.mongodb.controllers.LoginController;
-import com.imaginea.mongodb.exceptions.ApplicationException;
-import com.imaginea.mongodb.exceptions.ErrorCodes;
+import com.imaginea.mongodb.controllers.LogoutController;
 import com.imaginea.mongodb.exceptions.MongoHostUnknownException;
 import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
+import com.imaginea.mongodb.utils.JSON;
 import com.imaginea.mongodb.utils.MongoInstanceProvider;
+import com.mongodb.BasicDBObject;
 import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
@@ -43,6 +43,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -52,93 +53,87 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Rachit Mittal
  * @since 15 July 2011
- *
  */
 public class UserLoginTest extends BaseController {
 
-	private MongoInstanceProvider mongoInstanceProvider;
-	private static Mongo mongoInstance;
+    private MongoInstanceProvider mongoInstanceProvider;
+    private static Mongo mongoInstance;
 
-	/**
-	 * Class to be tested
-	 */
-	private LoginController loginController;
+    /**
+     * Class to be tested
+     */
+    private LoginController loginController;
+    private LogoutController logoutController;
 
-	/**
-	 * Logger object
-	 */
-	private static Logger logger = Logger.getLogger(UserLoginTest.class);
-	/**
-	 * test username and password
-	 */
-	private String testUsername = "name";
-	private String testPassword = "pass";
-	private static final String logConfigFile = "src/main/resources/log4j.properties";
+    /**
+     * Logger object
+     */
+    private static Logger logger = Logger.getLogger(UserLoginTest.class);
+    /**
+     * test username and password
+     */
+    private String testUsername = "name";
+    private String testPassword = "pass";
+    private static final String logConfigFile = "src/main/resources/log4j.properties";
 
-	/**
-	 * Default constructor binds mongo instance provider to config mongo
-	 * instance provider that returns according to parameters given in config
-	 * file mongo.config
-	 */
+    /**
+     * Default constructor binds mongo instance provider to config mongo
+     * instance provider that returns according to parameters given in config
+     * file mongo.config
+     */
 
-	public UserLoginTest() {
-		ErrorTemplate.execute(logger, new ResponseCallback() {
-			public Object execute() throws Exception {
-				mongoInstanceProvider = new ConfigMongoInstanceProvider();
-				PropertyConfigurator.configure(logConfigFile);
-				return null;
-			}
-		});
-	}
+    public UserLoginTest() {
+        ErrorTemplate.execute(logger, new ResponseCallback() {
+            public Object execute() throws Exception {
+                mongoInstanceProvider = new ConfigMongoInstanceProvider();
+                PropertyConfigurator.configure(logConfigFile);
+                return null;
+            }
+        });
+    }
 
-	/**
-	 * Instantiates the class LoginController which is to be tested and also gets a
-	 * mongo instance from mongo instance provider.
-	 */
+    /**
+     * Instantiates the class LoginController which is to be tested and also gets a
+     * mongo instance from mongo instance provider.
+     */
 
-	@Before
-	public void instantiateTestClass() {
-		loginController = new LoginController();
-		mongoInstance = mongoInstanceProvider.getMongoInstance();
-	}
+    @Before
+    public void instantiateTestClass() {
+        loginController = new LoginController();
+        logoutController = new LogoutController();
+        mongoInstance = mongoInstanceProvider.getMongoInstance();
+    }
 
-	/**
-	 * Test Post login Request made by User to LoginController resource for
-	 * authentication. Hereby we will check if a token ID is generated and also
-	 * will check if a mongoInstacne is set by the servlet.
-	 *
-	 *
-	 */
+    /**
+     * Test Post login Request made by User to LoginController resource for
+     * authentication. Hereby we will check if a token ID is generated and also
+     * will check if a mongoInstacne is set by the servlet.
+     */
 
-	@Test
-	public void testUserLoginRequest() throws MongoHostUnknownException {
-		ErrorTemplate.execute(logger, new ResponseCallback() {
-			public Object execute() throws Exception {
-				try {
-					// Insert user in admin db
-					mongoInstance.getDB("admin").addUser(testUsername, testPassword.toCharArray());
-					String host = mongoInstance.getAddress().getHost();
-					Integer port = (Integer) (mongoInstance.getAddress().getPort());
-					HttpServletRequest request = new MockHttpServletRequest();
-					// Call Service for login
-					loginController.authenticateUser(testUsername, testPassword, host, port.toString(), null, request);
-					// Check if we got a mongoInstance corresponding to our host
-					// and port.
-					String dbInfo = host + "_" + port;
-					Mongo m = LoginController.mongoConfigToInstanceMapping.get(dbInfo);
-					assertNotNull(m);
+    @Test
+    public void testUserLoginRequest() throws MongoHostUnknownException {
+        ErrorTemplate.execute(logger, new ResponseCallback() {
+            public Object execute() throws Exception {
+                // Insert user in admin db
+                mongoInstance.getDB("admin").addUser(testUsername, testPassword.toCharArray());
+                String host = mongoInstance.getAddress().getHost();
+                Integer port = (Integer) (mongoInstance.getAddress().getPort());
+                HttpServletRequest request = new MockHttpServletRequest();
+                // Call Service for login
+                String response = loginController.authenticateUser(testUsername, testPassword, host, port.toString(), null, request);
+                if (response.contains("Login Success")) {
+                    BasicDBObject responseObject = ((BasicDBObject) JSON.parse(response));
+                    String connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+                    String connectionDetails = loginController.getConnectionDetails(connectionId, request);
+                    assert (connectionDetails.contains("result") && connectionDetails.contains("dbNames"));
+                }
+                return null;
+            }
+        });
+    }
 
-				} catch (MongoException m) {
-					ApplicationException e = new ApplicationException(ErrorCodes.HOST_UNKNOWN, m.getMessage(), m);
-					throw e;
-				}
-				return null;
-			}
-		});
-	}
-
-	@After
-	public void destroyMongoProcess() {
-		mongoInstance.close();
-	}
+    @After
+    public void destroyMongoProcess() {
+        mongoInstance.close();
+    }
 }

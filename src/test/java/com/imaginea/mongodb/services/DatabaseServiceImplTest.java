@@ -31,7 +31,9 @@ import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.services.impl.DatabaseServiceImpl;
 import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
+import com.imaginea.mongodb.utils.JSON;
 import com.imaginea.mongodb.utils.MongoInstanceProvider;
+import com.mongodb.BasicDBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
@@ -41,6 +43,7 @@ import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,14 +68,15 @@ public class DatabaseServiceImplTest extends TestingTemplate {
      * Provides Mongo Instance.
      */
     private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo          mongoInstance;
-
+    private static Mongo mongoInstance;
+    private MockHttpServletRequest request = new MockHttpServletRequest();
     /**
      * Logger Object
      */
-    private static Logger         logger        = Logger.getLogger(DatabaseServiceImplTest.class);
+    private static Logger logger = Logger.getLogger(DatabaseServiceImplTest.class);
 
-    private static final String   logConfigFile = "src/main/resources/log4j.properties";
+    private static final String logConfigFile = "src/main/resources/log4j.properties";
+    private String connectionId;
 
     /**
      * Constructs a mongoInstanceProvider Object
@@ -95,13 +99,20 @@ public class DatabaseServiceImplTest extends TestingTemplate {
      */
     @Before
     public void instantiateTestClass() throws ApplicationException {
+        LoginController loginController = new LoginController();
+        // Add user to mappings in userLogin for authentication
+        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
+        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
+        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+
+
         // Creates Mongo Instance.
         mongoInstance = mongoInstanceProvider.getMongoInstance();
         // Add user to mappings in userLogin for authentication
         String dbInfo = mongoInstance.getAddress() + "_" + mongoInstance.getConnectPoint();
         LoginController.mongoConfigToInstanceMapping.put(dbInfo, mongoInstance);
         // Class to be tested
-        testDbService = new DatabaseServiceImpl(dbInfo);
+        testDbService = new DatabaseServiceImpl(connectionId);
     }
 
     /**
@@ -180,9 +191,9 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                         if (dbName == null) {
                             assertFalse("Db should not be created when it is null", dbNames.contains(dbName));
                         } else if ("".equals(dbName)) {
-                            assertFalse("Db should not be created when it is an empty string",dbNames.contains(dbName));
+                            assertFalse("Db should not be created when it is an empty string", dbNames.contains(dbName));
                         } else {
-                            assertTrue("Db should be created when it is a non empty string",dbNames.contains(dbName));
+                            assertTrue("Db should be created when it is a non empty string", dbNames.contains(dbName));
                             // Db not populate by test Cases
                             mongoInstance.dropDatabase(dbName);
                         }
@@ -278,8 +289,8 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                                 int noOfCollections = Integer.parseInt((String) temp.get("Value"));
 
                                 assertEquals("Collection should be zero as empty db", noOfCollections, 0); // As
-                                                                                                           // Empty
-                                                                                                           // Db
+                                // Empty
+                                // Db
                                 break;
                             }
                         }

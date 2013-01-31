@@ -27,18 +27,12 @@ package com.imaginea.mongodb.services;
 import com.imaginea.mongodb.controllers.BaseController;
 import com.imaginea.mongodb.controllers.LoginController;
 import com.imaginea.mongodb.controllers.LogoutController;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
-import com.mongodb.Mongo;
+import com.imaginea.mongodb.utils.JSON;
+import com.mongodb.BasicDBObject;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests the GET request made by user to disconnect from the application. Here we
@@ -49,61 +43,41 @@ import static org.junit.Assert.assertNotNull;
  * @since 15 July 2011
  */
 public class UserLogoutTest extends BaseController {
-	private MongoInstanceProvider mongoInstanceProvider;
-	private static Mongo mongoInstance;
+    private MockHttpServletRequest request = new MockHttpServletRequest();
 
-	/**
-	 * Class to be tested
-	 */
-	private LogoutController logoutController;
+    /**
+     * Class to be tested
+     */
+    private LogoutController logoutController;
 
-	/**
-	 * Logger object
-	 */
-	private static Logger logger = Logger.getLogger(UserLoginTest.class);
+    /**
+     * Logger object
+     */
+    private static Logger logger = Logger.getLogger(UserLoginTest.class);
+    private String connectionId;
 
-	private String testdbInfo = "localhost_27017";
-	private static final String logConfigFile = "src/main/resources/log4j.properties";
+    /**
+     * Instantiates the class LoginController which is to be tested and also gets a
+     * mongo instance from mongo instance provider.
+     */
+    @Before
+    public void instantiateTestClass() {
+        logoutController = new LogoutController();
+        request = new MockHttpServletRequest();
+        LoginController loginController = new LoginController();
+        // Add user to mappings in userLogin for authentication
+        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
+        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
+        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+    }
 
-	public UserLogoutTest() throws Exception {
-		ErrorTemplate.execute(logger, new ResponseCallback() {
-			public Object execute() throws Exception {
-				mongoInstanceProvider = new ConfigMongoInstanceProvider();
-				PropertyConfigurator.configure(logConfigFile);
-				return null;
-			}
-		});
+    /**
+     * Test GET Request made by User to disconnect from the application.
+     */
+    @Test
+    public void testUserLogoutRequest() {
+        String status = logoutController.doGet(connectionId, new MockHttpServletRequest());
+        assert (status.contains("User Logged Out"));
+    }
 
-	}
-
-	/**
-	 * Instantiates the class LoginController which is to be tested and also gets a
-	 * mongo instance from mongo instance provider.
-	 */
-	@Before
-	public void instantiateTestClass() {
-		logoutController = new LogoutController();
-		mongoInstance = mongoInstanceProvider.getMongoInstance();
-		// Add User to maps
-		LoginController.mongoConfigToInstanceMapping.put(testdbInfo, mongoInstance);
-		LoginController.mongoConfigToUsersMapping.put(testdbInfo, 1);
-	}
-
-	/**
-	 * Test GET Request made by User to disconnect from the application.
-	 *
-	 */
-	@Test
-	public void testUserLoginRequest() {
-
-		logoutController.doGet(testdbInfo,new MockHttpServletRequest());
-		assertNotNull(LoginController.mongoConfigToInstanceMapping.get(testdbInfo));
-		Integer value = 0;
-		assertEquals(value, LoginController.mongoConfigToUsersMapping.get(testdbInfo));
-	}
-
-	@After
-	public void destroyMongoProcess() {
-		mongoInstance.close();
-	}
 }
