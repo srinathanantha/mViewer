@@ -203,11 +203,11 @@ public class GridFSServiceImpl implements GridFSService {
      * @param bucketName  Name of GridFS Bucket
      * @param formData    formDataBodyPart of the uploaded file
      * @param inputStream inputStream of the uploaded file
-     * @param dbInfo      Mongo Db Configuration provided by user to connect to.
+     * @param connectionId ConnectionId of the connection
      * @returns Success message with additional file details such as name, size,
      * download url & deletion url as JSON Array string.
      */
-    public JSONArray insertFile(String dbName, String bucketName, String dbInfo, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException {
+    public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
 
@@ -238,8 +238,8 @@ public class GridFSServiceImpl implements GridFSService {
             JSONObject obj = new JSONObject();
             obj.put("name", fsInputFile.getFilename());
             obj.put("size", fsInputFile.getLength());
-            obj.put("url", String.format("services/%s/%s/gridfs/getfile?id=%s&download=%s&dbInfo=%s&ts=%s", dbName, bucketName, objectId, false, dbInfo, new Date()));
-            obj.put("delete_url", String.format("services/%s/%s/gridfs/dropfile?id=%s&dbInfo=%s&ts=%s", dbName, bucketName, objectId, dbInfo, new Date().getTime()));
+            obj.put("url", String.format("services/%s/%s/gridfs/getfile?id=%s&download=%s&connectionId=%s&ts=%s", dbName, bucketName, objectId, false, connectionId, new Date()));
+            obj.put("delete_url", String.format("services/%s/%s/gridfs/dropfile?id=%s&connectionId=%s&ts=%s", dbName, bucketName, objectId, connectionId, new Date().getTime()));
             obj.put("delete_type", "GET");
             result.put(obj);
 

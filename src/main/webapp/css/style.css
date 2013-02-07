@@ -421,6 +421,9 @@ ul.nav-link-right li label.disconnect {
 }
 
 #createDB {
+    height: 20px;
+    position: relative;
+    top: 3px;
     float: right;
     margin-top: -4px;
     margin-left: 4px;

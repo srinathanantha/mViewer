@@ -72,11 +72,11 @@ public interface GridFSService {
      * @param bucketName  Name of GridFS Bucket
      * @param formData    formDataBodyPart of the uploaded file
      * @param inputStream inputStream of the uploaded file
-     * @param dbInfo      Mongo Db Configuration provided by user to connect to.
+     * @param connectionId ConnectionId of the connection
      * @returns Success message with additional file details such as name, size,
      * download url & deletion url as JSON Array string.
      */
-    public JSONArray insertFile(String dbName, String bucketName, String dbInfo, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException;
+    public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException;
 
     /**
      * Service handler for dropping a file from GridFS.

@@ -56,7 +56,7 @@ public class LogoutController extends BaseController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String doGet(@QueryParam("connectionId") final String connectionId, @Context final HttpServletRequest request) {
-        String response = ErrorTemplate.execute(logger, new ResponseCallback() {
+        String response = new ResponseTemplate().execute(logger, connectionId, request, new ResponseCallback() {
             public Object execute() throws Exception {
                 authService.disconnectConnection(connectionId);
                 HttpSession session = request.getSession();
