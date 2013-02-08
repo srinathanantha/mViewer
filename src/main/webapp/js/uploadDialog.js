@@ -49,7 +49,7 @@ YUI.add('upload-dialog', function(Y) {
             this.cancel();
             if (newFilesUploaded == true) {
                 setTimeout(function() {
-                    Y.one("#" + Y.one("#currentBucket").get("value").replace(/ /g, '_')).simulate("click");
+                    Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
                 }, 250);
             }
         }

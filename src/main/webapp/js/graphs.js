@@ -153,7 +153,7 @@ YUI({
 
         function requestInitialData() {
             var fullUrl = window.location.search;
-            Y.one("#connectionId").set("value", fullUrl.substring(fullUrl.indexOf("=") + 1));
+            MV.appInfo.connectionId = fullUrl.substring(fullUrl.indexOf("=") + 1);
             var sUrl = MV.URLMap.graphInitiate();
             var request = Y.io(sUrl, cfg);
         }

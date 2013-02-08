@@ -51,6 +51,16 @@ YUI.add('utility', function(Y) {
     MV.infoIcon = "infoIcon";
     MV.users = "system.users";
     MV.indexes = "system.indexes";
+    MV.appInfo = {
+        currentColl: "",
+        currentDB: "",
+        currentBucket: "",
+        username: "",
+        host: "",
+        port: "",
+        newName: "",
+        connectionId: ""
+    };
 
     MV.openFileEvent = new YAHOO.util.CustomEvent("OpenFile");
     MV.deleteFileEvent = new YAHOO.util.CustomEvent("DeleteFile");
@@ -64,6 +74,22 @@ YUI.add('utility', function(Y) {
         MV.selectedHeader = $(node._node).closest('a');
     };
 
+    MV.databaseIdPrefix = "db-";
+    MV.collectionIdPrefix = "coll-";
+    MV.bucketIdPRefix = "bucket-";
+
+    MV.getDatabaseElementId = function(databaseName) {
+        return MV.databaseIdPrefix + (databaseName.replace(/ /g, '_').replace('.', '_'));
+    };
+
+    MV.getCollectionElementId = function(collectionName) {
+        return MV.collectionIdPrefix + (collectionName.replace(/ /g, '_').replace('.', '_'));
+    };
+
+    MV.getBucketElementId = function(bucketName) {
+        return MV.bucketIdPRefix + bucketName.replace(/ /g, '_');
+    };
+
     MV.selectDatabase = function(node) {
         if (MV.selectedDB) {
             MV.selectedDB.removeClass('sel');
@@ -72,6 +98,7 @@ YUI.add('utility', function(Y) {
         MV.selectedDB = $(node._node).closest('li');
     };
 
+    /* Highlights the selected database item(collection, bucket, system collections)*/
     MV.selectDBItem = function(node) {
         if (MV.selectedDBItem) {
             MV.selectedDBItem.removeClass('sel');
@@ -81,14 +108,14 @@ YUI.add('utility', function(Y) {
     };
 
     MV.StateManager = (function() {
-        var self = this, stateVariables = ['currentDB', 'currentColl', 'currentBucket', 'host', 'port', 'connectionId', 'newName'], exports = {}, i=0;
+        var self = this, stateVariables = ['currentDB', 'currentColl', 'currentBucket', 'host', 'port', 'connectionId', 'newName'], exports = {}, i = 0;
 
         function getVal(key) {
-            return Y.one('#' + key).get("value");
+            return MV.appInfo[key];
         }
 
         function setVal(key, value) {
-            Y.one('#' + key).set("value", value);
+            MV.appInfo[key] = value;
         }
 
         function deliverEvent(eventName, eventArgs) {
@@ -123,14 +150,17 @@ YUI.add('utility', function(Y) {
         }
 
         exports.connectionId = function() {
-            var query = window.location.search.substring(1);
-            var vars = query.split("&");
-            var params = new Array()
-            for (var i = 0; i < vars.length; i++) {
-                var pair = vars[i].split("=");
-                params[pair[0]] = pair[1]
+            if (!MV.appInfo.connectionId) {
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                var params = new Array()
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    params[pair[0]] = pair[1]
+                }
+                MV.appInfo.connectionId = params["connectionId"];
             }
-            return params["connectionId"];
+            return MV.appInfo.connectionId;
         };
 
         exports.publish = function(eventName, eventArgs) {
@@ -322,6 +352,7 @@ YUI.add('utility', function(Y) {
         "GET_DB_STATS_EXCEPTION": "Please check if mongod is running and refresh the page.",
         "GET_COLL_STATS_EXCEPTION": "Please check if mongod is running and refresh the page.",
         "COLLECTION_CREATION_EXCEPTION": "Please check if mongod is running and refresh the page.",
+        "COLLECTION_UPDATE_EXCEPTION": "Please check if mongod is running and refresh the page.",
         "COLLECTION_DELETION_EXCEPTION": "Please check if mongod is running and refresh the page.",
         "INVALID_OBJECT_ID": "Value provided for '_id' is invalid .",
         "UPDATE_OBJECT_ID_EXCEPTION": "_id cannot be updated.",

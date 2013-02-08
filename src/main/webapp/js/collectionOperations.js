@@ -34,13 +34,13 @@ YUI({
          * @param e The event Object
          */
         function requestCollNames(e) {
-            Y.one("#currentDB").set("value", e.currentTarget.getAttribute("label"));
-            Y.one("#currentColl").set("value", "");
+            MV.appInfo.currentDB = e.currentTarget.getAttribute("data-db-name");
+            MV.appInfo.currentColl = "";
             Y.one("#collNames").unplug(Y.Plugin.NodeMenuNav);
             Y.one("#bucketNames").unplug(Y.Plugin.NodeMenuNav);
             Y.one("#systemCollections").unplug(Y.Plugin.NodeMenuNav);
 
-            MV.createDatatable(MV.URLMap.dbStatistics(), Y.one("#currentDB").get("value"));
+            MV.createDatatable(MV.URLMap.dbStatistics(), MV.appInfo.currentDB);
             MV.selectDatabase(e.currentTarget);
             MV.hideQueryForm();
             MV.showLoadingPanel("Loading Collections...");
@@ -70,9 +70,9 @@ YUI({
                 parsedResult = parsedResponse.response.result;
 
                 var collTemplate = '' +
-                    '<li class="yui3-menuitem" label="[0]"> \
+                    '<li class="yui3-menuitem" data-collection-name="[0]"> \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] label="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
+                             <a id=[1] data-collection-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
                              <a href="#[4]" class="yui3-menu-toggle"></a>\
                          </span>\
                          <div id="[5]" class="yui3-menu menu-width">\
@@ -95,9 +95,9 @@ YUI({
                          </div>\
                          </li>';
                 var bucketTemplate = '' +
-                    '<li class="yui3-menuitem" label="[0]"> \
+                    '<li class="yui3-menuitem" data-bucket-name="[0]"> \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] label="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
+                             <a id=[1] data-bucket-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
                              <a href="#[4]" class="yui3-menu-toggle"></a>\
                          </span>\
                          <div id="[5]" class="yui3-menu menu-width">\
@@ -117,9 +117,9 @@ YUI({
                          </div>\
                          </li>';
                 var usersTemplate = '' +
-                    '<li class="yui3-menuitem" label="[0]"> \
+                    '<li class="yui3-menuitem" data-collection-name="[0]"> \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] label="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
+                        <a id=[1] data-collection-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
                         <a href="#[4]" class="yui3-menu-toggle"></a>\
                     </span>\
                     <div id="[5]" class="yui3-menu menu-width">\
@@ -136,9 +136,9 @@ YUI({
                     </div>\
                     </li>';
                 var indexesTemplate = '' +
-                    '<li class="yui3-menuitem" label="[0]"> \
+                    '<li class="yui3-menuitem" data-collection-name="[0]"> \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] label="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
+                        <a id=[1] data-collection-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
                         <a href="#[4]" class="yui3-menu-toggle"></a>\
                     </span>\
                     <div id="[5]" class="yui3-menu menu-width">\
@@ -163,11 +163,11 @@ YUI({
                         var id;
                         if (collectionName == 'system.users') {
 
-                            id = collectionName.replace(/ /g, '_').replace('.', '_');
+                            id = MV.getCollectionElementId(collectionName);
                             systemCollections += usersTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
                             hasUsersAndIndexes = true;
                         } else if (collectionName == 'system.indexes') {
-                            id = collectionName.replace(/ /g, '_').replace('.', '_');
+                            id = MV.getCollectionElementId(collectionName);
                             systemCollections += indexesTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
                             hasUsersAndIndexes = true;
                         } else {
@@ -175,13 +175,13 @@ YUI({
                             if (pos > 0) {
                                 collectionName = collectionName.substring(0, pos);
                                 formattedName = collectionName.length > 20 ? collectionName.substring(0, 20) + "..." : collectionName;
-                                id = collectionName.replace(/ /g, '_').replace('.', '_');
+                                id = MV.getBucketElementId(collectionName);
                                 gridFSBuckets += bucketTemplate.format(collectionName, id, formattedName, collectionName, id + "_subMenu", id + "_subMenu");
                                 hasFiles = true;
                             }
                             // Issue 17 https://github.com/Imaginea/mViewer/issues/17
                             if (pos < 0 && collectionName.search(".chunks") < 0) {
-                                id = collectionName.replace(/ /g, '_');
+                                id = MV.getCollectionElementId(collectionName);
                                 collections += collTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
                                 hasCollections = true;
                             }
@@ -225,10 +225,10 @@ YUI({
          * @param args the arguments containing information about which menu item was clicked
          */
         function handleCollectionClickEvent(event) {
-            var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["label"].value;
+            var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["data-collection-name"].value;
             var index = parseInt(event.currentTarget._node.attributes["index"].value);
-            Y.one("#currentColl").set("value", label);
-            MV.selectDBItem(sm.currentCollAsNode());
+            MV.appInfo.currentColl = label;
+            MV.selectDBItem(Y.one("#" + MV.getCollectionElementId(MV.appInfo.currentColl)));
             switch (index) {
                 case 1:
                     // Add Document
@@ -240,7 +240,7 @@ YUI({
                     break;
                 case 2:
                     // Drop Collection
-                    MV.showYesNoDialog("Do you really want to drop the Collection - " + Y.one("#currentColl").get("value") + "?", dropCollection, function() {
+                    MV.showYesNoDialog("Do you really want to drop the Collection - " + MV.appInfo.currentColl + "?", dropCollection, function() {
                         this.hide();
                     });
                     break;
@@ -285,7 +285,7 @@ YUI({
                 case 4:
                     // View collections Statistics
                     MV.hideQueryForm();
-                    MV.createDatatable(MV.URLMap.collStatistics(), Y.one("#currentColl").get("value"));
+                    MV.createDatatable(MV.URLMap.collStatistics(), MV.appInfo.currentColl);
                     break;
             }
         }
@@ -296,10 +296,10 @@ YUI({
          * @param args the arguments containing information about which menu item was clicked
          */
         function handleBucketClickEvent(event) {
-            var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["label"].value;
+            var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["data-bucket-name"].value;
             var index = parseInt(event.currentTarget._node.attributes["index"].value);
-            Y.one("#currentBucket").set("value", label);
-            MV.selectDBItem(sm.currentBucketAsNode());
+            MV.appInfo.currentBucket = label;
+            MV.selectDBItem(Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)));
             switch (index) {
                 case 1:
                     // Add File
@@ -311,15 +311,15 @@ YUI({
                     break;
                 case 2:
                     // Delete
-                    MV.showYesNoDialog("Do you really want to drop all files in this bucket - " + Y.one("#currentBucket").get("value") + "?", sendDropBucketRequest, function() {
+                    MV.showYesNoDialog("Do you really want to drop all files in this bucket - " + MV.appInfo.currentBucket + "?", sendDropBucketRequest, function() {
                         this.hide();
                     });
                     break;
                 case 3:
                     // click to view details
                     MV.hideQueryForm();
-                    MV.createDatatable(MV.URLMap.bucketStatistics(".files"), Y.one("#currentBucket").get("value"));
-                    MV.createDatatable(MV.URLMap.bucketStatistics(".chunks"), Y.one("#currentBucket").get("value"));
+                    MV.createDatatable(MV.URLMap.bucketStatistics(".files"), MV.appInfo.currentBucket);
+                    MV.createDatatable(MV.URLMap.bucketStatistics(".chunks"), MV.appInfo.currentBucket);
                     break;
             }
         }
@@ -340,7 +340,7 @@ YUI({
                         if (response !== undefined) {
                             Y.log(response, "info");
                             MV.showAlertMessage(response, MV.infoIcon);
-                            Y.one("#" + Y.one("#currentDB").get("value")).simulate("click");
+                            Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                         } else {
                             var error = parsedResponse.response.error;
                             MV.showAlertMessage("Could not delete all files : [0]", MV.warnIcon, error.code);
@@ -348,7 +348,7 @@ YUI({
                         }
                     },
                     failure: function(ioId, responseObj) {
-                        Y.log("Could not delete the file. Status text: ".format(Y.one("#currentBucket").get("value"), responseObj.statusText), "error");
+                        Y.log("Could not delete the file. Status text: ".format(MV.appInfo.currentBucket, responseObj.statusText), "error");
                         MV.showAlertMessage("Could not drop the file! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
                     }
                 }
@@ -375,18 +375,18 @@ YUI({
                                 error;
                             if (response !== undefined) {
                                 MV.showAlertMessage(response, MV.infoIcon);
-                                Y.log("[0] dropped. Response: [1]".format(Y.one("#currentColl").get("value"), response), "info");
+                                Y.log("[0] dropped. Response: [1]".format(MV.appInfo.currentColl, response), "info");
                                 sm.clearCurrentColl();
-                                Y.one("#" + Y.one("#currentDB").get("value")).simulate("click");
+                                Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                             } else {
                                 error = parsedResponse.response.error;
-                                MV.showAlertMessage("Could not drop: [0]. [1]".format(Y.one("#currentColl").get("value"), MV.errorCodeMap[error.code]), MV.warnIcon);
-                                Y.log("Could not drop [0], Error message: [1], Error Code: [2]".format(Y.one("#currentColl").get("value"), error.message, error.code), "error");
+                                MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
+                                Y.log("Could not drop [0], Error message: [1], Error Code: [2]".format(MV.appInfo.currentColl, error.message, error.code), "error");
                             }
                         },
                         failure: function(ioId, responseObj) {
-                            Y.log("Could not drop [0].Status text: ".format(Y.one("#currentColl").get("value"), responseObj.statusText), "error");
-                            MV.showAlertMessage("Could not drop [0]!  Please check if your app server is running and try again. Status Text: [1]".format(Y.one("#currentColl").get("value"), responseObj.statusText), MV.warnIcon);
+                            Y.log("Could not drop [0].Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
+                            MV.showAlertMessage("Could not drop [0]!  Please check if your app server is running and try again. Status Text: [1]".format(MV.appInfo.currentColl, responseObj.statusText), MV.warnIcon);
                         }
                     }
                 });
@@ -401,9 +401,9 @@ YUI({
                 response = parsedResponse.response.result,
                 error;
             if (response !== undefined) {
-                MV.showAlertMessage("New document added successfully to collection '[0]'".format(Y.one("#currentColl").get("value")), MV.infoIcon);
-                Y.log("New document added to [0]".format(Y.one("#currentColl").get("value"), "info"));
-                sm.currentCollAsNode().simulate("click");
+                MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
+                Y.log("New document added to [0]".format(MV.appInfo.currentColl, "info"));
+                Y.one("#" + MV.getCollectionElementId(MV.appInfo.currentColl)).simulate("click");
             } else {
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not add Document ! [0]", MV.warnIcon, error.code);
@@ -423,13 +423,13 @@ YUI({
                 error;
             if (response !== undefined) {
                 MV.showAlertMessage(response, MV.infoIcon);
-                Y.log("[0] created in [1]".format(Y.one("#newName").get("value"), Y.one("#currentDB").get("value")), "info");
+                Y.log("[0] created in [1]".format(MV.appInfo.newName, MV.appInfo.currentDB), "info");
                 sm.clearCurrentColl();
-                Y.one("#" + Y.one("#currentDB").get("value")).simulate("click");
+                Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
             } else {
                 error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add Collection! [0]", MV.warnIcon, error.code);
-                Y.log("Could not add Collection! [0]".format(MV.errorCodeMap[error.code]), "error");
+                MV.showAlertMessage("Could not update Collection! [0]", MV.warnIcon, error.code);
+                Y.log("Could not update Collection! [0]".format(MV.errorCodeMap[error.code]), "error");
             }
         }
 

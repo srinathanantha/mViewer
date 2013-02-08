@@ -253,7 +253,7 @@ public class CollectionServiceImpl implements CollectionService {
                 result = "Collection [" + selectedCollectionName + "] was successfully renamed to '" + newCollName + "'";
             }
         } catch (MongoException m) {
-            throw new CollectionException(ErrorCodes.COLLECTION_CREATION_EXCEPTION, m.getMessage());
+            throw new CollectionException(ErrorCodes.COLLECTION_UPDATE_EXCEPTION, m.getMessage());
         }
         return result;
     }
@@ -343,7 +343,7 @@ public class CollectionServiceImpl implements CollectionService {
             }
             if (!mongoInstance.getDB(dbName).getCollectionNames().contains(collectionName)) {
                 throw new CollectionException(ErrorCodes.COLLECTION_DOES_NOT_EXIST,
-                        "Collection with name [" + collectionName + "] DOES NOT EXIST in Database [" + dbName + "]");
+                    "Collection with name [" + collectionName + "] DOES NOT EXIST in Database [" + dbName + "]");
             }
             CommandResult stats = mongoInstance.getDB(dbName).getCollection(collectionName).getStats();
 

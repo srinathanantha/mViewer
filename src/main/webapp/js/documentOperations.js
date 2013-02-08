@@ -38,7 +38,7 @@ YUI({
         var idMap = {};
 
         var initQueryBox = function(event) {
-            Y.one("#currentColl").set("value", event.currentTarget.getAttribute("label"));
+            MV.appInfo.currentColl = event.currentTarget.getAttribute("data-collection-name");
             MV.selectDBItem(event.currentTarget);
             MV.loadQueryBox(MV.URLMap.getDocKeys(), MV.URLMap.getDocs(), sm.currentColl(), showTabView);
         };
@@ -54,7 +54,7 @@ YUI({
 
             try {
                 Y.log("Preparing the data tabs...", "info");
-                MV.header.set("innerHTML", "Contents of Collection : " + Y.one("#currentColl").get("value"));
+                MV.header.set("innerHTML", "Contents of Collection : " + MV.appInfo.currentColl);
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForDocs(response);
                 var treeble = MV.getTreeble(treebleData, "document");
@@ -306,7 +306,7 @@ YUI({
                                 }
                             },
                             failure: function(ioId, responseObj) {
-                                Y.log("Could not delete the document .Status text: ".format(Y.one("#currentColl").get("value"), responseObj.statusText), "error");
+                                Y.log("Could not delete the document .Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
                                 MV.showAlertMessage("Could not drop the document! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
                             }
                         }

@@ -32,7 +32,7 @@ YUI({
 
 
         var initQueryBox = function(event) {
-            Y.one("#currentBucket").set("value", event.currentTarget.getAttribute("label"));
+            MV.appInfo.currentBucket = event.currentTarget.getAttribute("data-bucket-name");
             MV.selectDBItem(event.currentTarget);
             MV.loadQueryBox(MV.URLMap.getFilesCount(), MV.URLMap.getFiles(), sm.currentBucket(), showTabView);
         };
@@ -50,7 +50,7 @@ YUI({
 
             try {
                 Y.log("Preparing the data tabs...", "info");
-                MV.header.set("innerHTML", "Contents of GridFS Bucket : " + Y.one("#currentBucket").get("value"));
+                MV.header.set("innerHTML", "Contents of GridFS Bucket : " + MV.appInfo.currentBucket);
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForFiles(response);
                 var treeble = MV.getTreeble(treebleData, "file");
@@ -188,7 +188,7 @@ YUI({
                                 MV.showAlertMessage(response, MV.infoIcon);
                                 Y.log("File with _id= [0] deleted. Response: [1]".format(docId, response), "info");
                                 //Y.one('#file' + index).remove();
-                                Y.one("#" + Y.one("#currentBucket").get("value").replace(/ /g, '_')).simulate("click");
+                                Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
                             } else {
                                 var error = parsedResponse.response.error;
                                 MV.showAlertMessage("Could not delete the file with _id [0]. [1]".format(docId, MV.errorCodeMap[error.code]), MV.warnIcon);
@@ -196,7 +196,7 @@ YUI({
                             }
                         },
                         failure: function(ioId, responseObj) {
-                            Y.log("Could not delete the file. Status text: ".format(Y.one("#currentBucket").get("value"), responseObj.statusText), "error");
+                            Y.log("Could not delete the file. Status text: ".format(MV.appInfo.currentBucket, responseObj.statusText), "error");
                             MV.showAlertMessage("Could not drop the file! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
                         }
                     }

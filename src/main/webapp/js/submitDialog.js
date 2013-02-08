@@ -42,7 +42,7 @@ YUI.add('submit-dialog', function(Y) {
             } else {
                 var updateColl = Y.one("#updateColl").get("value");
                 if (updateColl === "false") {
-                    Y.one("#currentColl").set("value", newCollInfo.newCollName);
+                    MV.appInfo.currentColl = newCollInfo.newCollName;
                 }
                 Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.insertColl());
             }
@@ -67,7 +67,7 @@ YUI.add('submit-dialog', function(Y) {
                 MV.showAlertMessage("Enter the database name!", MV.warnIcon);
                 return false;
             } else {
-                Y.one("#newName").set("value", newDBInfo.name);
+                MV.appInfo.newName = newDBInfo.name;
                 Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.insertDB());
                 MV.showAlertMessage("New Database '"+newDBInfo.name+"' added successfully", MV.warnIcon);
             }

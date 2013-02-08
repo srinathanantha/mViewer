@@ -22,38 +22,14 @@ public class QueryExecutor {
             keysObj.put(strtok.nextToken(), 1);
         }
         DBObject sortObj = (DBObject) JSON.parse(sortByStr);
+        if (command.equals("aggregate")) {
+            return executeAggregate(dbCollection, queryStr);
+        }
         if (command.equals("count")) {
             return executeCount(dbCollection, queryStr);
         }
         if (command.equals("distinct")) {
             return executeDistinct(dbCollection, queryStr);
-        }
-        if (command.equals("find")) {
-            return executeFind(dbCollection, queryStr, keysObj, sortObj, limit, skip);
-        }
-        if (command.equals("findOne")) {
-            return executeFindOne(dbCollection, queryStr);
-        }
-        if (command.equals("findAndModify")) {
-            return executeFindAndModify(dbCollection, queryStr, keysObj);
-        }
-        if (command.equals("group")) {
-            return executeGroup(dbCollection, queryStr);
-        }
-        if (command.equals("insert")) {
-            return executeInsert(dbCollection, queryStr);
-        }
-        if (command.equals("mapReduce")) {
-            return executeMapReduce(dbCollection, queryStr, limit);
-        }
-        if (command.equals("update")) {
-            return executeUpdate(dbCollection, queryStr);
-        }
-        if (command.equals("remove")) {
-            return executeRemove(dbCollection, queryStr);
-        }
-        if (command.equals("stats")) {
-            return executeStats(dbCollection);
         }
         if (command.equals("drop")) {
             return executeDrop(dbCollection);
@@ -67,8 +43,41 @@ public class QueryExecutor {
         if (command.equals("ensureIndex")) {
             return executeEnsureIndex(dbCollection, queryStr);
         }
+        if (command.equals("find")) {
+            return executeFind(dbCollection, queryStr, keysObj, sortObj, limit, skip);
+        }
+        if (command.equals("findOne")) {
+            return executeFindOne(dbCollection, queryStr);
+        }
+        if (command.equals("findAndModify")) {
+            return executeFindAndModify(dbCollection, queryStr, keysObj);
+        }
+        if (command.equals("group")) {
+            return executeGroup(dbCollection, queryStr);
+        }
         if (command.equals("getIndexes")) {
             return executeGetIndexes(dbCollection);
+        }
+        if (command.equals("insert")) {
+            return executeInsert(dbCollection, queryStr);
+        }
+        if (command.equals("mapReduce")) {
+            return executeMapReduce(dbCollection, queryStr, limit);
+        }
+        if (command.equals("remove")) {
+            return executeRemove(dbCollection, queryStr);
+        }
+        if (command.equals("stats")) {
+            return executeStats(dbCollection);
+        }
+        if (command.equals("storageSize")) {
+            return executeStorageSize(dbCollection);
+        }
+        if (command.equals("totalIndexSize")) {
+            return executeTotalIndexSize(dbCollection);
+        }
+        if (command.equals("update")) {
+            return executeUpdate(dbCollection, queryStr);
         }
         throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "Command is not yet supported");
     }
@@ -78,9 +87,9 @@ public class QueryExecutor {
         if (queryObj instanceof List) {
             List<DBObject> listOfAggregates = (List) queryObj;
             int size = listOfAggregates.size();
-            AggregationOutput aggregationOutput = dbCollection.aggregate(listOfAggregates.get(0), listOfAggregates.subList(1, size).toArray(new DBObject[size]));
+            AggregationOutput aggregationOutput = dbCollection.aggregate(listOfAggregates.get(0), listOfAggregates.subList(1, size).toArray(new DBObject[size - 1]));
             Iterator<DBObject> resultIterator = aggregationOutput.results().iterator();
-            List<DBObject> results = dbCollection.getIndexInfo();
+            List<DBObject> results = new ArrayList<DBObject>();
             while (resultIterator.hasNext()) {
                 results.add(resultIterator.next());
             }
@@ -282,6 +291,16 @@ public class QueryExecutor {
     public static JSONObject executeStats(DBCollection dbCollection) throws JSONException {
         CommandResult stats = dbCollection.getStats();
         return constructResponse(false, stats);
+    }
+
+    public static JSONObject executeStorageSize(DBCollection dbCollection) throws JSONException {
+        Integer storageSize = (Integer) dbCollection.getStats().toMap().get("storageSize");
+        return constructResponse(false, new BasicDBObject("storageSize", storageSize));
+    }
+
+    public static JSONObject executeTotalIndexSize(DBCollection dbCollection) throws JSONException {
+        Integer totalIndexSize = (Integer) dbCollection.getStats().toMap().get("totalIndexSize");
+        return constructResponse(false, new BasicDBObject("totalIndexSize", totalIndexSize));
     }
 
     private static JSONObject constructResponse(boolean isEditable, long size, List docs) throws JSONException {
