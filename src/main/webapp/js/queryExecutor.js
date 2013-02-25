@@ -102,7 +102,7 @@ YUI.add('query-executor', function(Y) {
                     document.getElementById('queryExecutor').style.display = 'block';
                     queryForm = Y.one('#queryForm');
                     queryForm.addClass('form-cont');
-                    MV.header.set("innerHTML", "");
+                    MV.clearHeader();
                     MV.mainBody.empty(true);
                     queryForm.set("innerHTML", getForm(keys, count));
                     MV.mainBody.set("innerHTML", paginatorTemplate.format(count < 25 ? count : 25, count));

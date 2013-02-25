@@ -53,6 +53,7 @@ YUI({
                     failure: displayError
                 }
             });
+            $("#dbOperations").show();
         }
 
         /**
@@ -159,7 +160,7 @@ YUI({
                 if (parsedResult) {
                     for (index = 0; index < parsedResult.length; index++) {
                         var collectionName = parsedResult[index];
-                        var formattedName = collectionName.length > 20 ? collectionName.substring(0, 20) + "..." : collectionName;
+                        var formattedName = collectionName.length > 18 ? collectionName.substring(0, 15) + "..." : collectionName;
                         var id;
                         if (collectionName == 'system.users') {
 
@@ -174,9 +175,9 @@ YUI({
                             var pos = collectionName.lastIndexOf(".files");
                             if (pos > 0) {
                                 collectionName = collectionName.substring(0, pos);
-                                formattedName = collectionName.length > 20 ? collectionName.substring(0, 20) + "..." : collectionName;
+                                formattedName = collectionName.length > 18 ? collectionName.substring(0, 15) + "..." : collectionName;
                                 id = MV.getBucketElementId(collectionName);
-                                gridFSBuckets += bucketTemplate.format(collectionName, id, formattedName, collectionName, id + "_subMenu", id + "_subMenu");
+                                gridFSBuckets += bucketTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
                                 hasFiles = true;
                             }
                             // Issue 17 https://github.com/Imaginea/mViewer/issues/17
@@ -197,13 +198,10 @@ YUI({
 
                     var menu1 = Y.one("#collNames");
                     menu1.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
-                    menu1.set("style.display", "block");
                     var menu2 = Y.one("#bucketNames");
                     menu2.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
-                    menu2.set("style.display", "block");
                     var menu3 = Y.one("#systemCollections");
                     menu3.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
-                    menu3.set("style.display", "block");
                     sm.publish(sm.events.collectionsChanged);
                     MV.hideLoadingPanel();
                     Y.log("Collection Names succesfully loaded", "info");

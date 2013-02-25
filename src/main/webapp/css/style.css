@@ -21,6 +21,20 @@ input {
     vertical-align: middle;
 }
 
+.ui-accordion .ui-accordion-content {
+    padding: 0px;
+}
+
+#dbOperations .buffer .yui3-menu {
+    max-height: 200px;
+    overflow: auto;
+}
+
+#dbBuffer .yui3-menu {
+    max-height: 190px;
+    overflow: auto;
+}
+
 /*Login Screen*/
 
 .loginScreen {
@@ -260,7 +274,7 @@ ul.lists li .yui3-menu-label {
 }
 
 ul.lists li .yui3-menu-label a {
-    width: 80% !important;
+    width: 77% !important;
     cursor: pointer !important;
 }
 
@@ -269,7 +283,7 @@ ul.lists li .yui3-menu-label a {
 }
 
 .menu-width {
-    width: 150px;
+    width: 160px;
 }
 
 ul.lists li .op_icon {
@@ -398,6 +412,11 @@ ul.nav-link-right li label.disconnect {
     font-weight: bold;
 }
 
+.db-header-label {
+    width: 80%;
+    display: inline-block;
+}
+
 .sublist-head {
     text-transform: none;
 }
@@ -421,9 +440,8 @@ ul.nav-link-right li label.disconnect {
 }
 
 #createDB {
-    height: 20px;
+    height: 24px;
     position: relative;
-    top: 3px;
     float: right;
     margin-top: -4px;
     margin-left: 4px;
@@ -678,6 +696,14 @@ textarea .disabled {
     font-weight: bold;
 }
 
+.db-header-label span {
+    display: inline-block;
+}
+
+#mainBodyHeader {
+    word-wrap: break-word;
+}
+
 .yui-skin-sam .yui-dt-liner {
     margin: 0;
     padding: 4px 6px;
@@ -924,10 +950,6 @@ div.buffer {
 
 div.dbBuffer {
     height: 30%;
-    min-height: 50px
-}
-
-div.collectionBuffer {
     min-height: 50px
 }
 

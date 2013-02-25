@@ -58,7 +58,7 @@ YUI({
 
             try {
                 Y.log("Preparing the data tabs...", "info");
-                MV.header.set("innerHTML", "Contents of Collection : " + MV.appInfo.currentColl);
+                MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForDocs(response);
                 var treeble = MV.getTreeble(treebleData, "document");

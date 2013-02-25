@@ -202,7 +202,7 @@ YUI({
                         var spanDataDbName = dbName;
                         var subMenuHref = dbName + "_subMenu";
                         var subMenuId = dbName + "_subMenu"
-                        var formattedName = dbName.length > 20 ? dbName.substring(0, 20) + "..." : dbName;
+                        var formattedName = dbName.length > 18 ? dbName.substring(0, 15) + "..." : dbName;
                         dbNames += dbTemplate.format(menuDataDbName, spanId, spanDataDbName, formattedName, subMenuHref, subMenuId);
                     }
                     if (index === 0) {
@@ -270,6 +270,24 @@ YUI({
             MV.showSubmitDialog("addDBDialog", requestConnectionDetails, null);
         }
 
+        $('#dbBuffer .db-header-label').click(function(){
+            $("#dbNames").toggle();
+        });
+
+        $('#dbOperations').accordion({
+            header: "div.list-head",
+            heightStyle : "content",
+            collapsible: true,
+            active : 0
+        });
+
+
+
+        /*$(".left-cont .buffer .list-head").click(function(eventObject) {
+            if(eventObject.target.tagName !== "BUTTON") {
+                $(this).siblings(".buffer-content").toggle();
+            }
+        });*/
         // Make a request to load Database names when the page loads
         Y.on("load", requestConnectionDetails);
     });
