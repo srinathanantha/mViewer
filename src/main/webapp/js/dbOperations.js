@@ -266,12 +266,15 @@ YUI({
         /**
          * The function shows a dialog that takes input (i.e. Db name) from user
          */
-        function createDB() {
+        function createDB(event) {
             MV.showSubmitDialog("addDBDialog", requestConnectionDetails, null);
+            event.stopPropagation();
         }
 
-        $('#dbBuffer .db-header-label').click(function(){
-            $("#dbNames").toggle();
+        $('#dbBuffer').accordion({
+            header: "div.list-head",
+            heightStyle : "content",
+            collapsible: true
         });
 
         $('#dbOperations').accordion({

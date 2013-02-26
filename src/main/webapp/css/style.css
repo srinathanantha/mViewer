@@ -26,12 +26,12 @@ input {
 }
 
 #dbOperations .buffer .yui3-menu {
-    max-height: 200px;
+    max-height: 245px;
     overflow: auto;
 }
 
 #dbBuffer .yui3-menu {
-    max-height: 190px;
+    max-height: 125px;
     overflow: auto;
 }
 
@@ -402,8 +402,6 @@ ul.nav-link-right li label.disconnect {
 .list-head {
     background: white;
     border: 1px solid #E3EAEE;
-    border-left: 0;
-    border-right: 0;
     padding: 10px 3px 10px 9px;
     height: 16px;
     text-transform: uppercase;
@@ -950,7 +948,6 @@ div.buffer {
 
 div.dbBuffer {
     height: 30%;
-    min-height: 50px
 }
 
 fieldset.bufferFieldSet {
