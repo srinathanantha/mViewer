@@ -310,7 +310,7 @@ YUI.add('query-executor', function(Y) {
                         checkedFields.push(item.get("name"));
                     }
                 }
-                return ("&query=[0]&limit=[1]&skip=[2]&fields=[3]&sortBy=[4]".format(query, limit, skip, checkedFields, sortBy));
+                return ("&query=[0]&limit=[1]&skip=[2]&fields=[3]&sortBy=[4]".format(encodeURIComponent(query), limit, skip, checkedFields, sortBy));
             } catch (error) {
                 Y.log("Could not parse query. Reason: [0]".format(error), "error");
                 MV.showAlertMessage("Failed:Could not parse query. [0]".format(error), MV.warnIcon);
