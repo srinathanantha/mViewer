@@ -35,6 +35,7 @@ YUI.add('upload-dialog', function(Y) {
                 effect: YAHOO.widget.ContainerEffect.SLIDE,
                 duration: 0.25
             },
+            close : false,
             constraintoviewport: true,
             buttons: [
                 {
@@ -53,8 +54,6 @@ YUI.add('upload-dialog', function(Y) {
                 }, 250);
             }
         }
-
-        ;
 
         uploadDialog.setHeader("File Upload");
         uploadDialog.render();

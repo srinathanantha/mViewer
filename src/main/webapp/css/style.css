@@ -25,13 +25,8 @@ input {
     padding: 0px;
 }
 
-#dbOperations .buffer .yui3-menu {
+#dbOperations .dbOperation {
     max-height: 245px;
-    overflow: auto;
-}
-
-#dbBuffer .yui3-menu {
-    max-height: 125px;
     overflow: auto;
 }
 
@@ -282,8 +277,20 @@ ul.lists li .yui3-menu-label a {
     display: inline-block !important;
 }
 
-.menu-width {
-    width: 160px;
+#dbNames .menu-width {
+    width: 165px;
+}
+
+#collNames .menu-width {
+    width: 155px;
+}
+
+#bucketNames .menu-width {
+    width: 120px;
+}
+
+#systemCollections .menu-width {
+    width: 130px;
 }
 
 ul.lists li .op_icon {
@@ -541,12 +548,20 @@ table tr td {
     overflow: auto;
 }
 
-.wrap {
+.wrap_filename {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 120px;
+}
+
+.wrap_filelink {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 212px;
 }
 
 .checklist li {
@@ -830,6 +845,8 @@ textarea .disabled {
 #dbNames {
     position: static;
     display: none;
+    max-height: 125px;
+    overflow: auto;
 }
 
 #collNames {
@@ -923,12 +940,6 @@ textarea .disabled {
 }
 
 .shadow, * input:focus, button:focus, textarea:focus, a:focus, select:focus, tr.selected {
-    /* border: 1px solid #CCCCCC; */
-    /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); */
-    /* -webkit-box-shadow: rgba(0,0,0,.2) 0px 0px 5px; */
-    /* -moz-box-shadow: rgba(0,0,0,.2) 0px 0px 5px; */
-    /* -o-box-shadow: rgba(0,0,0,.2) 0px 0px 5px; */
-
     border: 1px solid #CCCCCC;
     box-shadow: 0 0 2px 2px highlight !important;
     -webkit-box-shadow: 0 0 2px 2px rgb(255, 255, 255);
