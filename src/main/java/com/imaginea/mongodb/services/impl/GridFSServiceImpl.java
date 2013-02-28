@@ -17,6 +17,7 @@ package com.imaginea.mongodb.services.impl;
 
 import com.imaginea.mongodb.exceptions.*;
 import com.imaginea.mongodb.services.AuthService;
+import com.imaginea.mongodb.services.CollectionService;
 import com.imaginea.mongodb.services.DatabaseService;
 import com.imaginea.mongodb.services.GridFSService;
 import com.imaginea.mongodb.utils.JSON;
@@ -35,7 +36,9 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Defines services definitions for performing operations like create/drop on
@@ -53,6 +56,7 @@ public class GridFSServiceImpl implements GridFSService {
     private Mongo mongoInstance;
 
     private DatabaseService databaseService;
+    private CollectionService collectionService;
 
     private static final AuthService AUTH_SERVICE = AuthServiceImpl.getInstance();
 
@@ -67,6 +71,7 @@ public class GridFSServiceImpl implements GridFSService {
     public GridFSServiceImpl(String connectionId) throws ApplicationException {
         mongoInstance = AUTH_SERVICE.getMongoInstance(connectionId);
         databaseService = new DatabaseServiceImpl(connectionId);
+        collectionService = new CollectionServiceImpl(connectionId);
     }
 
     /**
@@ -74,7 +79,7 @@ public class GridFSServiceImpl implements GridFSService {
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
-     * @returns Status message.
+     * @return Status message.
      */
     public String createStore(String dbName, String bucketName) throws DatabaseException, CollectionException {
         if (dbName == null) {
@@ -89,10 +94,12 @@ public class GridFSServiceImpl implements GridFSService {
         if (bucketName.equals("")) {
             throw new CollectionException(ErrorCodes.COLLECTION_NAME_EMPTY, "Bucket Name Empty");
         }
-
-        new GridFS(mongoInstance.getDB(dbName), bucketName);
-
-        return "GridFS bucket [" + bucketName + "] added to database [" + dbName + "].";
+        if(getAllBuckets(dbName).contains(bucketName)){
+            return "There is already a GridFS bucket with name [" + bucketName + "].";
+        } else {
+            new GridFS(mongoInstance.getDB(dbName), bucketName);
+            return "GridFS bucket [" + bucketName + "] added to database [" + dbName + "].";
+        }
     }
 
     /**
@@ -103,8 +110,9 @@ public class GridFSServiceImpl implements GridFSService {
      * @param query
      * @param fields
      * @param skip
-     * @param limit      @returns JSON representation of list of all files as a String.
+     * @param limit
      * @param sortBy
+     * @return JSON representation of list of all files as a String.
      */
     public JSONObject getFileList(String dbName, String bucketName, String query, String fields, String skip, String limit, String sortBy) throws ValidationException, DatabaseException, CollectionException {
         if (dbName == null) {
@@ -164,7 +172,7 @@ public class GridFSServiceImpl implements GridFSService {
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
      * @param _id        ObjectId of the file to be retrieved
-     * @returns Requested multipartfile for viewing or download based on 'download' param.
+     * @return Requested multipartfile for viewing or download based on 'download' param.
      */
     public File getFile(String dbName, String bucketName, String _id) throws ValidationException, DatabaseException, CollectionException {
         if (dbName == null) {
@@ -204,7 +212,7 @@ public class GridFSServiceImpl implements GridFSService {
      * @param formData    formDataBodyPart of the uploaded file
      * @param inputStream inputStream of the uploaded file
      * @param connectionId ConnectionId of the connection
-     * @returns Success message with additional file details such as name, size,
+     * @return Success message with additional file details such as name, size,
      * download url & deletion url as JSON Array string.
      */
     public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException {
@@ -255,7 +263,7 @@ public class GridFSServiceImpl implements GridFSService {
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
      * @param _id        Object id of file to be deleted
-     * @returns Status message.
+     * @return Status message.
      */
     public String deleteFile(String dbName, String bucketName, String _id) throws DatabaseException, DocumentException, CollectionException, ValidationException {
         if (dbName == null) {
@@ -301,12 +309,37 @@ public class GridFSServiceImpl implements GridFSService {
         return result;
     }
 
+    @Override
+    public Set<String> getAllBuckets(String dbName) throws DatabaseException, CollectionException {
+        if (dbName == null) {
+            throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
+
+        }
+        if (dbName.equals("")) {
+            throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Empty");
+        }
+
+        if (!databaseService.getDbList().contains(dbName)) {
+            throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS, "DB [" + dbName + "] DOES NOT EXIST");
+        }
+
+        Set<String> collList = collectionService.getCollList(dbName);
+        Set<String> bucketsList = new HashSet<String>();
+        for (String collection : collList) {
+            int pos = collection.lastIndexOf(".files");
+            if( pos > 0 ) {
+                  bucketsList.add(collection.substring(0,pos));
+            }
+        }
+        return bucketsList;
+    }
+
     /**
      * Service implementation for dropping all files from a GridFS bucket.
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
-     * @returns Status message.
+     * @return Status message.
      */
     public String dropBucket(String dbName, String bucketName) throws DatabaseException, DocumentException, CollectionException, ValidationException {
         if (dbName == null) {
@@ -345,7 +378,7 @@ public class GridFSServiceImpl implements GridFSService {
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
-     * @returns Status message.
+     * @return Status message.
      */
     public JSONObject getCount(String dbName, String bucketName) throws DatabaseException, DocumentException, ValidationException, CollectionException {
         if (dbName == null) {

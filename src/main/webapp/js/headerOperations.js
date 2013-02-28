@@ -75,7 +75,6 @@ YUI({
                         var response = parsedResponse.response.result;
                         if (response !== undefined) {
                             window.location = "index.html";
-                            Y.log("Successfully logging out.", "info");
                         } else {
                             var error = parsedResponse.response.error;
                             MV.showAlertMessage("Cannot disconnect! [0]", MV.warnIcon, error.code);

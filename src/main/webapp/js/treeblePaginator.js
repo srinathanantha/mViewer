@@ -244,7 +244,6 @@ YUI.add('treeble-paginator', function(Y) {
         var resultObject = {};
         resultObject.documents = result;
         returnObject.result = resultObject;
-        Y.log("Tree table data prepared", "info");
         return (returnObject);
     };
 

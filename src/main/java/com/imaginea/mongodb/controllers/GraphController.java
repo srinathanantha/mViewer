@@ -57,8 +57,8 @@ public class GraphController extends HttpServlet {
     private static int lastNoOfInserts = 0;
     private static int lastNoOfUpdates = 0;
     private static int lastNoOfDeletes = 0;
-    int maxLen = 20;
-    int jump = 1;
+    private int maxLen = 20;
+    private int jump = 1;
 
     private AuthService authService = AuthServiceImpl.getInstance();
 

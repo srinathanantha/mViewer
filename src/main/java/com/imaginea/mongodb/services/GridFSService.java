@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Set;
 
 /**
  * Declares service methods for performing CRUD operations on files stored in GridFS.
@@ -38,7 +39,7 @@ public interface GridFSService {
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
-     * @returns Status message.
+     * @return Status message.
      */
     public String createStore(String dbName, String bucketName) throws DatabaseException, CollectionException;
 
@@ -50,8 +51,9 @@ public interface GridFSService {
      * @param query
      * @param keys
      * @param skip
-     * @param limit      @returns JSON representation of list of all files as a String.
+     * @param limit
      * @param sortBy
+     * @return JSON representation of list of all files as a String.
      */
     public JSONObject getFileList(String dbName, String bucketName, String query, String keys, String skip, String limit, String sortBy) throws ValidationException, DatabaseException, CollectionException;
 
@@ -61,7 +63,7 @@ public interface GridFSService {
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
      * @param id         ObjectId of the file to be retrieved
-     * @returns Requested multipartfile for viewing or download based on 'download' param.
+     * @return Requested multipartfile for viewing or download based on 'download' param.
      */
     public File getFile(String dbName, String bucketName, String id) throws ValidationException, DatabaseException, CollectionException;
 
@@ -73,7 +75,7 @@ public interface GridFSService {
      * @param formData    formDataBodyPart of the uploaded file
      * @param inputStream inputStream of the uploaded file
      * @param connectionId ConnectionId of the connection
-     * @returns Success message with additional file details such as name, size,
+     * @return Success message with additional file details such as name, size,
      * download url & deletion url as JSON Array string.
      */
     public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException;
@@ -84,7 +86,7 @@ public interface GridFSService {
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
      * @param _id        Object id of file to be deleted
-     * @returns Status message.
+     * @return Status message.
      */
     public String deleteFile(String dbName, String bucketName, String _id) throws DatabaseException, DocumentException, ValidationException, CollectionException;
 
@@ -93,7 +95,7 @@ public interface GridFSService {
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
-     * @returns Status message.
+     * @return Status message.
      */
     public String dropBucket(String dbName, String bucketName) throws DatabaseException, DocumentException, ValidationException, CollectionException;
 
@@ -102,7 +104,16 @@ public interface GridFSService {
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
-     * @returns Status message.
+     * @return Status message.
      */
     public JSONObject getCount(String dbName, String bucketName) throws DatabaseException, DocumentException, ValidationException, CollectionException;
+
+    /**
+     * returns all the gridfs buckets for the db
+     * @param dbName
+     * @return
+     * @throws DatabaseException
+     * @throws CollectionException
+     */
+    Set<String> getAllBuckets(String dbName) throws DatabaseException, CollectionException;
 }

@@ -29,7 +29,6 @@ YUI({
                         parsedResponse = Y.JSON.parse(responseObject.responseText);
                         var response = parsedResponse.response.result;
                         if (response !== undefined) {
-                            Y.log("Successfully set the logging level", "info");
                             Y.one("#logMessage").set("innerHTML", response + "<br> Please log the issue at httsp://github.com/Imaginea/mViewer, do attach the mViewer.log ");
                         } else {
                             var error = parsedResponse.response.error;

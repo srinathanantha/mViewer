@@ -57,7 +57,6 @@ YUI({
             MV.deleteDocEvent.subscribe(deleteUserOrIndex);
 
             try {
-                Y.log("Preparing the data tabs...", "info");
                 MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForDocs(response);
@@ -77,7 +76,6 @@ YUI({
                 }
                 sm.publish(sm.events.queryFired);
                 MV.hideLoadingPanel();
-                Y.log("Loaded data tabs.", "info");
             } catch (error) {
                 MV.hideLoadingPanel();
                 Y.log("Failed to initailise data tabs. Reason: [0]".format(error), "error");
@@ -187,7 +185,6 @@ YUI({
                     });
                 }
             }, 'div.jsonBuffer');
-            Y.log("The documents written on the JSON tab", "debug");
         }
 
         /**
@@ -246,7 +243,6 @@ YUI({
                                     var response = parsedResponse.response.result;
                                     if (response !== undefined) {
                                         MV.showAlertMessage(response, MV.infoIcon);
-                                        Y.log("User with username= [0] deleted. Response: [1]".format(username, response), "info");
                                         Y.one('#execQueryButton').simulate('click');
                                     }
                                     else {
@@ -280,7 +276,6 @@ YUI({
                                     var response = parsedResponse.response.result;
                                     if (response !== undefined) {
                                         MV.showAlertMessage(response, MV.infoIcon);
-                                        Y.log("Index with indexname= [0] deleted. Response: [1]".format(indexName, response), "info");
                                         Y.one('#execQueryButton').simulate('click');
                                     }
                                     else {
@@ -466,7 +461,6 @@ YUI({
                                 error;
                             if (response !== undefined) {
                                 MV.showAlertMessage(response, MV.infoIcon);
-                                Y.log("[0] dropped. Response: [1]".format(MV.appInfo.currentColl, response), "info");
                                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                                 Y.one("#" + collection).simulate("click");
                             } else {
@@ -504,7 +498,6 @@ YUI({
                                 error;
                             if (response !== undefined) {
                                 MV.showAlertMessage(response, MV.infoIcon);
-                                Y.log("[0] dropped. Response: [1]".format(MV.appInfo.currentColl, response), "info");
                                 sm.clearcurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                             } else {
@@ -531,7 +524,6 @@ YUI({
                 error;
             if (response !== undefined) {
                 MV.showAlertMessage(response, MV.infoIcon);
-                Y.log("User added to [0]".format(MV.appInfo.currentColl, "info"));
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
 
@@ -552,7 +544,6 @@ YUI({
                 error;
             if (response !== undefined) {
                 MV.showAlertMessage(response, MV.infoIcon);
-                Y.log("New Index added to [0]".format(MV.appInfo.currentColl, "info"));
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
             } else {

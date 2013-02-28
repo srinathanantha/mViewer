@@ -35,7 +35,6 @@ YUI({
                 error;
             if (response !== undefined) {
                 MV.showAlertMessage(response, MV.infoIcon);
-                Y.log("[0] created in [1]".format(MV.appInfo.newName, MV.appInfo.currentDB), "info");
                 sm.clearCurrentColl();
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
             } else {
@@ -53,7 +52,6 @@ YUI({
         function sendDropDBRequest() {
             //"this" refers to the Yes/No dialog box
             this.hide();
-            Y.log("Preparing to send request to drop DB", "info");
             var request = Y.io(MV.URLMap.dropDB(), {
                 method: "POST",
                 on: {
@@ -61,7 +59,6 @@ YUI({
                         var parsedResponse = Y.JSON.parse(responseObject.responseText),
                             error;
                         if (parsedResponse.response.result !== undefined) {
-                            Y.log("[0] dropped".format(MV.appInfo.currentDB), "info");
                             MV.appInfo.currentDB = "";
                             alert(parsedResponse.response.result);
                             window.location.reload();
@@ -158,7 +155,6 @@ YUI({
          *  @param responseObject The response Object
          */
         function showConnectionDetails(ioId, responseObject) {
-            Y.log("Response Recieved of get DB request", "info");
             try {
                 var parsedResponse = Y.JSON.parse(responseObject.responseText);
                 var result = parsedResponse.response.result;
@@ -214,7 +210,6 @@ YUI({
                     menu.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
                     menu.set("style.display", "block");
                     MV.hideLoadingPanel();
-                    Y.log("Database Names succesfully loaded", "info");
                     sm.publish(sm.events.dbsChanged);
                 } else {
                     MV.hideLoadingPanel();
@@ -259,7 +254,6 @@ YUI({
                             failure: displayError
                         }
                     });
-                Y.log("Sending request to load DB names", "info");
             }
         }
 
@@ -284,13 +278,6 @@ YUI({
             active : 0
         });
 
-
-
-        /*$(".left-cont .buffer .list-head").click(function(eventObject) {
-            if(eventObject.target.tagName !== "BUTTON") {
-                $(this).siblings(".buffer-content").toggle();
-            }
-        });*/
         // Make a request to load Database names when the page loads
         Y.on("load", requestConnectionDetails);
     });

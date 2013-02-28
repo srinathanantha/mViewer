@@ -177,7 +177,6 @@ YUI({
             var parsedResponse = Y.JSON.parse(responseObject.responseText);
             response = parsedResponse.response.result;
             if (response !== undefined) {
-                Y.log("Chart initiated");
                 drawChart();
             } else {
                 MV.showAlertMessage("Error: [0]".format(parsedResponse.response.error.message), MV.warnIcon);

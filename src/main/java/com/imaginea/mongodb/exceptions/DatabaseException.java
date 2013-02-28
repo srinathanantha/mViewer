@@ -41,7 +41,7 @@ public class DatabaseException extends ApplicationException {
 
 
     /**
-     * Creates a new DatabaseException with errorcode and message.
+     * Creates a new DatabaseException with errorCode and message.
      *
      * @param errorCode : ErrorCode of the Exception thrown
      * @param message   : A description about the Error.
@@ -52,7 +52,7 @@ public class DatabaseException extends ApplicationException {
     }
 
     /**
-     * Creates a new DatabaseException with errorcode and message and appending
+     * Creates a new DatabaseException with errorCode and message and appending
      * the cause of a caught exception.
      *
      * @param errorCode : ErrorCode of the Exception thrown

@@ -35,9 +35,9 @@ import java.util.Set;
  * resources to get list of all collections in a database present in mongo and
  * also statistics of a particular collection.
  * <p/>
- * These resources map different HTTP equests made by the client to access these
+ * These resources map different HTTP requests made by the client to access these
  * resources to services file which performs these operations. The resources
- * also form a JSON response using the output recieved from the serives files.
+ * also form a JSON response using the output received from the services files.
  * GET and POST request resources for collections are defined here. For PUT and
  * DELETE functionality , a POST request with an action parameter taking values
  * PUT and DELETE is made.
@@ -94,9 +94,7 @@ public class CollectionController extends BaseController {
         String response = new ResponseTemplate().execute(logger, connectionId, request, new ResponseCallback() {
             public Object execute() throws Exception {
                 CollectionService collectionService = new CollectionServiceImpl(connectionId);
-                Set<String> collectionNames = collectionService.getCollList(dbName);
-
-                return collectionNames;
+                return collectionService.getCollList(dbName);
             }
         });
         return response;

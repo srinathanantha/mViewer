@@ -11,10 +11,9 @@ public class ConnectionDetails {
     private int hostPort;
     private String username;
     private String password;
-    private String dbNames;//Comma Seperated Values
+    private String dbNames;//Comma separated Values
     private Set<String> authenticatedDbNames = new HashSet<String>();
     private boolean authMode;
-    private boolean adminLogin;
 
     public ConnectionDetails(String hostIp, int hostPort, String username, String password, String dbNames) {
         this.hostIp = hostIp;

@@ -53,7 +53,6 @@ YUI({
             MV.deleteDocEvent.subscribe(deleteDoc);
 
             try {
-                Y.log("Preparing the data tabs...", "info");
                 MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForDocs(response);
@@ -70,7 +69,6 @@ YUI({
                 populateJSONTab(response);
                 sm.publish(sm.events.queryFired);
                 MV.hideLoadingPanel();
-                Y.log("Loaded data tabs.", "info");
             } catch (error) {
                 MV.hideLoadingPanel();
                 Y.log("Failed to initailise data tabs. Reason: [0]".format(error), "error");
@@ -166,7 +164,6 @@ YUI({
                     });
                 }
             }, 'div.jsonBuffer');
-            Y.log("The documents written on the JSON tab", "debug");
         }
 
         /**
@@ -242,7 +239,6 @@ YUI({
                             toggleSaveEdit(targetNode, index, actionMap.save);
                             MV.showAlertMessage("Document updated successfully.", MV.infoIcon);
                             Y.one('#execQueryButton').simulate('click');
-                            Y.log("Document update to [0]".format(response), "info");
                         } else {
                             var error = parsedResponse.response.error;
                             MV.showAlertMessage("Could not update Document ! [0]", MV.warnIcon, error.code);
@@ -297,7 +293,6 @@ YUI({
                                 var response = parsedResponse.response.result;
                                 if (response !== undefined) {
                                     MV.showAlertMessage("Document deleted successfully.", MV.infoIcon);
-                                    Y.log("Document with _id= [0] deleted. Response: [1]".format(docId, response), "info");
                                     Y.one('#execQueryButton').simulate('click');
                                 } else {
                                     var error = parsedResponse.response.error;

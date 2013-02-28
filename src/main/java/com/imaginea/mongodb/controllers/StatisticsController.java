@@ -70,8 +70,7 @@ public class StatisticsController extends BaseController {
             public Object execute() throws Exception {
                 Mongo mongoInstance = authService.getMongoInstance(connectionId);
                 // Get Server Stats
-                CommandResult cd = mongoInstance.getDB("admin").command("serverStatus");
-                return cd;
+                return mongoInstance.getDB("admin").command("serverStatus");
             }
         });
         return response;
@@ -92,8 +91,7 @@ public class StatisticsController extends BaseController {
         String response = new ResponseTemplate().execute(logger, connectionId, request, new ResponseCallback() {
             public Object execute() throws Exception {
                 DatabaseService databaseService = new DatabaseServiceImpl(connectionId);
-                JSONArray dbStats = databaseService.getDbStats(dbName);
-                return dbStats;
+                return databaseService.getDbStats(dbName);
             }
         });
         return response;
@@ -120,8 +118,7 @@ public class StatisticsController extends BaseController {
 
                 CollectionService collectionService = new CollectionServiceImpl(connectionId);
                 // Get the result;
-                JSONArray collectionStats = collectionService.getCollStats(dbName, collectionName);
-                return collectionStats;
+                return collectionService.getCollStats(dbName, collectionName);
             }
         });
         return response;

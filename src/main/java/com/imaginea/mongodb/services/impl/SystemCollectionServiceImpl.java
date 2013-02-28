@@ -36,7 +36,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
-import java.util.Iterator;
+import java.util.Set;
 
 
 public class SystemCollectionServiceImpl implements SystemCollectionService {
@@ -44,7 +44,6 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
      * Mongo Instance to communicate with mongo
      */
     private Mongo mongoInstance;
-    private ConnectionDetails connectionDetails;
     private static final AuthService AUTH_SERVICE = AuthServiceImpl.getInstance();
 
 
@@ -59,7 +58,6 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
     public SystemCollectionServiceImpl(String connectionId) throws ApplicationException {
         MongoConnectionDetails mongoConnectionDetails = AUTH_SERVICE.getMongoConnectionDetails(connectionId);
         mongoInstance = mongoConnectionDetails.getMongo();
-        connectionDetails = mongoConnectionDetails.getConnectionDetails();
     }
 
     /**
@@ -206,9 +204,9 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Empty");
         }
 
-        Iterator iter = mongoInstance.getDB(dbName).getCollectionNames().iterator();
-        while (iter.hasNext()) {
-            mongoInstance.getDB(dbName).getCollection(iter.next().toString()).dropIndexes();
+        Set<String> collectionNames = mongoInstance.getDB(dbName).getCollectionNames();
+        for (String collection : collectionNames) {
+            mongoInstance.getDB(dbName).getCollection(collection).dropIndexes();
         }
         return "Indexes are dropped on all collections from DB: " + dbName;
     }

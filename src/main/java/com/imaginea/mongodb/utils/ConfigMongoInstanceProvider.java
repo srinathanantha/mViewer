@@ -31,7 +31,7 @@ import java.util.Properties;
 /**
  * Provides an Implementation for MongoInstanceProvider that provides instance
  * of Mongo Db after reading parameters from config file for performing
- * operations on MonogDb Resources {Db,collection,document}.
+ * operations on MongoDb Resources {Db,collection,document}.
  *
  * @author Rachit Mittal
  */
@@ -39,11 +39,6 @@ import java.util.Properties;
 public class ConfigMongoInstanceProvider implements MongoInstanceProvider {
 
     private Mongo mongoInstance;
-
-    private String mongoHost;
-    private int mongoPort;
-
-    private Process p;
 
     /**
      * Get the initial MongoIP and mongoPort from config file and returns a
@@ -62,8 +57,8 @@ public class ConfigMongoInstanceProvider implements MongoInstanceProvider {
             prop.load(is);
 
             if (prop != null) {
-                mongoHost = prop.getProperty("mongoHost");
-                mongoPort = Integer.parseInt(prop.getProperty("mongoPort"));
+                String mongoHost = prop.getProperty("mongoHost");
+                int mongoPort = Integer.parseInt(prop.getProperty("mongoPort"));
                 mongoInstance = new Mongo(mongoHost, mongoPort);
             }
             System.out.println(mongoInstance.getDatabaseNames());
@@ -87,12 +82,5 @@ public class ConfigMongoInstanceProvider implements MongoInstanceProvider {
 
     public Mongo getMongoInstance() {
         return mongoInstance;
-    }
-
-    /**
-     * Destroys Mongo Process
-     */
-    public void killMongoProcess() {
-        p.destroy();
     }
 }

@@ -84,7 +84,6 @@ YUI({
                             response = parsedResponse.response.result,
                             error = parsedResponse.response.error, errorDiv;
                         if (error == undefined) {
-                            Y.log("Successfully logging in", "info");
                             window.location = "home.html?connectionId=" + parsedResponse.response.connectionId;
                         } else {
                             errorDiv = Y.one("#errorMsg");

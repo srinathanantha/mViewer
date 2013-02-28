@@ -40,12 +40,11 @@ public interface CollectionService {
      * @param dbName Name of database
      * @return List of All Collections present in MongoDb
      * @throws DatabaseException   throw super type of UndefinedDatabaseException
-     * @throws ValidationException throw super type of EmptyDatabaseNameException
      * @throws CollectionException exception while performing get list operation on
      *                             collection
      */
 
-    public Set<String> getCollList(String dbName) throws ValidationException, DatabaseException, CollectionException;
+    public Set<String> getCollList(String dbName) throws DatabaseException, CollectionException;
 
     /**
      * Creates a collection inside a database in mongo to which user is

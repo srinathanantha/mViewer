@@ -32,9 +32,9 @@ import java.util.List;
  * in Mongo we are currently connected to. Also provide resources to get list of
  * all databases present in mongo and also statistics of a particular database.
  * <p/>
- * These resources map different HTTP equests made by the client to access these
+ * These resources map different HTTP requests made by the client to access these
  * resources to services file which performs these operations. The resources
- * also form a JSON response using the output recieved from the serives files.
+ * also form a JSON response using the output received from the services files.
  * GET and POST request resources for databases are defined here. For PUT and
  * DELETE functionality , a POST request with an action parameter taking values
  * PUT and DELETE is made.
@@ -64,8 +64,7 @@ public class DatabaseController extends BaseController {
             public Object execute() throws Exception {
                 // TODO Using Service Provider
                 DatabaseService databaseService = new DatabaseServiceImpl(connectionId);
-                List<String> dbNames = databaseService.getDbList();
-                return dbNames;
+                return databaseService.getDbList();
             }
         });
         return response;
@@ -78,8 +77,8 @@ public class DatabaseController extends BaseController {
      * exception from the service files an error object if formed.
      *
      * @param dbName       Name of Database for which to perform create/drop operation
-     *                     depending on action patameter
-     * @param action       Query Paramater with value PUT for identifying a create
+     *                     depending on action parameter
+     * @param action       Query parameter with value PUT for identifying a create
      *                     database request and value DELETE for dropping a database.
      * @param request      Get the HTTP request context to extract session parameters
      * @param connectionId Mongo Db Configuration provided by user to connect to.

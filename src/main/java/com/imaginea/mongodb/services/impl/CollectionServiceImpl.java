@@ -50,7 +50,7 @@ public class CollectionServiceImpl implements CollectionService {
     /**
      * Creates an instance of MongoInstanceProvider which is used to get a mongo
      * instance to perform operations on collections. The instance is created
-     * based on a userMappingKey which is recieved from the collection request
+     * based on a userMappingKey which is received from the collection request
      * dispatcher and is obtained from tokenId of user.
      *
      * @param connectionId A combination of username,mongoHost and mongoPort
@@ -67,11 +67,10 @@ public class CollectionServiceImpl implements CollectionService {
      * @param dbName Name of database
      * @return List of All Collections present in MongoDb
      * @throws DatabaseException   throw super type of UndefinedDatabaseException
-     * @throws ValidationException throw super type of EmptyDatabaseNameException
      * @throws CollectionException exception while performing get list operation on
      *                             collection
      */
-    public Set<String> getCollList(String dbName) throws ValidationException, DatabaseException, CollectionException {
+    public Set<String> getCollList(String dbName) throws DatabaseException, CollectionException {
 
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Is Null");
@@ -79,34 +78,22 @@ public class CollectionServiceImpl implements CollectionService {
         if (dbName.equals("")) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Empty");
         }
-
-        Set<String> collList = new HashSet<String>();
-
         try {
             List<String> dbList = databaseService.getDbList();
             if (!dbList.contains(dbName)) {
                 throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS, "Database with dbName [ " + dbName + "] does not exist");
             }
-
-            Set<String> collectionList = new HashSet<String>();
-            collectionList = mongoInstance.getDB(dbName).getCollectionNames();
-            Iterator<String> it = collectionList.iterator();
-
-            while (it.hasNext()) {
-                String coll = it.next();
-                collList.add(coll);
-            }
+            Set<String> collectionList = mongoInstance.getDB(dbName).getCollectionNames();
             //For a newly added database there will be no system.users, So we are manually creating the system.users
-            if (collList.contains("system.indexes") && !collList.contains("system.users")) {
+            if (collectionList.contains("system.indexes") && !collectionList.contains("system.users")) {
                 DBObject options = new BasicDBObject();
                 mongoInstance.getDB(dbName).createCollection("system.users", options);
-                collList.add("system.users");
+                collectionList.add("system.users");
             }
+            return collectionList;
         } catch (MongoException m) {
             throw new CollectionException(ErrorCodes.GET_COLLECTION_LIST_EXCEPTION, m.getMessage());
         }
-        return collList;
-
     }
 
     /**
@@ -161,8 +148,7 @@ public class CollectionServiceImpl implements CollectionService {
         } catch (MongoException m) {
             throw new CollectionException(ErrorCodes.COLLECTION_CREATION_EXCEPTION, m.getMessage());
         }
-        String result = "Collection [" + newCollName + "] was successfully added to Database [" + dbName + "].";
-        return result;
+        return "Collection [" + newCollName + "] was successfully added to Database [" + dbName + "].";
     }
 
     /**
@@ -299,9 +285,7 @@ public class CollectionServiceImpl implements CollectionService {
         } catch (MongoException m) {
             throw new CollectionException(ErrorCodes.COLLECTION_DELETION_EXCEPTION, m.getMessage());
         }
-        String result = "Collection [" + collectionName + "] was successfully deleted from Database [" + dbName + "].";
-
-        return result;
+        return "Collection [" + collectionName + "] was successfully deleted from Database [" + dbName + "].";
     }
 
     /**
@@ -349,11 +333,10 @@ public class CollectionServiceImpl implements CollectionService {
 
             Set<String> keys = stats.keySet();
             Iterator<String> keyIterator = keys.iterator();
-            JSONObject temp = new JSONObject();
 
             while (keyIterator.hasNext()) {
-                temp = new JSONObject();
-                String key = keyIterator.next().toString();
+                JSONObject temp = new JSONObject();
+                String key = keyIterator.next();
                 temp.put("Key", key);
                 String value = stats.get(key).toString();
                 temp.put("Value", value);
@@ -361,8 +344,6 @@ public class CollectionServiceImpl implements CollectionService {
                 temp.put("Type", type.substring(type.lastIndexOf('.') + 1));
                 collStats.put(temp);
             }
-        } catch (JSONException e) {
-            throw e;
         } catch (MongoException m) {
             throw new CollectionException(ErrorCodes.GET_COLL_STATS_EXCEPTION, m.getMessage());
         }

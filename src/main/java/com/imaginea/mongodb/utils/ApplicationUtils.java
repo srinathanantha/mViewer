@@ -32,7 +32,7 @@ public class ApplicationUtils {
     public static String serializeToJSON(JSONObject object) {
         try {
             Iterator keys = object.keys();
-            StringBuffer sb = new StringBuffer("{");
+            StringBuilder sb = new StringBuilder("{");
 
             while (keys.hasNext()) {
                 if (sb.length() > 1) {
@@ -57,10 +57,10 @@ public class ApplicationUtils {
         // BasicDBObject & BasicDBList is also an instanceof Map.
         // Hence they should be handled in precedence to Map.
         if (value instanceof BasicDBObject) {
-            return ((BasicDBObject) value).toString();
+            return value.toString();
         }
         if (value instanceof BasicDBList) {
-            return ((BasicDBList) value).toString();
+            return value.toString();
         }
         if (value instanceof JSONString) {
             Object o;
@@ -85,7 +85,7 @@ public class ApplicationUtils {
         }
         if (value instanceof Map) {
             JSONObject jsonObject = new JSONObject((Map) value);
-            return serializeToJSON((JSONObject) jsonObject);
+            return serializeToJSON(jsonObject);
         }
         if (value instanceof JSONArray) {
             return join((JSONArray) value);
@@ -109,7 +109,7 @@ public class ApplicationUtils {
      */
     private static String join(ArrayList value) throws JSONException {
         int len = value.size();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < len; i += 1) {
             if (i > 0) {
@@ -130,7 +130,7 @@ public class ApplicationUtils {
      */
     private static String join(JSONArray value) throws JSONException {
         int len = value.length();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < len; i += 1) {
             if (i > 0) {

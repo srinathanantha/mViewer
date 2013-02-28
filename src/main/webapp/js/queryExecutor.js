@@ -93,7 +93,6 @@ YUI.add('query-executor', function(Y) {
          */
         function populateQueryBox(ioId, responseObject) {
             var parsedResponse, keys, count, queryForm, error;
-            Y.log("Preparing to show QueryBox", "info");
             try {
                 parsedResponse = Y.JSON.parse(responseObject.responseText);
                 keys = parsedResponse.response.result.keys;
@@ -107,7 +106,6 @@ YUI.add('query-executor', function(Y) {
                     queryForm.set("innerHTML", getForm(keys, count));
                     MV.mainBody.set("innerHTML", paginatorTemplate.format(count < 25 ? count : 25, count));
                     initListeners();
-                    Y.log("QueryBox loaded", "info");
                 } else {
                     error = parsedResponse.response.error;
                     Y.log("Could not get keys. Message: [0]".format(error.message), "error");

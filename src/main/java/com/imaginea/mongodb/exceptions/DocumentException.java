@@ -43,7 +43,7 @@ public class DocumentException extends ApplicationException {
     /**
      * Defines a Document Exception and also sets errorCode.
      *
-     * @param errorCode the errorcode for the message
+     * @param errorCode the errorCode for the message
      * @param message   the error message
      */
     public DocumentException(String errorCode, String message) {
@@ -57,7 +57,7 @@ public class DocumentException extends ApplicationException {
      * @param errorCode : ErrorCode of the Exception thrown
      * @param message   : A description about the Exception. *
      * @param cause     : Cause of the caught Exception to be appended in the new
-     *                  Dcouemtn Exception formed here.
+     *                  Document Exception formed here.
      */
 
     public DocumentException(String errorCode, String message, Throwable cause) {

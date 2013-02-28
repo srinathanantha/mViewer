@@ -49,7 +49,6 @@ YUI({
             MV.deleteFileEvent.subscribe(deleteFile);
 
             try {
-                Y.log("Preparing the data tabs...", "info");
                 MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForFiles(response);
@@ -60,7 +59,6 @@ YUI({
                 populateJSONTab(response);
                 sm.publish(sm.events.queryFired);
                 MV.hideLoadingPanel();
-                Y.log("Loaded data tabs.", "info");
             } catch (error) {
                 MV.hideLoadingPanel();
                 Y.log("Failed to initailise data tabs. Reason: [0]".format(error), "error");
@@ -141,7 +139,6 @@ YUI({
                     });
                 }
             }, 'div.jsonBuffer');
-            Y.log("The files written on the JSON tab", "debug");
         }
 
         /**
@@ -186,7 +183,6 @@ YUI({
                             var response = parsedResponse.response.result;
                             if (response !== undefined) {
                                 MV.showAlertMessage(response, MV.infoIcon);
-                                Y.log("File with _id= [0] deleted. Response: [1]".format(docId, response), "info");
                                 //Y.one('#file' + index).remove();
                                 Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
                             } else {

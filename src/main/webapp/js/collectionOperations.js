@@ -44,7 +44,6 @@ YUI({
             MV.selectDatabase(e.currentTarget);
             MV.hideQueryForm();
             MV.showLoadingPanel("Loading Collections...");
-            Y.log("Initiating request to load collections.", "info");
             var request = Y.io(MV.URLMap.getColl(), {
                 // configuration for loading the collections
                 method: "GET",
@@ -64,7 +63,6 @@ YUI({
          * @param responseObject The response Object
          */
         function displayCollectionNames(oId, responseObject) {
-            Y.log("Response Recieved of get collection request", "info");
             var parsedResponse, parsedResult, info, index, error, collections = "", gridFSBuckets = "", systemCollections = "";
             try {
                 parsedResponse = Y.JSON.parse(responseObject.responseText);
@@ -204,7 +202,6 @@ YUI({
                     menu3.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
                     sm.publish(sm.events.collectionsChanged);
                     MV.hideLoadingPanel();
-                    Y.log("Collection Names succesfully loaded", "info");
                 } else {
                     error = parsedResponse.response.error;
                     Y.log("Could not load collections. Message: [0]".format(error.message), "error");
@@ -329,14 +326,12 @@ YUI({
         function sendDropBucketRequest() {
             //"this" refers to the Yes/No dialog box
             this.hide();
-            Y.log("Preparing to send request to drop bucket", "info");
             var request = Y.io(MV.URLMap.dropBucket(), {
                 on: {
                     success: function(ioId, responseObj) {
                         var parsedResponse = Y.JSON.parse(responseObj.responseText);
                         var response = parsedResponse.response.result;
                         if (response !== undefined) {
-                            Y.log(response, "info");
                             MV.showAlertMessage(response, MV.infoIcon);
                             Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                         } else {
@@ -373,7 +368,6 @@ YUI({
                                 error;
                             if (response !== undefined) {
                                 MV.showAlertMessage(response, MV.infoIcon);
-                                Y.log("[0] dropped. Response: [1]".format(MV.appInfo.currentColl, response), "info");
                                 sm.clearCurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                             } else {
@@ -400,7 +394,6 @@ YUI({
                 error;
             if (response !== undefined) {
                 MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
-                Y.log("New document added to [0]".format(MV.appInfo.currentColl, "info"));
                 Y.one("#" + MV.getCollectionElementId(MV.appInfo.currentColl)).simulate("click");
             } else {
                 error = parsedResponse.response.error;
@@ -421,7 +414,6 @@ YUI({
                 error;
             if (response !== undefined) {
                 MV.showAlertMessage(response, MV.infoIcon);
-                Y.log("[0] created in [1]".format(MV.appInfo.newName, MV.appInfo.currentDB), "info");
                 sm.clearCurrentColl();
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
             } else {

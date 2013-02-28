@@ -42,7 +42,7 @@ public class CollectionException extends ApplicationException {
     /**
      * Defines a Collection Exception and also sets errorCode.
      *
-     * @param errorCode the errorcode for the message
+     * @param errorCode the errorCode for the message
      * @param message   the error message
      */
     public CollectionException(String errorCode, String message) {

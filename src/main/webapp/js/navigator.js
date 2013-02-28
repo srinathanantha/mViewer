@@ -30,7 +30,6 @@
 
         Navigator.prototype = {
             init: function() {
-                Y.log("About to init the navigator", "debug");
                 var selectorString = this.selectorString;
                 var self = this;
                 this.regions = [];
@@ -164,7 +163,6 @@
             selectElement: function(self) {
                 self.hideCommandBar();
                 if (selectedElement) {
-                    Y.log(selectedElement, "debug");
                     var selectedNodeName = selectedElement.get('nodeName');
                     if ('INPUT' === selectedNodeName || 'TEXTAREA' === selectedNodeName) {
                         selectedElement.focus();

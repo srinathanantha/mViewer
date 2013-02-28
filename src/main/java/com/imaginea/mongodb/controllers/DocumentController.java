@@ -43,9 +43,9 @@ import java.util.Set;
  * to. Also provide resources to get list of all documents present inside a
  * collection in a database in mongo.
  * <p/>
- * These resources map different HTTP equests made by the client to access these
+ * These resources map different HTTP requests made by the client to access these
  * resources to services file which performs these operations. The resources
- * also form a JSON response using the output recieved from the serives files.
+ * also form a JSON response using the output received from the services files.
  * GET and POST request resources for documents are defined here. For PUT and
  * DELETE functionality , a POST request with an action parameter taking values
  * PUT and DELETE is made.
@@ -104,8 +104,7 @@ public class DocumentController extends BaseController {
                         String jsonStr = query.substring(startIndex + 1, endIndex);
                         int docsLimit = Integer.parseInt(limit);
                         int docsSkip = Integer.parseInt(skip);
-                        JSONObject result = documentService.getQueriedDocsList(dbName, collection, command, jsonStr, fields, sortBy, docsLimit, docsSkip);
-                        return result;
+                        return documentService.getQueriedDocsList(dbName, collection, command, jsonStr, fields, sortBy, docsLimit, docsSkip);
                     }
                 });
 
@@ -166,12 +165,10 @@ public class DocumentController extends BaseController {
      */
     private void getNestedKeys(DBObject doc, Set<String> completeSet, String prefix) {
         Set<String> allKeys = doc.keySet();
-        Iterator<String> it = allKeys.iterator();
-        while (it.hasNext()) {
-            String temp = it.next();
-            completeSet.add(prefix + temp);
-            if (doc.get(temp) instanceof BasicDBObject) {
-                getNestedKeys((DBObject) doc.get(temp), completeSet, prefix + temp + ".");
+        for (String key : allKeys) {
+            completeSet.add(prefix + key);
+            if (doc.get(key) instanceof BasicDBObject) {
+                getNestedKeys((DBObject) doc.get(key), completeSet, prefix + key + ".");
             }
         }
     }
@@ -188,7 +185,7 @@ public class DocumentController extends BaseController {
      * @param documentData   Contains the document to be inserted
      * @param _id            Object id of document to delete or update
      * @param keys           new Document values in case of update
-     * @param action         Query Paramater with value PUT for identifying a create
+     * @param action         Query Parameter with value PUT for identifying a create
      *                       database request and value DELETE for dropping a database.
      * @param connectionId   Mongo Db Configuration provided by user to connect to.
      * @param request        Get the HTTP request context to extract session parameters

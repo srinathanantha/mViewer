@@ -31,7 +31,6 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addCollection() {
-            Y.log("Submit handler for add collection called", "info");
             var newCollInfo = this.getData();
             if (newCollInfo.newCollName === "") {
                 MV.showAlertMessage("Name should be entered to create a Collection!", MV.warnIcon);
@@ -56,7 +55,6 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addGridFS() {
-            Y.log("Submit handler for adding gridFS bucket called", "info");
             var newCollInfo = this.getData();
             if (newCollInfo.name === "") {
                 MV.showAlertMessage("Enter the bucket name!", MV.warnIcon);

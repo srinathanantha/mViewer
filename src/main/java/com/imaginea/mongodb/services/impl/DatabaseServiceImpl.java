@@ -58,7 +58,7 @@ public class DatabaseServiceImpl implements DatabaseService {
     /**
      * Creates an instance of MongoInstanceProvider which is used to get a mongo
      * instance to perform operations on databases. The instance is created
-     * based on a userMappingKey which is recieved from the database request
+     * based on a userMappingKey which is received from the database request
      * dispatcher and is obtained from tokenId of user.
      *
      * @param connectionId A combination of username,mongoHost and mongoPort
@@ -122,8 +122,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             throw new DatabaseException("DB_CREATION_EXCEPTION", e.getMessage());
         }
 
-        String result = "Created DB with name '" + dbName + "'";
-        return result;
+        return "Created DB with name '" + dbName + "'";
     }
 
     /**
@@ -156,8 +155,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             throw new DatabaseException("DB_DELETION_EXCEPTION", e.getMessage());
         }
 
-        String result = "Successfully dropped DB '" + dbName + "'. The page will reload now.";
-        return result;
+        return "Successfully dropped DB '" + dbName + "'. The page will reload now.";
     }
 
     /**
@@ -194,11 +192,9 @@ public class DatabaseServiceImpl implements DatabaseService {
 
             Iterator<String> keyIterator = keys.iterator();
 
-            JSONObject temp = new JSONObject();
-
             while (keyIterator.hasNext()) {
-                temp = new JSONObject();
-                String key = keyIterator.next().toString();
+                JSONObject temp = new JSONObject();
+                String key = keyIterator.next();
                 temp.put("Key", key);
                 String value = stats.get(key).toString();
                 temp.put("Value", value);
@@ -206,8 +202,6 @@ public class DatabaseServiceImpl implements DatabaseService {
                 temp.put("Type", type.substring(type.lastIndexOf('.') + 1));
                 dbStats.put(temp);
             }
-        } catch (JSONException e) {
-            throw e;
         } catch (MongoException m) {
             throw new DatabaseException(ErrorCodes.GET_DB_STATS_EXCEPTION, m.getMessage());
         }

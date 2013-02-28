@@ -52,8 +52,7 @@ public class GridFSController extends BaseController {
         String response = new ResponseTemplate().execute(logger, connectionId, request, new ResponseCallback() {
             public Object execute() throws Exception {
                 GridFSService gridFSService = new GridFSServiceImpl(connectionId);
-                String result = gridFSService.createStore(dbName, bucketName);
-                return result;
+                return gridFSService.createStore(dbName, bucketName);
             }
         });
         return response;
@@ -67,8 +66,7 @@ public class GridFSController extends BaseController {
         String response = new ResponseTemplate().execute(logger, connectionId, request, new ResponseCallback() {
             public Object execute() throws Exception {
                 GridFSService gridFSService = new GridFSServiceImpl(connectionId);
-                JSONObject result = gridFSService.getCount(dbName, bucketName);
-                return result;
+                return gridFSService.getCount(dbName, bucketName);
             }
         });
         return response;
@@ -81,7 +79,7 @@ public class GridFSController extends BaseController {
      * @param bucketName   Name of GridFS Bucket
      * @param connectionId Mongo Db Configuration provided by user to connect to.
      * @param request      Get the HTTP request context to extract session parameters
-     * @returns JSON representation of list of all files as a String.
+     * @return JSON representation of list of all files as a String.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -100,8 +98,7 @@ public class GridFSController extends BaseController {
                 GridFSService gridFSService = new GridFSServiceImpl(connectionId);
                 int startIndex = query.indexOf("("), endIndex = query.lastIndexOf(")");
                 String jsonStr = query.substring(startIndex + 1, endIndex);
-                JSONObject result = gridFSService.getFileList(dbName, bucketName, jsonStr, keys, skip, limit, sortBy);
-                return result;
+                return gridFSService.getFileList(dbName, bucketName, jsonStr, keys, skip, limit, sortBy);
             }
         });
         return response.replace("\\", "").replace("\"{", "{").replace("}\"", "}");
@@ -110,19 +107,18 @@ public class GridFSController extends BaseController {
     /**
      * Request handler for retrieving the specified file stored in GridFS.
      *
+     *
      * @param dbName         Name of Database
      * @param bucketName     Name of GridFS Bucket
      * @param id             ObjectId of the file to be retrieved
      * @param download       is download request
      * @param connectionId   Mongo Db Configuration provided by user to connect to.
-     * @param servletRequest Get the HTTP request context to extract session parameters
-     * @returns Requested multipartfile for viewing or download based on 'download' param.
+     * @return Requested multipartfile for viewing or download based on 'download' param.
      */
     @GET
     @Path("getfile")
     public Response getFile(@PathParam("dbName") final String dbName, @PathParam("bucketName") final String bucketName, @QueryParam("id") final String id,
-                            @QueryParam("download") final boolean download, @QueryParam("connectionId") final String connectionId,
-                            @Context final HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) throws ApplicationException {
+                            @QueryParam("download") final boolean download, @QueryParam("connectionId") final String connectionId) throws ApplicationException {
         GridFSService gridFSService = new GridFSServiceImpl(connectionId);
         File fileObject = null;
         try {
@@ -132,7 +128,7 @@ public class GridFSController extends BaseController {
         }
         String contentType = ApplicationUtils.getContentType(fileObject);
         Response.ResponseBuilder response = Response.ok(fileObject, contentType);
-        if (download == true) {
+        if (download) {
             response.header("Content-Disposition", "attachment; filename=" + fileObject.getName());
         } else {
             response.header("Content-Disposition", "filename=" + fileObject.getName());
@@ -150,7 +146,7 @@ public class GridFSController extends BaseController {
      * @param inputStream    inputStream of the uploaded file
      * @param connectionId   Mongo Db Configuration provided by user to connect to.
      * @param request        HTTP request context to extract session parameters
-     * @returns Success message with additional file details such as name, size,
+     * @return Success message with additional file details such as name, size,
      * download url & deletion url as JSON Array string.
      */
     @POST
@@ -180,7 +176,7 @@ public class GridFSController extends BaseController {
      * @param _id          Object id of file to be deleted
      * @param connectionId Mongo Db Configuration provided by user to connect to.
      * @param request      Get the HTTP request context to extract session parameters
-     * @returns Status message.
+     * @return Status message.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -222,8 +218,7 @@ public class GridFSController extends BaseController {
         String response = new ResponseTemplate().execute(logger, connectionId, request, new ResponseCallback() {
             public Object execute() throws Exception {
                 GridFSService gridFSService = new GridFSServiceImpl(connectionId);
-                String result = gridFSService.dropBucket(dbName, bucketName);
-                return result;
+                return gridFSService.dropBucket(dbName, bucketName);
             }
         });
         return response;

@@ -49,7 +49,7 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * Creates an instance of MongoInstanceProvider which is used to get a mongo
      * instance to perform operations on documents. The instance is created
-     * based on a userMappingKey which is recieved from the database request
+     * based on a userMappingKey which is received from the database request
      * dispatcher and is obtained from tokenId of user.
      *
      * @param connectionId A combination of username,mongoHost and mongoPort
@@ -183,7 +183,6 @@ public class DocumentServiceImpl implements DocumentService {
      *                             ,EmptyDocumentDataException
      * @throws CollectionException throw super type of UndefinedCollectionException
      * @throws DocumentException   throw super type of UpdateDocumentException
-     * @throws JSONException
      */
 
     public String updateDocument(String dbName, String collectionName, String _id, DBObject newData) throws DatabaseException, CollectionException, DocumentException, ValidationException {

@@ -39,7 +39,7 @@ public class ApplicationException extends Exception {
     private String errorCode;
 
     /**
-     * Creates a new ApplicationException with errorcode and message.
+     * Creates a new ApplicationException with errorCode and message.
      *
      * @param errorCode : ErrorCode of the Exception thrown
      * @param message   : A description about the Error.
@@ -51,7 +51,7 @@ public class ApplicationException extends Exception {
     }
 
     /**
-     * Creates a new ApplicationException with errorcode and message and
+     * Creates a new ApplicationException with errorCode and message and
      * appending the cause of a caught exception.
      *
      * @param errorCode : ErrorCode of the Exception thrown
@@ -66,9 +66,9 @@ public class ApplicationException extends Exception {
     }
 
     /**
-     * Return the error code of an exeption.
+     * Return the error code of an exception.
      *
-     * @return the errorcode
+     * @return the errorCode
      */
     public String getErrorCode() {
         return this.errorCode;
