@@ -331,7 +331,7 @@ YUI({
             var doc = textArea.get("value");
             try {
                 var parsedDoc = Y.JSON.parse(doc);
-                sendUpdateDocRequest(Y.JSON.stringify(parsedDoc), idMap[index].docId, eventObject);
+                sendUpdateDocRequest(encodeURIComponent(doc), idMap[index].docId, eventObject);
             } catch (e) {
                 var message = e.message.substr(e.message.indexOf(":") + 1);
                 MV.showAlertMessage("Invalid Document format: " + message, MV.warnIcon);
