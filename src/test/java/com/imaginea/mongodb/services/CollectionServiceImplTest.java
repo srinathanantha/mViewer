@@ -25,29 +25,22 @@
 
 package com.imaginea.mongodb.services;
 
-import com.imaginea.mongodb.controllers.LoginController;
 import com.imaginea.mongodb.controllers.TestingTemplate;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.services.impl.CollectionServiceImpl;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
-import com.imaginea.mongodb.utils.JSON;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -67,55 +60,18 @@ public class CollectionServiceImplTest extends TestingTemplate {
     /**
      * Instance of class to be tested.
      */
-    private CollectionServiceImpl testCollService;
-    /**
-     * Provides Mongo Instance.
-     */
-    private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo mongoInstance;
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    /**
-     * Logger Object
-     */
+    private CollectionService testCollectionService;
+
+    private static HttpServletRequest request = new MockHttpServletRequest();
+    private static String connectionId;
+
+
     private static Logger logger = Logger.getLogger(CollectionServiceImplTest.class);
-    private static final String logConfigFile = "src/main/resources/log4j.properties";
-    private String connectionId;
 
-    /**
-     * Constructs a mongoInstanceProvider Object.
-     */
-    public CollectionServiceImplTest() {
-        TestingTemplate.execute(logger, new ResponseCallback() {
-            public Object execute() throws Exception {
-                mongoInstanceProvider = new ConfigMongoInstanceProvider();
-                PropertyConfigurator.configure(logConfigFile);
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Instantiates the object of class under test and also creates an instance
-     * of mongo using the mongo service provider that reads from config file in
-     * order to test resources.Here we also put our tokenId in session and in
-     * mappings defined in LoginController class so that user is authentcated.
-     */
     @Before
     public void instantiateTestClass() throws ApplicationException {
-        LoginController loginController = new LoginController();
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
-        // Creates Mongo Instance.
-        mongoInstance = mongoInstanceProvider.getMongoInstance();
-        // Add user to mappings in userLogin for authentication
-        String dbInfo = mongoInstance.getAddress() + "_" + mongoInstance.getConnectPoint();
-        LoginController.mongoConfigToInstanceMapping.put(dbInfo, mongoInstance);
-        // Class to be tested
-        testCollService = new CollectionServiceImpl(connectionId);
-        request = new MockHttpServletRequest();
-
+        connectionId = loginAndGetConnectionId(request);
+        testCollectionService = new CollectionServiceImpl(connectionId);
     }
 
     /**
@@ -142,15 +98,14 @@ public class CollectionServiceImplTest extends TestingTemplate {
                                 mongoInstance.getDB(dbName).createCollection(collectionName, options);
                             }
                             // Get collection list from service
-                            Set<String> collectionList = testCollService.getCollList(dbName);
+                            Set<String> collectionList = testCollectionService.getCollList(dbName);
                             assert (collectionList.contains(collectionName));
                             // Db not populate by test Cases
                             mongoInstance.dropDatabase(dbName);
                         } catch (MongoException m) {
                             // Throw a new Exception here if mongoexception in
                             // this code
-                            ApplicationException e = new ApplicationException(ErrorCodes.GET_COLLECTION_LIST_EXCEPTION, "Error While testing Get Collections", m.getCause());
-                            throw e;
+                            throw new ApplicationException(ErrorCodes.GET_COLLECTION_LIST_EXCEPTION, "Error While testing Get Collections", m.getCause());
                         }
                         // Return nothing . Just error written in log
                         return null;
@@ -184,7 +139,7 @@ public class CollectionServiceImplTest extends TestingTemplate {
                                 mongoInstance.getDB(dbName).getCollection(collectionName).drop();
                             }
                             // Insert collection using service
-                            testCollService.insertCollection(dbName, collectionName, true, 100000, 100, true);
+                            testCollectionService.insertCollection(dbName, collectionName, true, 100000, 100, true);
                             // Check if collection exists in get List of
                             // collections
                             Set<String> collectionList = mongoInstance.getDB(dbName).getCollectionNames();
@@ -230,7 +185,7 @@ public class CollectionServiceImplTest extends TestingTemplate {
                             }
 
                             // Delete collection using service
-                            testCollService.deleteCollection(dbName, collectionName);
+                            testCollectionService.deleteCollection(dbName, collectionName);
                             // Check if collection exists in the list
                             Set<String> collectionList = mongoInstance.getDB(dbName).getCollectionNames();
                             assert (!collectionList.contains(collectionName));
@@ -271,7 +226,7 @@ public class CollectionServiceImplTest extends TestingTemplate {
                             // Create an empty collection
                             DBObject options = new BasicDBObject();
                             mongoInstance.getDB(dbName).createCollection(collectionName, options);
-                            JSONArray dbStats = testCollService.getCollStats(dbName, collectionName);
+                            JSONArray dbStats = testCollectionService.getCollStats(dbName, collectionName);
                             // Check if noOf Documents = 0
                             for (int i = 0; i < dbStats.length(); i++) {
                                 JSONObject temp = (JSONObject) dbStats.get(i);
@@ -297,6 +252,6 @@ public class CollectionServiceImplTest extends TestingTemplate {
 
     @AfterClass
     public static void destroyMongoProcess() {
-        mongoInstance.close();
+        logout(connectionId, request);
     }
 }

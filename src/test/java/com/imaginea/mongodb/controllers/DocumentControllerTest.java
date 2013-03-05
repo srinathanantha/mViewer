@@ -28,20 +28,20 @@ package com.imaginea.mongodb.controllers;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.DocumentException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
 import com.imaginea.mongodb.utils.JSON;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
-import com.mongodb.*;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,75 +50,29 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests the document request dispatcher resource that handles the GET and POST
  * request for documents present in Mongo. Tests the get and post functions
- * metioned in the resource with dummy request and test document and collection
+ * mentioned in the resource with dummy request and test document and collection
  * names and check the functionality.
  *
  * @author Rachit Mittal
  * @since 16 Jul 2011
  */
-public class DocumentControllerTest extends BaseController {
+public class DocumentControllerTest extends TestingTemplate {
 
-    private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo mongoInstance;
     /**
      * Object of class to be tested
      */
-    private DocumentController testDocResource;
+    private DocumentController testDocumentController;
 
-    /**
-     * Logger object
-     */
+    private static HttpServletRequest request = new MockHttpServletRequest();
+    private static String connectionId;
+
     private static Logger logger = Logger.getLogger(DocumentControllerTest.class);
-    private static final String logConfigFile = "src/main/resources/log4j.properties";
-    // To set a dbInfo in session
-    // Not coded to interface as Mock object provides a set Session
-    // functionality.
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    private String testDbInfo;
-    private String connectionId;
 
-    /**
-     * Constructs a mongoInstanceProvider Object.
-     */
-    public DocumentControllerTest() {
-        TestingTemplate.execute(logger, new ResponseCallback() {
-            public Object execute() throws Exception {
-                mongoInstanceProvider = new ConfigMongoInstanceProvider();
-                PropertyConfigurator.configure(logConfigFile);
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Instantiates the object of class under test and also creates an instance
-     * of mongo using the mongo service provider that reads from config file in
-     * order to test resources.Here we also put our tokenId in session and in
-     * mappings defined in LoginController class so that user is authentcated.
-     */
     @Before
     public void instantiateTestClass() {
-
-        // Creates Mongo Instance.
-        mongoInstance = mongoInstanceProvider.getMongoInstance();
         // Class to be tested
-        testDocResource = new DocumentController();
-        // Add user to mappings in userLogin for authentication
-        testDbInfo = mongoInstance.getAddress().getHost() + "_" + mongoInstance.getAddress().getPort();
-        LoginController.mongoConfigToInstanceMapping.put(testDbInfo, mongoInstance);
-        // Add dbInfo in Session
-        List<String> dbInfos = new ArrayList<String>();
-        dbInfos.add(testDbInfo);
-        HttpSession session = new MockHttpSession();
-        session.setAttribute("dbInfo", dbInfos);
-        request = new MockHttpServletRequest();
-        request.setSession(session);
-        LoginController loginController = new LoginController();
-
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+        testDocumentController = new DocumentController();
+        connectionId = loginAndGetConnectionId(request);
     }
 
     /**
@@ -164,7 +118,7 @@ public class DocumentControllerTest extends BaseController {
 
                                 String fields = "test,_id";
 
-                                String docList = testDocResource.executeQuery(dbName, collName, "db." + collName + ".find()", connectionId, fields, "100", "0", "", request);
+                                String docList = testDocumentController.executeQuery(dbName, collName, "db." + collName + ".find()", connectionId, fields, "100", "0", "", request);
 
                                 DBObject response = (BasicDBObject) JSON.parse(docList);
 
@@ -252,7 +206,7 @@ public class DocumentControllerTest extends BaseController {
                                     }
                                 }
 
-                                String resp = testDocResource.postDocsRequest(dbName, collName, "PUT", documentName.toString(), null, null, connectionId, request);
+                                String resp = testDocumentController.postDocsRequest(dbName, collName, "PUT", documentName.toString(), null, null, connectionId, request);
                                 DBObject response = (BasicDBObject) JSON.parse(resp);
 
                                 if (dbName == null) {
@@ -317,6 +271,6 @@ public class DocumentControllerTest extends BaseController {
     // TODO Test update and delete doc
     @AfterClass
     public static void destroyMongoProcess() {
-        mongoInstance.close();
+        logout(connectionId, request);
     }
 }

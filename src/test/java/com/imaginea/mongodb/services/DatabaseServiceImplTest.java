@@ -25,15 +25,10 @@
 
 package com.imaginea.mongodb.services;
 
-import com.imaginea.mongodb.controllers.LoginController;
 import com.imaginea.mongodb.controllers.TestingTemplate;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.services.impl.DatabaseServiceImpl;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
-import com.imaginea.mongodb.utils.JSON;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
-import com.mongodb.BasicDBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
@@ -45,10 +40,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test service functions for performing operations like create/drop on
@@ -63,56 +61,18 @@ public class DatabaseServiceImplTest extends TestingTemplate {
     /**
      * Instance of class to be tested.
      */
-    private DatabaseServiceImpl testDbService;
-    /**
-     * Provides Mongo Instance.
-     */
-    private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo mongoInstance;
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    /**
-     * Logger Object
-     */
+    private DatabaseService testDatabaseService;
+
+    private static HttpServletRequest request = new MockHttpServletRequest();
+    private static String connectionId;
+
     private static Logger logger = Logger.getLogger(DatabaseServiceImplTest.class);
 
-    private static final String logConfigFile = "src/main/resources/log4j.properties";
-    private String connectionId;
-
-    /**
-     * Constructs a mongoInstanceProvider Object
-     */
-    public DatabaseServiceImplTest() {
-        ErrorTemplate.execute(logger, new ResponseCallback() {
-            public Object execute() throws Exception {
-                mongoInstanceProvider = new ConfigMongoInstanceProvider();
-                PropertyConfigurator.configure(logConfigFile);
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Instantiates the object of class under test and also creates an instance
-     * of mongo using the mongo service provider that reads from config file in
-     * order to test resources.Here we also put our tokenId in session and in
-     * mappings defined in LoginController class so that user is authentcated.
-     */
     @Before
     public void instantiateTestClass() throws ApplicationException {
-        LoginController loginController = new LoginController();
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
-
-
-        // Creates Mongo Instance.
-        mongoInstance = mongoInstanceProvider.getMongoInstance();
-        // Add user to mappings in userLogin for authentication
-        String dbInfo = mongoInstance.getAddress() + "_" + mongoInstance.getConnectPoint();
-        LoginController.mongoConfigToInstanceMapping.put(dbInfo, mongoInstance);
+        connectionId = loginAndGetConnectionId(request);
         // Class to be tested
-        testDbService = new DatabaseServiceImpl(connectionId);
+        testDatabaseService = new DatabaseServiceImpl(connectionId);
     }
 
     /**
@@ -143,7 +103,7 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                             }
                         }
                         // Get list using service
-                        List<String> dbNames = testDbService.getDbList();
+                        List<String> dbNames = testDatabaseService.getDbList();
                         if (dbName == null) {
                             assert (!dbNames.contains(dbName));
                         } else if ("".equals(dbName)) {
@@ -157,8 +117,7 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                         }
                     } catch (MongoException m) // while dropping Db
                     {
-                        ApplicationException e = new ApplicationException(ErrorCodes.GET_DB_LIST_EXCEPTION, "Error Testing Database List", m.getCause());
-                        throw e;
+                        throw new ApplicationException(ErrorCodes.GET_DB_LIST_EXCEPTION, "Error Testing Database List", m.getCause());
                     }
                     return null;
                 }
@@ -185,7 +144,7 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                 public Object execute() throws Exception {
                     try {
                         // Create a Database using service
-                        testDbService.createDb(dbName);
+                        testDatabaseService.createDb(dbName);
                         // Get Db List
                         List<String> dbNames = mongoInstance.getDatabaseNames();
                         if (dbName == null) {
@@ -237,7 +196,7 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                             }
                         }
                         // Drop using service
-                        testDbService.dropDb(dbName);
+                        testDatabaseService.dropDb(dbName);
                         List<String> dbNames = mongoInstance.getDatabaseNames();
                         if (dbName == null) {
                             assertFalse("Check if dbName doesnot exist when db name is null", dbNames.contains(dbName));
@@ -281,7 +240,7 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                         }
                         // Create an empty db
                         mongoInstance.getDB(dbName).getCollectionNames();
-                        JSONArray dbStats = testDbService.getDbStats(dbName);
+                        JSONArray dbStats = testDatabaseService.getDbStats(dbName);
 
                         for (int i = 0; i < dbStats.length(); i++) {
                             JSONObject temp = (JSONObject) dbStats.get(i);
@@ -306,6 +265,6 @@ public class DatabaseServiceImplTest extends TestingTemplate {
 
     @AfterClass
     public static void destroyMongoProcess() {
-        mongoInstance.close();
+        logout(connectionId, request);
     }
 }

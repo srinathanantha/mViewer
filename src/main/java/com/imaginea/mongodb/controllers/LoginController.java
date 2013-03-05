@@ -51,10 +51,7 @@ import java.util.Set;
 
 @Path("/login")
 public class LoginController extends BaseController {
-    private static final long serialVersionUID = 1L;
 
-    public static Map<String, Mongo> mongoConfigToInstanceMapping = new HashMap<String, Mongo>();
-    public static Map<String, Integer> mongoConfigToUsersMapping = new HashMap<String, Integer>();
     private static Logger logger = Logger.getLogger(LoginController.class);
 
     /**

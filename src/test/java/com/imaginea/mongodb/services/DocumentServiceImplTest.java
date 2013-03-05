@@ -24,15 +24,17 @@
  */
 package com.imaginea.mongodb.services;
 
-import com.imaginea.mongodb.controllers.LoginController;
 import com.imaginea.mongodb.controllers.TestingTemplate;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.services.impl.DocumentServiceImpl;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
 import com.imaginea.mongodb.utils.JSON;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONObject;
@@ -41,10 +43,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test all the service functions like create/update/delete documents in
@@ -59,59 +64,17 @@ public class DocumentServiceImplTest extends TestingTemplate {
     /**
      * Instance of class to be tested.
      */
-    private DocumentServiceImpl testDocService;
-    /**
-     * Provides Mongo Instance.
-     */
-    private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo mongoInstance;
+    private DocumentService testDocumentService;
 
-    /**
-     * Logger Object
-     */
+    private static HttpServletRequest request = new MockHttpServletRequest();
+    private static String connectionId;
+
     private static Logger logger = Logger.getLogger(DocumentServiceImplTest.class);
-    private static final String logConfigFile = "src/main/resources/log4j.properties";
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    private String connectionId;
 
-    /**
-     * Constructs a mongoInstanceProvider Object.
-     */
-
-    public DocumentServiceImplTest() throws Exception {
-        ErrorTemplate.execute(logger, new ResponseCallback() {
-            public Object execute() throws Exception {
-                mongoInstanceProvider = new ConfigMongoInstanceProvider();
-                PropertyConfigurator.configure(logConfigFile);
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Instantiates the object of class under test and also creates an instance
-     * of mongo using the mongo service provider that reads from config file in
-     * order to test resources.Here we also put our tokenId in session and in
-     * mappings defined in LoginController class so that user is authentcated.
-     */
     @Before
     public void instantiateTestClass() throws ApplicationException {
-        LoginController loginController = new LoginController();
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
-
-
-        // Creates Mongo Instance.
-        mongoInstance = mongoInstanceProvider.getMongoInstance();
-
-        // Add user to mappings in userLogin for authentication
-        String dbInfo = mongoInstance.getAddress() + "_" + mongoInstance.getConnectPoint();
-
-        LoginController.mongoConfigToInstanceMapping.put(dbInfo, mongoInstance);
-        // Class to be tested
-        testDocService = new DocumentServiceImpl(connectionId);
+        connectionId = loginAndGetConnectionId(request);
+        testDocumentService = new DocumentServiceImpl(connectionId);
     }
 
     /**
@@ -147,7 +110,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 DBObject keys = new BasicDBObject();
                                 keys.put("p", 1);
 
-                                JSONObject result = testDocService.getQueriedDocsList(dbName, collectionName, "find", null, "p", "", 0, 0);
+                                JSONObject result = testDocumentService.getQueriedDocsList(dbName, collectionName, "find", null, "p", "", 0, 0);
 
                                 ArrayList<DBObject> documentList = (ArrayList<DBObject>) result.get("documents");
                                 boolean flag = false;
@@ -169,8 +132,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 mongoInstance.dropDatabase(dbName);
                             } catch (MongoException m) // while dropping Db
                             {
-                                ApplicationException e = new ApplicationException(ErrorCodes.GET_DOCUMENT_LIST_EXCEPTION, "Error Testing Document List", m.getCause());
-                                throw e;
+                                throw  new ApplicationException(ErrorCodes.GET_DOCUMENT_LIST_EXCEPTION, "Error Testing Document List", m.getCause());
                             }
                             return null;
                         }
@@ -208,7 +170,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                     mongoInstance.getDB(dbName).createCollection(collectionName, options);
                                 }
                                 // Insert document
-                                testDocService.insertDocument(dbName, collectionName, documentName);
+                                testDocumentService.insertDocument(dbName, collectionName, documentName);
                                 List<DBObject> documentList = new ArrayList<DBObject>();
                                 DBCursor cursor = mongoInstance.getDB(dbName).getCollection(collectionName).find();
                                 while (cursor.hasNext()) {
@@ -279,7 +241,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 DBObject document = mongoInstance.getDB(dbName).getCollection(collectionName).findOne(documentName);
                                 String docId = JSON.serialize(document.get("_id"));
                                 newDocument.put("_id", docId);
-                                testDocService.updateDocument(dbName, collectionName, docId, newDocument);
+                                testDocumentService.updateDocument(dbName, collectionName, docId, newDocument);
                                 DBObject query = new BasicDBObject("_id", docId);
                                 DBCollection collection = mongoInstance.getDB(dbName).getCollection(collectionName);
                                 document = collection.findOne(query);
@@ -346,7 +308,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 //Testing if doc exists before delete
                                 DBCollection coll = mongoInstance.getDB(dbName).getCollection(collectionName);
                                 long countBeforeDelete = coll.getCount();
-                                testDocService.deleteDocument(dbName, collectionName, docId);
+                                testDocumentService.deleteDocument(dbName, collectionName, docId);
                                 DBObject docAfterDelete = coll.findOne(document.get("_id"));
                                 assertNull("docAfterDelete should be null if delete was successfull", docAfterDelete);
                                 long countAfterDelete = coll.getCount();
@@ -388,6 +350,6 @@ public class DocumentServiceImplTest extends TestingTemplate {
 
     @AfterClass
     public static void destroyMongoProcess() {
-        mongoInstance.close();
+        logout(connectionId, request);
     }
 }

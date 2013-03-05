@@ -28,19 +28,18 @@ package com.imaginea.mongodb.controllers;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.DatabaseException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
 import com.imaginea.mongodb.utils.JSON;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
-import com.mongodb.*;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,70 +59,21 @@ import static org.junit.Assert.assertEquals;
  */
 public class DatabaseControllerTest extends TestingTemplate {
 
-    private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo mongoInstance;
-
     /**
      * Class to be tested.
      */
-    private DatabaseController testDbResource;
+    private DatabaseController testDatabaseController;
 
-    /**
-     * Logger object
-     */
+    private static HttpServletRequest request = new MockHttpServletRequest();
+    private static String connectionId;
+
     private static Logger logger = Logger.getLogger(DatabaseControllerTest.class);
-    private static final String logConfigFile = "src/main/resources/log4j.properties";
-    // To set a dbInfo in session
-    // Not coded to interface as Mock object provides a set Session
-    // functionality.
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    private String testDbInfo;
-    private String connectionId;
 
-    /**
-     * Constructs a mongoInstanceProvider Object.
-     */
-    public DatabaseControllerTest() {
-
-        TestingTemplate.execute(logger, new ResponseCallback() {
-            public Object execute() throws Exception {
-                mongoInstanceProvider = new ConfigMongoInstanceProvider();
-                PropertyConfigurator.configure(logConfigFile);
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Instantiates the object of class under test and also creates an instance
-     * of mongo using the mongo service provider that reads from config file in
-     * order to test resources.Here we also put our tokenId in session and in
-     * mappings defined in LoginController class so that user is authentcated.
-     */
     @Before
     public void instantiateTestClass() {
-
-        // Creates Mongo Instance.
-        mongoInstance = mongoInstanceProvider.getMongoInstance();
         // Class to be tested
-        testDbResource = new DatabaseController();
-        // Add user to mappings in userLogin for authentication
-        testDbInfo = mongoInstance.getAddress().getHost() + "_" + mongoInstance.getAddress().getPort();
-        LoginController.mongoConfigToInstanceMapping.put(testDbInfo, mongoInstance);
-        // Add dbInfo in Session
-        List<String> dbInfos = new ArrayList<String>();
-        dbInfos.add(testDbInfo);
-        HttpSession session = new MockHttpSession();
-        session.setAttribute("dbInfo", dbInfos);
-        request = new MockHttpServletRequest();
-        request.setSession(session);
-        // TODO can do this same work in a function at one place.
-        LoginController loginController = new LoginController();
-
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+        testDatabaseController = new DatabaseController();
+        connectionId = loginAndGetConnectionId(request);
     }
 
     /**
@@ -156,7 +106,7 @@ public class DatabaseControllerTest extends TestingTemplate {
                                 }
                             }
                         }
-                        String dbList = testDbResource.getDbList(testDbInfo, request);
+                        String dbList = testDatabaseController.getDbList(connectionId, request);
 
                         // response has a JSON Object with result as key and
                         // value as
@@ -206,7 +156,7 @@ public class DatabaseControllerTest extends TestingTemplate {
                 public Object execute() throws Exception {
                     try {
 
-                        String resp = testDbResource.postDbRequest(dbName, "PUT", connectionId, request);
+                        String resp = testDatabaseController.postDbRequest(dbName, "PUT", connectionId, request);
 
                         if (dbName == null) {
                             DBObject response = (BasicDBObject) JSON.parse(resp);
@@ -269,7 +219,7 @@ public class DatabaseControllerTest extends TestingTemplate {
                             }
                         }
 
-                        String resp = testDbResource.postDbRequest(dbName, "DELETE", connectionId, request);
+                        String resp = testDatabaseController.postDbRequest(dbName, "DELETE", connectionId, request);
 
                         List<String> dbNames = mongoInstance.getDatabaseNames();
 
@@ -302,6 +252,6 @@ public class DatabaseControllerTest extends TestingTemplate {
 
     @AfterClass
     public static void destroyMongoProcess() {
-        mongoInstance.close();
+        logout(connectionId, request);
     }
 }

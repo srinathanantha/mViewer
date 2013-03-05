@@ -29,20 +29,19 @@ import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.CollectionException;
 import com.imaginea.mongodb.exceptions.DatabaseException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
-import com.imaginea.mongodb.utils.ConfigMongoInstanceProvider;
 import com.imaginea.mongodb.utils.JSON;
-import com.imaginea.mongodb.utils.MongoInstanceProvider;
-import com.mongodb.*;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,61 +54,22 @@ import static org.junit.Assert.assertEquals;
  * @author Rachit Mittal
  * @since 17 Jul 2011
  */
-public class StatisticsControllerTest extends BaseController {
+public class StatisticsControllerTest extends TestingTemplate {
 
-    private MongoInstanceProvider mongoInstanceProvider;
-    private static Mongo mongoInstance;
     /**
      * Object of class to be tested
      */
-    private StatisticsController testStatResource;
-    /**
-     * Logger object
-     */
+    private StatisticsController testStatisticsController;
+
+    private static HttpServletRequest request = new MockHttpServletRequest();
+    private static String connectionId;
+
     private static Logger logger = Logger.getLogger(StatisticsControllerTest.class);
 
-    private static final String logConfigFile = "src/main/resources/log4j.properties";
-
-    // To set a dbInfo in session
-    // Not coded to interface as Mock object provides a set Session
-    // functionality.
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    private String testDbInfo;
-    private String connectionId;
-
-    /**
-     * Constructs a mongoInstanceProvider Object.
-     */
-    public StatisticsControllerTest() {
-        TestingTemplate.execute(logger, new ResponseCallback() {
-            public Object execute() throws Exception {
-                mongoInstanceProvider = new ConfigMongoInstanceProvider();
-                PropertyConfigurator.configure(logConfigFile);
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Instantiates the object of class under test and also creates an instance
-     * of mongo using the mongo service provider that reads from config file in
-     * order to test resources.Here we also put our tokenId in session and in
-     * mappings defined in LoginController class so that user is authentcated.
-     */
     @Before
     public void instantiateTestClass() {
-
-        // Creates Mongo Instance.
-        mongoInstance = mongoInstanceProvider.getMongoInstance();
-        // Class to be tested
-        testStatResource = new StatisticsController();
-        request = new MockHttpServletRequest();
-        LoginController loginController = new LoginController();
-
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+        testStatisticsController = new StatisticsController();
+        connectionId = loginAndGetConnectionId(request);
     }
 
     /**
@@ -144,7 +104,7 @@ public class StatisticsControllerTest extends BaseController {
                             }
                         }
 
-                        String resp = testStatResource.getDbStats(dbName, connectionId, request);
+                        String resp = testStatisticsController.getDbStats(dbName, connectionId, request);
 
                         if (dbName == null) {
                             DBObject response = (BasicDBObject) JSON.parse(resp);
@@ -224,7 +184,7 @@ public class StatisticsControllerTest extends BaseController {
                             }
                         }
 
-                        String resp = testStatResource.getCollStats(dbName, testCollName, connectionId, request);
+                        String resp = testStatisticsController.getCollStats(dbName, testCollName, connectionId, request);
 
                         if (dbName == null) {
                             DBObject response = (BasicDBObject) JSON.parse(resp);
@@ -265,6 +225,6 @@ public class StatisticsControllerTest extends BaseController {
 
     @AfterClass
     public static void destroyMongoProcess() {
-        mongoInstance.close();
+        logout(connectionId, request);
     }
 }
