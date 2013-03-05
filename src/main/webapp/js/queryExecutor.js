@@ -5,6 +5,7 @@ YUI.add('query-executor', function(Y) {
 
     MV.loadQueryBox = function(keysUrl, dataUrl, selectedCollection, sHandler) {
 
+        var cachedQueryParams = {};
         successHandler = sHandler;
         currentSelection = selectedCollection;
 
@@ -23,39 +24,57 @@ YUI.add('query-executor', function(Y) {
                 },
                 failure: function(ioId, responseObject) {
                     MV.hideLoadingPanel();
-                    MV.showAlertMessage("Unexpected Error: Could not load the query Box", MV.warnIcon);
+                    MV.showAlertMessage("Could not load the query Box", MV.warnIcon);
                     Y.log("Could not send the request to get the keys in the collection. Response Status: [0]".format(responseObject.statusText), "error");
                 }
             }
         });
 
         /**
-         *The function is an event handler for the execute query button. It gets the query parameters
+         *The function is an event handler for the execute query button. It gets the query parameters from UI components
          *and sends a request to get the documents
-         * @param {Object} event The event object
          */
-        function executeQuery(event) {
-            var queryParams = getQueryParameters();
-            if (queryParams !== undefined) {
+        function executeQuery() {
+            var queryParams = getQueryParameters(false);
+            execute(queryParams);
+        }
+
+        /**
+         *The function is an event handler for the execute query button. It gets the query parameters from cache
+         *and sends a request to get the documents
+         */
+        function executeCachedQuery() {
+            var queryParams = getQueryParameters(true);
+            execute(queryParams);
+        }
+
+        function execute(queryParams) {
+            var queryStr = "&query=[0]&limit=[1]&skip=[2]&fields=[3]&sortBy=[4]".format(
+                encodeURIComponent(queryParams.query), queryParams.limit, queryParams.skip, queryParams.checkedFields, queryParams.sortBy);
+            if (queryStr !== undefined) {
                 MV.showLoadingPanel("Loading Documents...");
                 Y.io(dataUrl, {
                     method: "GET",
-                    data: queryParams,
+                    data: queryStr,
                     on: {
                         success: function(request, response) {
                             var parsedResponse = Y.JSON.parse(response.responseText).response;
                             var result = parsedResponse.result, error = parsedResponse.error;
                             if (result && !error) {
+                                //TotalCount may vary from request to request. so update the same in cache.
+                                queryParams.totalCount = result.count;
+                                setQueryParameters(queryParams);
+                                //Update the pagination anchors accordingly
                                 updateAnchors(result.count, result.editable);
                                 successHandler(result);
                             } else {
                                 MV.hideLoadingPanel();
-                                MV.showAlertMessage("Error executing query: [0]".format(error.message), MV.warnIcon);
+                                MV.showAlertMessage(error.message, MV.warnIcon);
                             }
                         },
                         failure: function(request, response) {
                             MV.hideLoadingPanel();
-                            MV.showAlertMessage("Error executing query: [0]".format(response.responseText), MV.warnIcon);
+                            MV.showAlertMessage(response.responseText, MV.warnIcon);
                         }
                     }
                 });
@@ -77,7 +96,7 @@ YUI.add('query-executor', function(Y) {
                     },
                     failure: function(ioId, responseObject) {
                         MV.hideLoadingPanel();
-                        MV.showAlertMessage("Unexpected Error: Could not load the query Box", MV.warnIcon);
+                        MV.showAlertMessage("Could not load the query Box", MV.warnIcon);
                         Y.log("Could not send the request to get the keys in the collection. Response Status: [0]".format(responseObject.statusText), "error");
                     }
                 }
@@ -190,19 +209,19 @@ YUI.add('query-executor', function(Y) {
             Y.on("keyup", function(eventObject) {
                 // insert a ctrl + enter listener for query evaluation
                 if (eventObject.ctrlKey && eventObject.keyCode === 13) {
-                    Y.one('#execQueryButton').simulate('click');
+                    executeQuery();
                 }
             }, "#queryBox");
             Y.on("keyup", function(eventObject) {
                 // insert a ctrl + enter listener for query evaluation on skip field
                 if (eventObject.ctrlKey && eventObject.keyCode === 13) {
-                    Y.one('#execQueryButton').simulate('click');
+                    executeQuery();
                 }
             }, "#skip");
             Y.on("keyup", function(eventObject) {
                 // insert a ctrl + enter listener for query evaluation on limit field
                 if (eventObject.ctrlKey && eventObject.keyCode === 13) {
-                    Y.one('#execQueryButton').simulate('click');
+                    executeQuery();
                 }
             }, "#limit");
         }
@@ -225,46 +244,56 @@ YUI.add('query-executor', function(Y) {
             var href = event.currentTarget.get("href");
             if (href == null || href == undefined || href == "")
                 return;
+            var queryParameters = getQueryParameters(true);
+            var skipValue = queryParameters.skip, limitValue = queryParameters.limit, countValue = queryParameters.totalCount;
             var id = event.currentTarget.get("id");
-            var skip = Y.one('#skip'), limit = Y.one('#limit'), count = Y.one('#countLabel');
-            var skipValue = parseInt(skip.get('value')), limitValue = parseInt(limit.get('value')), countValue = parseInt(count.get('text'));
             if (id === "first") {
-                skip.set('value', 0);
+                skipValue = 0;
             } else if (id === "prev") {
-                skip.set('value', (skipValue - limitValue) < 0 ? 0 : (skipValue - limitValue));
+                skipValue = (skipValue - limitValue) < 0 ? 0 : (skipValue - limitValue);
             } else if (id === "next") {
-                skip.set('value', skipValue + limitValue);
+                skipValue = skipValue + limitValue;
             } else if (id === "last") {
-                skip.set('value', countValue - limitValue);
+                skipValue = countValue - limitValue;
             }
-            Y.one('#execQueryButton').simulate('click');
-            updateAnchors(countValue, true);
+            //update skip value in the cache query parameters
+            queryParameters.skip = skipValue;
+            executeCachedQuery();
         }
 
         function updateAnchors(count, showPaginated) {
             var first = Y.one('#first'), prev = Y.one('#prev'), next = Y.one('#next'), last = Y.one('#last');
             var start = Y.one('#startLabel'), end = Y.one('#endLabel'), countLabel = Y.one('#countLabel');
-            var skip = parseInt(Y.one('#skip').get('value')), limit = parseInt(Y.one('#limit').get('value'));
-            if (skip == 0 || !showPaginated)
+            // Get the cached query parameter values
+            var queryParameters = getQueryParameters(true);
+            var skipValue = queryParameters.skip, limitValue = queryParameters.limit;
+            if (skipValue == 0 || skipValue >= count || !showPaginated)
                 disableAnchor(first);
             else
                 enableAnchor(first);
-            if (skip + limit <= limit || !showPaginated)
+            if (skipValue >= count || skipValue + limitValue <= limitValue || !showPaginated)
                 disableAnchor(prev);
             else
                 enableAnchor(prev);
-            if (skip >= count - limit || !showPaginated)
+            if (skipValue >= count - limitValue || !showPaginated)
                 disableAnchor(next);
             else
                 enableAnchor(next);
-            if (skip + limit >= count || !showPaginated)
+            if (skipValue + limitValue >= count || !showPaginated)
                 disableAnchor(last);
             else
                 enableAnchor(last);
-            var size = showPaginated ? skip + limit : count;
-            start.set('text', count != 0 ? skip + 1 : 0);
-            end.set('text', count <= size ? count : skip + limit);
-            countLabel.set('text', count);
+            //Check if the skip value is greater than the totalCount of resultSet for the executedQuery
+            if (skipValue < count) {
+                var size = showPaginated ? skipValue + limitValue : count;
+                start.set('text', count != 0 ? skipValue + 1 : 0);
+                end.set('text', count <= size ? count : skipValue + limitValue);
+                countLabel.set('text', count);
+            } else {
+                start.set('text', 0);
+                end.set('text', 0);
+                countLabel.set('text', 0);
+            }
         }
 
         function enableAnchor(obj) {
@@ -278,40 +307,40 @@ YUI.add('query-executor', function(Y) {
         }
 
         /**
-         * This function gets the query parameters from the query box. It takes the
-         * query string, the limit value, skip value and the fields selected and return a
-         * query parameter string which will be added to the request URL
-         * @returns {String} Query prameter string
+         * Stores the query parameters in the cache.
+         * @param queryParams
+         */
+        function setQueryParameters(queryParams) {
+            cachedQueryParams = queryParams;
+        }
+
+        /**
+         * This function gets the query parameters from the query box or cache.
+         * @param fromCache fetches values from cache when true else from the query box
+         * @returns {String} Query parameters
          *
          */
-        function getQueryParameters() {
-            var parsedQuery, query = Y.one('#queryBox').get("value").trim(),
-                limit = Y.one('#limit').get("value"),
-                skip = Y.one('#skip').get("value").trim(),
-                fields = Y.all('#fields input'),
-                sortBy = "{" + Y.one('#sort').get("value") + "}",
-                index = 0, checkedFields = [], item;
-
-            if (query === "") {
-                query = "{}";
-            }
-
-            //replace the single quotes (') in the query string by double quotes (")
-            query = query.replace(/'/g, '"');
-            query = query.replace(/\r/g, '');
-            query = query.replace(/\n/g, '');
-
-            try {
-                for (index = 0; index < fields.size(); index++) {
+        function getQueryParameters(fromCache) {
+            if (fromCache) {
+                return cachedQueryParams;
+            } else {
+                var queryParameters = { query: "", limit: 0, skip: 0, checkedFields: [], sortBy: "", totalCount: 0};
+                queryParameters.query = Y.one('#queryBox').get("value").trim();
+                queryParameters.limit = parseInt(Y.one('#limit').get("value"));
+                queryParameters.skip = parseInt(Y.one('#skip').get("value").trim());
+                queryParameters.sortBy = "{" + Y.one('#sort').get("value") + "}";
+                //populate checked keys of a collection from UI
+                var fields = Y.all('#fields input'), item;
+                for (var index = 0; index < fields.size(); index++) {
                     item = fields.item(index);
                     if (item.get("checked")) {
-                        checkedFields.push(item.get("name"));
+                        queryParameters.checkedFields.push(item.get("name"));
                     }
                 }
-                return ("&query=[0]&limit=[1]&skip=[2]&fields=[3]&sortBy=[4]".format(encodeURIComponent(query), limit, skip, checkedFields, sortBy));
-            } catch (error) {
-                Y.log("Could not parse query. Reason: [0]".format(error), "error");
-                MV.showAlertMessage("Failed:Could not parse query. [0]".format(error), MV.warnIcon);
+                if (queryParameters.query === "") {
+                    queryParameters.query = "{}";
+                }
+                return queryParameters;
             }
         }
     };
