@@ -205,6 +205,9 @@ public class QueryExecutor {
         } else {
             writeResult = dbCollection.insert(queryObj);
         }
+        if (writeResult.getLastError().get("err") == null) {
+            return constructResponse(false, queryObj);
+        }
         return constructResponse(false, writeResult.getLastError());
     }
 

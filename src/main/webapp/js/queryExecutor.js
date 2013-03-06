@@ -254,7 +254,7 @@ YUI.add('query-executor', function(Y) {
             } else if (id === "next") {
                 skipValue = skipValue + limitValue;
             } else if (id === "last") {
-                skipValue = countValue - limitValue;
+                skipValue = countValue - (countValue % limitValue);
             }
             //update skip value in the cache query parameters
             queryParameters.skip = skipValue;
