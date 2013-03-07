@@ -47,6 +47,13 @@ YUI.add('yes-no-dialog', function(Y) {
         yesNoDialog.cfg.setProperty("buttons", buttons);
         yesNoDialog.show();
     };
+    var sm = MV.StateManager;
+    var hideConfirmationDialog = function() {
+        if(yesNoDialog) {
+            yesNoDialog.hide();
+        }
+    };
+    sm.subscribe(hideConfirmationDialog, [sm.events.actionTriggered]);
 }, '3.3.0', {
     requires: []
 });

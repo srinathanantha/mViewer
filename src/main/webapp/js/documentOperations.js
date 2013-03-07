@@ -38,6 +38,7 @@ YUI({
         var idMap = {}, queryExecutor;
 
         var initQueryBox = function(event) {
+            sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentColl = event.currentTarget.getAttribute("data-collection-name");
             MV.selectDBItem(event.currentTarget);
             queryExecutor = MV.loadQueryBox(MV.URLMap.getDocKeys(), MV.URLMap.getDocs(), sm.currentColl(), showTabView);
@@ -67,7 +68,6 @@ YUI({
                 treeble.subscribe("rowMouseoverEvent", treeble.onEventHighlightRow);
                 treeble.subscribe("rowMouseoutEvent", treeble.onEventUnhighlightRow);
                 populateJSONTab(response);
-                sm.publish(sm.events.queryFired);
                 MV.hideLoadingPanel();
             } catch (error) {
                 MV.hideLoadingPanel();
@@ -311,7 +311,7 @@ YUI({
                 this.hide();
             };
             if (args[0].eventObj.currentTarget.hasClass('deletebtn') || args[0].eventObj.currentTarget.hasClass('delete-icon')) {
-                MV.showYesNoDialog("Delete Document", "Are you sure you want to drop the document ?", sendDeleteDocRequest, function() {
+                MV.showYesNoDialog("Delete Document", "Are you sure you want to delete the document ?", sendDeleteDocRequest, function() {
                     this.hide();
                 });
             } else {

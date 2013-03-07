@@ -564,6 +564,14 @@ table tr td {
     width: 212px;
 }
 
+.wrap_listitem {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 140px;
+}
+
 .checklist li {
     background: none;
     padding-left: 0;

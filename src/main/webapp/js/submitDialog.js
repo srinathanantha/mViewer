@@ -22,6 +22,8 @@
 YUI.add('submit-dialog', function(Y) {
     YUI.namespace('com.imaginea.mongoV');
     var MV = YUI.com.imaginea.mongoV;
+    var sm = MV.StateManager;
+    var activeDialog = null;
 
     MV.showSubmitDialog = function Dialog(form, successHandler, failureHandler) {
         YAHOO.util.Dom.removeClass(form, "yui-pe-content");
@@ -31,6 +33,10 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addCollection() {
+            if(!sm.currentDB()) {
+                MV.showAlertMessage("No Database Selected!", MV.warnIcon);
+                return false;
+            }
             var newCollInfo = this.getData();
             if (newCollInfo.newCollName === "") {
                 MV.showAlertMessage("Name should be entered to create a Collection!", MV.warnIcon);
@@ -55,6 +61,10 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addGridFS() {
+            if(!sm.currentDB()) {
+                MV.showAlertMessage("No Database Selected!", MV.warnIcon);
+                return false;
+            }
             var newCollInfo = this.getData();
             if (newCollInfo.name === "") {
                 MV.showAlertMessage("Enter the bucket name!", MV.warnIcon);
@@ -91,6 +101,14 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addDocument() {
+            if(!sm.currentDB()) {
+                MV.showAlertMessage("No Database Selected!", MV.warnIcon);
+                return false;
+            }
+            if(!sm.currentColl()) {
+                MV.showAlertMessage("No Collection Selected in the Database!", MV.warnIcon);
+                return false;
+            }
             var newDoc = this.getData().document;
             if (newDoc === "") {
                 MV.showAlertMessage("Enter a valid Document", MV.warnIcon);
@@ -107,6 +125,10 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addUser() {
+            if(!sm.currentDB()) {
+                MV.showAlertMessage("No Database Selected!", MV.warnIcon);
+                return false;
+            }
             var userName = this.getData().addUser_user_name;
             var password = this.getData().addUser_password;
 
@@ -123,6 +145,10 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addIndex() {
+            if(!sm.currentDB()) {
+                MV.showAlertMessage("No Database Selected!", MV.warnIcon);
+                return false;
+            }
             var indexDocument = this.getData().index_keys;
             try {
                 Y.JSON.parse(indexDocument);
@@ -144,6 +170,9 @@ YUI.add('submit-dialog', function(Y) {
             "addIndexDialogSubmitHandler": addIndex
         };
 
+        if(activeDialog && activeDialog.id !== form) {
+            activeDialog.cancel();
+        }
         var dialogBox = $("#" + form).data("dialogBox");
         if (!dialogBox) {
             dialogBox = new YAHOO.widget.Dialog(form, {
@@ -184,9 +213,18 @@ YUI.add('submit-dialog', function(Y) {
             dialogBox.render();
             $("#" + form).data("dialogBox", dialogBox);
         }
+        activeDialog = dialogBox;
         dialogBox.show();
         return dialogBox;
     };
+
+    var hideActiveDialog = function() {
+        if(activeDialog) {
+            activeDialog.cancel();
+        }
+    };
+
+    sm.subscribe(hideActiveDialog, [sm.events.actionTriggered]);
 
     function updateCappedSection(event) {
         var isChecked = event.currentTarget._node.checked;

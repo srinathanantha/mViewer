@@ -34,6 +34,12 @@ YUI.add('alert-dialog', function(Y) {
             timeoutId = setTimeout("document.getElementById('infoMsg').style.display='none'", 12000);
         }
     };
+
+    var sm = MV.StateManager;
+    var hideAlertMessage = function() {
+        document.getElementById('infoMsg').style.display='none';
+    };
+    sm.subscribe(hideAlertMessage, [sm.events.actionTriggered]);
 }, '3.3.0', {
-    requires: ["node"]
+    requires: ["utility", "node"]
 });

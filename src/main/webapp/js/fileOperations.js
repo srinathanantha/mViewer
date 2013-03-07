@@ -32,6 +32,7 @@ YUI({
 
 
         var initQueryBox = function(event) {
+            sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentBucket = event.currentTarget.getAttribute("data-bucket-name");
             MV.selectDBItem(event.currentTarget);
             MV.loadQueryBox(MV.URLMap.getFilesCount(), MV.URLMap.getFiles(), sm.currentBucket(), showTabView);
@@ -57,7 +58,6 @@ YUI({
                 treeble.subscribe("rowMouseoverEvent", treeble.onEventHighlightRow);
                 treeble.subscribe("rowMouseoutEvent", treeble.onEventUnhighlightRow);
                 populateJSONTab(response);
-                sm.publish(sm.events.queryFired);
                 MV.hideLoadingPanel();
             } catch (error) {
                 MV.hideLoadingPanel();
@@ -182,9 +182,9 @@ YUI({
                             var parsedResponse = Y.JSON.parse(responseObj.responseText);
                             var response = parsedResponse.response.result;
                             if (response !== undefined) {
-                                MV.showAlertMessage(response, MV.infoIcon);
                                 //Y.one('#file' + index).remove();
                                 Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
+                                MV.showAlertMessage(response, MV.infoIcon);
                             } else {
                                 var error = parsedResponse.response.error;
                                 MV.showAlertMessage("Could not delete the file with _id [0]. [1]".format(docId, MV.errorCodeMap[error.code]), MV.warnIcon);

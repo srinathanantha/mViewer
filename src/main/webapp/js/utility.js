@@ -7,8 +7,7 @@ YUI.add('utility', function(Y) {
     // format function can be added
     if (typeof String.prototype.format !== 'function') {
         String.prototype.format = function() {
-            var formatted = this,
-                i;
+            var formatted = this,i;
             for (i = 0; i < arguments.length; i++) {
                 formatted = formatted.replace("[" + i + "]", arguments[i]);
             }
@@ -193,7 +192,7 @@ YUI.add('utility', function(Y) {
             }
 
             for (; i < eventNames.length; i++) {
-                eventName = eventNames[i];
+                var eventName = eventNames[i];
                 if (gRegistry[eventName] === undefined) {
                     gRegistry[eventName] = [];
                 }
@@ -210,10 +209,10 @@ YUI.add('utility', function(Y) {
             return new Date().getTime().toString();
         };
         exports.events = {
-            collectionsChanged: 1,
-            dbsChanged: 2,
-            queryFired: 3,
-            openFile: 4
+            dbListUpdated: 1,
+            collectionListUpdated: 2,
+            actionTriggered : 3,
+            queryExecuted: 4
         };
         return exports;
 

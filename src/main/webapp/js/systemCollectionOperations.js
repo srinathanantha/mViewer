@@ -42,6 +42,7 @@ YUI({
         var idMap = {}, queryExecutor;
 
         var initQueryBox = function(event) {
+            sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentColl = event.currentTarget.getAttribute("data-collection-name");
             MV.selectDBItem(event.currentTarget);
             queryExecutor = MV.loadQueryBox(MV.URLMap.getDocKeys(), MV.URLMap.getDocs(), sm.currentColl(), showTabView);
@@ -74,7 +75,6 @@ YUI({
                         $(this).css('visibility', 'hidden');
                     });
                 }
-                sm.publish(sm.events.queryFired);
                 MV.hideLoadingPanel();
             } catch (error) {
                 MV.hideLoadingPanel();
@@ -225,9 +225,12 @@ YUI({
                                     var parsedResponse = Y.JSON.parse(responseObj.responseText);
                                     var response = parsedResponse.response.result;
                                     if (response !== undefined) {
-                                        MV.showAlertMessage(response, MV.infoIcon);
+                                        /**
+                                         * The alert message need to be shown after simulating the click event,otherwise the message will be hidden by click event
+                                         */
                                         // Re-execute the cached find query to update the view with the new resultSet
                                         queryExecutor.executeCachedQuery();
+                                        MV.showAlertMessage(response, MV.infoIcon);
                                     }
                                     else {
                                         var error = parsedResponse.response.error;
@@ -259,9 +262,9 @@ YUI({
                                     var parsedResponse = Y.JSON.parse(responseObj.responseText);
                                     var response = parsedResponse.response.result;
                                     if (response !== undefined) {
-                                        MV.showAlertMessage(response, MV.infoIcon);
                                         // Re-execute the cached find query to update the view with the new resultSet
                                         queryExecutor.executeCachedQuery();
+                                        MV.showAlertMessage(response, MV.infoIcon);
                                     }
                                     else {
                                         var error = parsedResponse.response.error;
@@ -335,6 +338,7 @@ YUI({
          * @param args the arguments containing information about which menu item was clicked
          */
         function handleUserAndIndexEvent(event) {
+            sm.publish(sm.events.actionTriggered);
             var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["data-collection-name"].value;
             var index = parseInt(event.currentTarget._node.attributes["index"].value);
             MV.appInfo.currentColl = label;
@@ -407,9 +411,9 @@ YUI({
                                 response = parsedResponse.response.result,
                                 error;
                             if (response !== undefined) {
-                                MV.showAlertMessage(response, MV.infoIcon);
                                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                                 Y.one("#" + collection).simulate("click");
+                                MV.showAlertMessage(response, MV.infoIcon);
                             } else {
                                 error = parsedResponse.response.error;
                                 MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
@@ -444,9 +448,9 @@ YUI({
                                 response = parsedResponse.response.result,
                                 error;
                             if (response !== undefined) {
-                                MV.showAlertMessage(response, MV.infoIcon);
                                 sm.clearcurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
+                                MV.showAlertMessage(response, MV.infoIcon);
                             } else {
                                 error = parsedResponse.response.error;
                                 MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
@@ -470,10 +474,9 @@ YUI({
                 response = parsedResponse.response.result,
                 error;
             if (response !== undefined) {
-                MV.showAlertMessage(response, MV.infoIcon);
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
-
+                MV.showAlertMessage(response, MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not add user ! [0]", MV.warnIcon, error.code);
@@ -490,9 +493,9 @@ YUI({
                 response = parsedResponse.response.result,
                 error;
             if (response !== undefined) {
-                MV.showAlertMessage(response, MV.infoIcon);
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
+                MV.showAlertMessage(response, MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not add Index ! [0]", MV.warnIcon, error.code);

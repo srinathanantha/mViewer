@@ -2,6 +2,7 @@ YUI.add('query-executor', function(Y) {
     YUI.namespace('com.imaginea.mongoV');
     var MV = YUI.com.imaginea.mongoV;
     var successHandler, currentSelection;
+    var sm = MV.StateManager;
 
     MV.loadQueryBox = function(keysUrl, dataUrl, selectedCollection, sHandler) {
 
@@ -66,6 +67,7 @@ YUI.add('query-executor', function(Y) {
                                 cacheFindQuery(queryParams);
                                 //Update the pagination anchors accordingly
                                 updateAnchors(result.count, result.editable);
+                                sm.publish(sm.events.queryExecuted);
                                 successHandler(result);
                             } else {
                                 MV.hideLoadingPanel();

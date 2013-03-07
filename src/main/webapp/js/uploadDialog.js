@@ -16,43 +16,36 @@
  * Author: Srinath Anantha
  */
 
-YUI.add('upload-dialog', function(Y) {
+YUI.add('upload-dialog', function (Y) {
     YUI.namespace('com.imaginea.mongoV');
     var MV = YUI.com.imaginea.mongoV;
+    var uploadDialog = null;
+    var newFilesUploaded = false;
 
-    MV.showUploadDialog = function(form) {
-        var newFilesUploaded = false;
-
+    MV.showUploadDialog = function (form) {
+        newFilesUploaded = false;
         YAHOO.util.Dom.removeClass(form, "yui-pe-content");
 
-        var uploadDialog = new YAHOO.widget.SimpleDialog(form, {
-            width: "40em",
-            fixedcenter: true,
-            visible: false,
-            draggable: true,
-            zIndex: 2000,
-            effect: {
-                effect: YAHOO.widget.ContainerEffect.SLIDE,
-                duration: 0.25
-            },
-            close : false,
-            constraintoviewport: true,
-            buttons: [
-                {
-                    text: "Close",
-                    handler: handleClose
-                }
-            ]
-        });
-
-        function handleClose() {
-            $('#fileupload').fileupload('destroy');
-            this.cancel();
-            if (newFilesUploaded == true) {
-                setTimeout(function() {
-                    Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
-                }, 250);
-            }
+        if (!uploadDialog) {
+            uploadDialog = new YAHOO.widget.SimpleDialog(form, {
+                width:"40em",
+                fixedcenter:true,
+                visible:false,
+                draggable:true,
+                zIndex:2000,
+                effect:{
+                    effect:YAHOO.widget.ContainerEffect.SLIDE,
+                    duration:0.25
+                },
+                close:false,
+                constraintoviewport:true,
+                buttons:[
+                    {
+                        text:"Close",
+                        handler:hideUploadDialog
+                    }
+                ]
+            });
         }
 
         uploadDialog.setHeader("File Upload");
@@ -61,32 +54,32 @@ YUI.add('upload-dialog', function(Y) {
 
         // Initialize the jQuery File Upload widget:
         $('#fileupload').fileupload({
-            url: MV.URLMap.insertFile(),
-            sequentialUploads: true
+            url:MV.URLMap.insertFile(),
+            sequentialUploads:true
         });
 
         $('#fileupload').fileupload({
             // Callback for successful uploads:
-            done: function(e, data) {
+            done:function (e, data) {
                 var that = $(this).data('fileupload'),
                     template,
                     preview;
                 if (data.context) {
-                    data.context.each(function(index) {
+                    data.context.each(function (index) {
                         var file = ($.isArray(data.result) &&
-                            data.result[index]) || {error: 'emptyResult'};
+                            data.result[index]) || {error:'emptyResult'};
                         if (file.error) {
                             that._adjustMaxNumberOfFiles(1);
                         }
                         that._transition($(this)).done(
-                            function() {
+                            function () {
                                 var node = $(this);
                                 template = that._renderDownload([file])
                                     .css('height', node.height())
                                     .replaceAll(node);
                                 that._forceReflow(template);
                                 that._transition(template).done(
-                                    function() {
+                                    function () {
                                         data.context = $(this);
                                         that._trigger('completed', e, data);
                                     }
@@ -99,7 +92,7 @@ YUI.add('upload-dialog', function(Y) {
                         .appendTo(that.options.filesContainer);
                     that._forceReflow(template);
                     that._transition(template).done(
-                        function() {
+                        function () {
                             data.context = $(this);
                             that._trigger('completed', e, data);
                         }
@@ -111,8 +104,26 @@ YUI.add('upload-dialog', function(Y) {
 
         // Clear table body
         $('#fileupload-body').empty();
+    };
+
+    function hideUploadDialog() {
+        if(uploadDialog) {
+            $('#fileupload').fileupload('destroy');
+            uploadDialog.cancel();
+            if (newFilesUploaded == true) {
+                setTimeout(function () {
+                    Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
+                }, 250);
+            }
+            uploadDialog = null;
+        }
     }
+
+    var sm = MV.StateManager;
+
+    sm.subscribe(hideUploadDialog, [sm.events.actionTriggered]);
+
 }, '3.3.0', {
-    requires: []
+    requires:[]
 });
 

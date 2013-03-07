@@ -25,8 +25,8 @@ YUI({
             collDiv = Y.one("#collNames ul.lists"),
             systemCollDiv = Y.one("#systemCollections ul.lists"),
             gridFSDiv = Y.one("#bucketNames ul.lists");
-        collDiv.delegate('click', handleCollectionClickEvent, 'a.onclick');
-        gridFSDiv.delegate('click', handleBucketClickEvent, 'a.onclick');
+        collDiv.delegate('click', handleCollectionMenuClickEvent, 'a.onclick');
+        gridFSDiv.delegate('click', handleBucketMenuClickEvent, 'a.onclick');
 
         /**
          * Click event handler on the database name. It sets the current DB and
@@ -34,6 +34,7 @@ YUI({
          * @param e The event Object
          */
         function requestCollNames(e) {
+            sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentDB = e.currentTarget.getAttribute("data-db-name");
             MV.appInfo.currentColl = "";
             Y.one("#collNames").unplug(Y.Plugin.NodeMenuNav);
@@ -71,10 +72,10 @@ YUI({
                 var collTemplate = '' +
                     '<li class="yui3-menuitem" data-collection-name="[0]"> \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] data-collection-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
-                             <a href="#[4]" class="yui3-menu-toggle"></a>\
+                             <a id=[1] data-collection-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
+                             <a href="#[5]" class="yui3-menu-toggle"></a>\
                          </span>\
-                         <div id="[5]" class="yui3-menu menu-width">\
+                         <div id="[6]" class="yui3-menu menu-width">\
                              <div class="yui3-menu-content">\
                                  <ul>\
                                      <li class="yui3-menuitem">\
@@ -96,10 +97,10 @@ YUI({
                 var bucketTemplate = '' +
                     '<li class="yui3-menuitem" data-bucket-name="[0]"> \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] data-bucket-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
-                             <a href="#[4]" class="yui3-menu-toggle"></a>\
+                             <a id=[1] data-bucket-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
+                             <a href="#[5]" class="yui3-menu-toggle"></a>\
                          </span>\
-                         <div id="[5]" class="yui3-menu menu-width">\
+                         <div id="[6]" class="yui3-menu menu-width">\
                              <div class="yui3-menu-content">\
                                  <ul>\
                                      <li class="yui3-menuitem">\
@@ -118,10 +119,10 @@ YUI({
                 var usersTemplate = '' +
                     '<li class="yui3-menuitem" data-collection-name="[0]"> \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] data-collection-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
-                        <a href="#[4]" class="yui3-menu-toggle"></a>\
+                        <a id=[1] data-collection-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
+                        <a href="#[5]" class="yui3-menu-toggle"></a>\
                     </span>\
-                    <div id="[5]" class="yui3-menu menu-width">\
+                    <div id="[6]" class="yui3-menu menu-width">\
                         <div class="yui3-menu-content">\
                             <ul>\
                                 <li class="yui3-menuitem">\
@@ -137,10 +138,10 @@ YUI({
                 var indexesTemplate = '' +
                     '<li class="yui3-menuitem" data-collection-name="[0]"> \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] data-collection-name="[2]" href="javascript:void(0)" class="collectionLabel navigable">[3]</a> \
-                        <a href="#[4]" class="yui3-menu-toggle"></a>\
+                        <a id=[1] data-collection-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
+                        <a href="#[5]" class="yui3-menu-toggle"></a>\
                     </span>\
-                    <div id="[5]" class="yui3-menu menu-width">\
+                    <div id="[6]" class="yui3-menu menu-width">\
                         <div class="yui3-menu-content">\
                             <ul>\
                                 <li class="yui3-menuitem">\
@@ -158,30 +159,27 @@ YUI({
                 if (parsedResult) {
                     for (index = 0; index < parsedResult.length; index++) {
                         var collectionName = parsedResult[index];
-                        var formattedName = collectionName.length > 18 ? collectionName.substring(0, 15) + "..." : collectionName;
                         var id;
                         if (collectionName == 'system.users') {
-
                             id = MV.getCollectionElementId(collectionName);
-                            systemCollections += usersTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
+                            systemCollections += usersTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                             hasUsersAndIndexes = true;
                         } else if (collectionName == 'system.indexes') {
                             id = MV.getCollectionElementId(collectionName);
-                            systemCollections += indexesTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
+                            systemCollections += indexesTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                             hasUsersAndIndexes = true;
                         } else {
                             var pos = collectionName.lastIndexOf(".files");
                             if (pos > 0) {
                                 collectionName = collectionName.substring(0, pos);
-                                formattedName = collectionName.length > 18 ? collectionName.substring(0, 15) + "..." : collectionName;
                                 id = MV.getBucketElementId(collectionName);
-                                gridFSBuckets += bucketTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
+                                gridFSBuckets += bucketTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                                 hasFiles = true;
                             }
                             // Issue 17 https://github.com/Imaginea/mViewer/issues/17
                             if (pos < 0 && collectionName.search(".chunks") < 0) {
                                 id = MV.getCollectionElementId(collectionName);
-                                collections += collTemplate.format(collectionName, id, collectionName, formattedName, id + "_subMenu", id + "_subMenu");
+                                collections += collTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                                 hasCollections = true;
                             }
                         }
@@ -200,7 +198,7 @@ YUI({
                     menu2.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
                     var menu3 = Y.one("#systemCollections");
                     menu3.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 });
-                    sm.publish(sm.events.collectionsChanged);
+                    sm.publish(sm.events.collectionListUpdated);
                     MV.hideLoadingPanel();
                 } else {
                     error = parsedResponse.response.error;
@@ -219,7 +217,8 @@ YUI({
          * @param eventType The event type
          * @param args the arguments containing information about which menu item was clicked
          */
-        function handleCollectionClickEvent(event) {
+        function handleCollectionMenuClickEvent(event) {
+            sm.publish(sm.events.actionTriggered);
             var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["data-collection-name"].value;
             var index = parseInt(event.currentTarget._node.attributes["index"].value);
             MV.appInfo.currentColl = label;
@@ -290,7 +289,8 @@ YUI({
          * @param eventType The event type
          * @param args the arguments containing information about which menu item was clicked
          */
-        function handleBucketClickEvent(event) {
+        function handleBucketMenuClickEvent(event) {
+            sm.publish(sm.events.actionTriggered);
             var label = $(event.currentTarget._node).closest("ul").closest("li")[0].attributes["data-bucket-name"].value;
             var index = parseInt(event.currentTarget._node.attributes["index"].value);
             MV.appInfo.currentBucket = label;
@@ -332,8 +332,8 @@ YUI({
                         var parsedResponse = Y.JSON.parse(responseObj.responseText);
                         var response = parsedResponse.response.result;
                         if (response !== undefined) {
-                            MV.showAlertMessage(response, MV.infoIcon);
                             Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
+                            MV.showAlertMessage(response, MV.infoIcon);
                         } else {
                             var error = parsedResponse.response.error;
                             MV.showAlertMessage("Could not delete all files : [0]", MV.warnIcon, error.code);
@@ -367,9 +367,9 @@ YUI({
                                 response = parsedResponse.response.result,
                                 error;
                             if (response !== undefined) {
-                                MV.showAlertMessage(response, MV.infoIcon);
                                 sm.clearCurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
+                                MV.showAlertMessage(response, MV.infoIcon);
                             } else {
                                 error = parsedResponse.response.error;
                                 MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
@@ -393,8 +393,8 @@ YUI({
                 response = parsedResponse.response.result,
                 error;
             if (response !== undefined) {
-                MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
                 Y.one("#" + MV.getCollectionElementId(MV.appInfo.currentColl)).simulate("click");
+                MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not add Document ! [0]", MV.warnIcon, error.code);
@@ -413,9 +413,12 @@ YUI({
                 response = parsedResponse.response.result,
                 error;
             if (response !== undefined) {
-                MV.showAlertMessage(response, MV.infoIcon);
                 sm.clearCurrentColl();
+                /**
+                 * The alert message need to be shown after simulating the click event,otherwise the message will be hidden by click event
+                 */
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
+                MV.showAlertMessage(response, MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not update Collection! [0]", MV.warnIcon, error.code);

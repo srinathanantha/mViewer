@@ -13,7 +13,7 @@
             var navigatorCallback = function() {
                 self.init();
             };
-            sm.subscribe(navigatorCallback, [sm.events.collectionsChanged, sm.events.dbsChanged, sm.events.queryFired]);
+            sm.subscribe(navigatorCallback, [sm.events.collectionListUpdated, sm.events.dbListUpdated, sm.events.queryExecuted, sm.events.actionTriggered]);
             this._bindKeysYUI();
             this.init();
         }
