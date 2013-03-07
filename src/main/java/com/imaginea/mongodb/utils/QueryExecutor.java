@@ -121,7 +121,7 @@ public class QueryExecutor {
         return constructResponse(false, distinctValuesList.size(), distinctValuesList);
     }
 
-    private static JSONObject executeDrop(DBCollection dbCollection) throws JSONException {
+    protected static JSONObject executeDrop(DBCollection dbCollection) throws JSONException {
         dbCollection.drop();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("success", true);
@@ -166,7 +166,7 @@ public class QueryExecutor {
         return constructResponse(true, matchedRecord);
     }
 
-    private static JSONObject executeFind(DBCollection dbCollection, String queryStr, DBObject keysObj, DBObject sortObj, int limit, int skip) throws JSONException {
+    protected static JSONObject executeFind(DBCollection dbCollection, String queryStr, DBObject keysObj, DBObject sortObj, int limit, int skip) throws JSONException {
         DBObject queryObj = (DBObject) JSON.parse(queryStr);
         DBCursor cursor = dbCollection.find(queryObj, keysObj).sort(sortObj).skip(skip).limit(limit);
         ArrayList<DBObject> dataList = new ArrayList<DBObject>();

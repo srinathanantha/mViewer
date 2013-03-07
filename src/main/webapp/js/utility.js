@@ -62,16 +62,16 @@ YUI.add('utility', function(Y) {
     };
 
     MV.headerConstants = {
-        STATISTICS : "Statistics",
-        SERVER_STATS : "Server Statistics",
-        QUERY_RESPONSE : "Query Response"
+        STATISTICS: "Statistics",
+        SERVER_STATS: "Server Statistics",
+        QUERY_RESPONSE: "Query Response"
     };
 
-    MV.setHeader = function(value){
+    MV.setHeader = function(value) {
         MV.header.set("innerHTML", value);
     };
 
-    MV.clearHeader = function(){
+    MV.clearHeader = function() {
         MV.header.set("innerHTML", "");
     };
 
@@ -337,6 +337,11 @@ YUI.add('utility', function(Y) {
         }
     };
 
+    MV.getErrorMsgFromServerError = function(error) {
+        var messageJSONStr = error.message.substr(error.message.indexOf(":") + 1);
+        return Y.JSON.parse(messageJSONStr).errmsg;
+    }
+
     MV.errorCodeMap = {
         "HOST_UNKNOWN": "Connection Failed ! Please check if MongoDB is running at the given host and port !",
         "MISSING_LOGIN_FIELDS": "Please fill in all the login fields !",
@@ -346,8 +351,8 @@ YUI.add('utility', function(Y) {
         "NEED_AUTHORISATION": "mongod is running in secure mode. Please enter username and password.",
         "INVALID_SESSION": "Your session has timed out ! Please login again.",
         "INVALID_CONNECTION": "You are currently not connected to Mongo DB ! Please Connect.",
-        "INVALID_NAME" : "Name cannot contain following special characters [!@#$%^&*(),;:\"{}[]'<>?/\\|]!",
-        "INVALID_NAME_ENDINGS" : "Name cannot begin or end with a '.'",
+        "INVALID_NAME": "Name cannot contain following special characters [!@#$%^&*(),;:\"{}[]'<>?/\\|]!",
+        "INVALID_NAME_ENDINGS": "Name cannot begin or end with a '.'",
         "GET_DB_LIST_EXCEPTION": "Could not load the DB list ! Please check if mongo is still running and then refresh the page.",
         "GET_COLLECTION_LIST_EXCEPTION": "Please check if mongod is still running and then refresh the page.",
         "DB_DELETION_EXCEPTION": "Please check if mongo is running and then refresh the page and try again.",

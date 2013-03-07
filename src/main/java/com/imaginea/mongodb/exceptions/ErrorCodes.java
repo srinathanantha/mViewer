@@ -91,4 +91,6 @@ public interface ErrorCodes {
 
     //Aggregation
     String INVALID_AGGREGATE_COMMAND = "INVALID_AGGREGATE_COMMAND";
+
+    String INVALID_COMMAND = "INVALID_COMMAND";
 }

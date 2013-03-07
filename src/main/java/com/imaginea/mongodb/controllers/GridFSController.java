@@ -18,16 +18,15 @@ package com.imaginea.mongodb.controllers;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.DocumentException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
+import com.imaginea.mongodb.exceptions.InvalidMongoCommandException;
 import com.imaginea.mongodb.services.GridFSService;
 import com.imaginea.mongodb.services.impl.GridFSServiceImpl;
 import com.imaginea.mongodb.utils.ApplicationUtils;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -97,8 +96,23 @@ public class GridFSController extends BaseController {
             public Object execute() throws Exception {
                 GridFSService gridFSService = new GridFSServiceImpl(connectionId);
                 int startIndex = query.indexOf("("), endIndex = query.lastIndexOf(")");
+                String cmdStr = query.substring(0, startIndex);
+                int lastIndexOfDot = cmdStr.lastIndexOf(".");
+                if (lastIndexOfDot + 1 == cmdStr.length()) {
+                    // In this case the cmsStr = db.gridFSName.
+                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_EMPTY, "Command is empty");
+                }
+                String command = cmdStr.substring(lastIndexOfDot + 1, cmdStr.length());
+                String bucket = null;
+                int firstIndexOfDot = cmdStr.indexOf(".");
+                if (firstIndexOfDot != lastIndexOfDot) {
+                    // when commands are of the form db.bucketName.find
+                    bucket = cmdStr.substring(firstIndexOfDot + 1, lastIndexOfDot);
+                } else {
+                    throw new InvalidMongoCommandException(ErrorCodes.INVALID_COMMAND, "Invalid command");
+                }
                 String jsonStr = query.substring(startIndex + 1, endIndex);
-                return gridFSService.getFileList(dbName, bucketName, jsonStr, keys, skip, limit, sortBy);
+                return gridFSService.executeQuery(dbName, bucket, command, jsonStr, keys, skip, limit, sortBy);
             }
         });
         return response.replace("\\", "").replace("\"{", "{").replace("}\"", "}");
@@ -107,12 +121,11 @@ public class GridFSController extends BaseController {
     /**
      * Request handler for retrieving the specified file stored in GridFS.
      *
-     *
-     * @param dbName         Name of Database
-     * @param bucketName     Name of GridFS Bucket
-     * @param id             ObjectId of the file to be retrieved
-     * @param download       is download request
-     * @param connectionId   Mongo Db Configuration provided by user to connect to.
+     * @param dbName       Name of Database
+     * @param bucketName   Name of GridFS Bucket
+     * @param id           ObjectId of the file to be retrieved
+     * @param download     is download request
+     * @param connectionId Mongo Db Configuration provided by user to connect to.
      * @return Requested multipartfile for viewing or download based on 'download' param.
      */
     @GET
@@ -147,7 +160,7 @@ public class GridFSController extends BaseController {
      * @param connectionId   Mongo Db Configuration provided by user to connect to.
      * @param request        HTTP request context to extract session parameters
      * @return Success message with additional file details such as name, size,
-     * download url & deletion url as JSON Array string.
+     *         download url & deletion url as JSON Array string.
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

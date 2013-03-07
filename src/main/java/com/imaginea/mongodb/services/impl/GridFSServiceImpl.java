@@ -20,6 +20,8 @@ import com.imaginea.mongodb.services.AuthService;
 import com.imaginea.mongodb.services.CollectionService;
 import com.imaginea.mongodb.services.DatabaseService;
 import com.imaginea.mongodb.services.GridFSService;
+import com.imaginea.mongodb.utils.GridFSQueryExecutor;
+import com.imaginea.mongodb.utils.QueryExecutor;
 import com.imaginea.mongodb.utils.JSON;
 import com.mongodb.*;
 import com.mongodb.gridfs.GridFS;
@@ -94,7 +96,7 @@ public class GridFSServiceImpl implements GridFSService {
         if (bucketName.equals("")) {
             throw new CollectionException(ErrorCodes.COLLECTION_NAME_EMPTY, "Bucket Name Empty");
         }
-        if(getAllBuckets(dbName).contains(bucketName)){
+        if (getAllBuckets(dbName).contains(bucketName)) {
             return "There is already a GridFS bucket with name [" + bucketName + "].";
         } else {
             new GridFS(mongoInstance.getDB(dbName), bucketName);
@@ -107,14 +109,14 @@ public class GridFSServiceImpl implements GridFSService {
      *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
+     * @param command
      * @param query
      * @param fields
      * @param skip
      * @param limit
-     * @param sortBy
-     * @return JSON representation of list of all files as a String.
+     * @param sortBy     @return JSON representation of list of all files as a String.
      */
-    public JSONObject getFileList(String dbName, String bucketName, String query, String fields, String skip, String limit, String sortBy) throws ValidationException, DatabaseException, CollectionException {
+    public JSONObject executeQuery(String dbName, String bucketName, String command, String query, String fields, String skip, String limit, String sortBy) throws ValidationException, DatabaseException, CollectionException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Is Null");
         }
@@ -133,32 +135,16 @@ public class GridFSServiceImpl implements GridFSService {
         try {
             if (!databaseService.getDbList().contains(dbName)) {
                 throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS,
-                        "Database with dbName [ " + dbName + "] does not exist");
+                    "Database with dbName [ " + dbName + "] does not exist");
             }
-
-            DBObject queryObj = (DBObject) JSON.parse(query);
             int filesLimit = Integer.parseInt(limit);
             int filesSkip = Integer.parseInt(skip);
-            DBObject sortObj = (DBObject) JSON.parse(sortBy);
-
-            GridFS gridFS = new GridFS(mongoInstance.getDB(dbName), bucketName);
+            DB db = mongoInstance.getDB(dbName);
+            GridFS gridFS = new GridFS(db, bucketName);
             Field field = GridFS.class.getDeclaredField("_filesCollection");
             field.setAccessible(true);
             DBCollection filesCollection = (DBCollection) field.get(gridFS);
-            // Partial Keys cant be fetched for a file
-            DBCursor cursor = filesCollection.find(queryObj, null).sort(sortObj).skip(filesSkip).limit(filesLimit);
-
-            Iterator<DBObject> it = cursor.iterator();
-
-            ArrayList<DBObject> fileList = new ArrayList<DBObject>();
-            while (it.hasNext()) {
-                fileList.add(it.next());
-            }
-
-            long count = filesCollection.count(queryObj);
-            result.put("documents", fileList);
-            result.put("editable", true);
-            result.put("count", count);
+            result = GridFSQueryExecutor.executeQuery(db, filesCollection, command, query, fields, sortBy, filesLimit, filesSkip);
         } catch (Exception m) {
             throw new CollectionException(ErrorCodes.GET_COLLECTION_LIST_EXCEPTION, m.getMessage());
         }
@@ -186,7 +172,7 @@ public class GridFSServiceImpl implements GridFSService {
             if (!databaseService.getDbList().contains(dbName)) {
                 throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS,
 
-                        "Database with dbName [ " + dbName + "] does not exist");
+                    "Database with dbName [ " + dbName + "] does not exist");
             }
             Object docId = JSON.parse(_id);
             BasicDBObject objectId = new BasicDBObject("_id", docId);
@@ -207,13 +193,13 @@ public class GridFSServiceImpl implements GridFSService {
     /**
      * Service implementation for uploading a file to GridFS.
      *
-     * @param dbName      Name of Database
-     * @param bucketName  Name of GridFS Bucket
-     * @param formData    formDataBodyPart of the uploaded file
-     * @param inputStream inputStream of the uploaded file
+     * @param dbName       Name of Database
+     * @param bucketName   Name of GridFS Bucket
+     * @param formData     formDataBodyPart of the uploaded file
+     * @param inputStream  inputStream of the uploaded file
      * @param connectionId ConnectionId of the connection
      * @return Success message with additional file details such as name, size,
-     * download url & deletion url as JSON Array string.
+     *         download url & deletion url as JSON Array string.
      */
     public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException {
         if (dbName == null) {
@@ -327,8 +313,8 @@ public class GridFSServiceImpl implements GridFSService {
         Set<String> bucketsList = new HashSet<String>();
         for (String collection : collList) {
             int pos = collection.lastIndexOf(".files");
-            if( pos > 0 ) {
-                  bucketsList.add(collection.substring(0,pos));
+            if (pos > 0) {
+                bucketsList.add(collection.substring(0, pos));
             }
         }
         return bucketsList;

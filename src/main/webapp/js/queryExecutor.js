@@ -64,7 +64,7 @@ YUI.add('query-executor', function(Y) {
                             if (result && !error) {
                                 //TotalCount may vary from request to request. so update the same in cache.
                                 queryParams.totalCount = result.count;
-                                cacheFindQuery(queryParams);
+                                postExecuteQueryProcess(queryParams);
                                 //Update the pagination anchors accordingly
                                 updateAnchors(result.count, result.editable);
                                 sm.publish(sm.events.queryExecuted);
@@ -308,15 +308,21 @@ YUI.add('query-executor', function(Y) {
             obj.setStyle('color', 'grey');
         }
 
+        function getCommand(queryParams) {
+            var commandStr = queryParams.query.substr(0, queryParams.query.indexOf("("));
+            return commandStr.substr(commandStr.lastIndexOf(".") + 1);
+        }
+
         /**
          * Stores the query parameters in the cache.
          * @param queryParams
          */
-        function cacheFindQuery(queryParams) {
-            var commandStr = queryParams.query.substr(0, queryParams.query.indexOf("("));
-            var command = commandStr.substr(commandStr.lastIndexOf(".") + 1);
-            if (command && (command === "find" || "findOne")) {
+        function postExecuteQueryProcess(queryParams) {
+            var command = getCommand(queryParams);
+            if (command && (command === "find" || command === "findOne")) {
                 cachedQueryParams = queryParams;
+            } else if (command === "drop") {
+                Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
             }
         }
 
