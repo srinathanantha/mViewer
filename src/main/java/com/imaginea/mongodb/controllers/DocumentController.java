@@ -89,6 +89,9 @@ public class DocumentController extends BaseController {
                     DocumentService documentService = new DocumentServiceImpl(connectionId);
                     // Get query
                     int startIndex = query.indexOf("("), endIndex = query.lastIndexOf(")");
+                    if (startIndex == -1 || endIndex == -1) {
+                        throw new InvalidMongoCommandException(ErrorCodes.INVALID_QUERY, "Invalid query");
+                    }
                     String cmdStr = query.substring(0, startIndex);
                     int lastIndexOfDot = cmdStr.lastIndexOf(".");
                     if (lastIndexOfDot + 1 == cmdStr.length()) {
