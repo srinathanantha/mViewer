@@ -21,6 +21,7 @@ import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.exceptions.InvalidMongoCommandException;
 import com.imaginea.mongodb.services.DocumentService;
 import com.imaginea.mongodb.services.impl.DocumentServiceImpl;
+import com.imaginea.mongodb.utils.ApplicationUtils;
 import com.imaginea.mongodb.utils.JSON;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -205,6 +206,7 @@ public class DocumentController extends BaseController {
             public Object execute() throws Exception {
 
                 DocumentService documentService = new DocumentServiceImpl(connectionId);
+                JSONObject resultJSON = new JSONObject();
                 String result = null;
                 RequestMethod method = null;
                 for (RequestMethod m : RequestMethod.values()) {
@@ -241,6 +243,10 @@ public class DocumentController extends BaseController {
                             // New Document Keys
                             DBObject newDoc = (DBObject) JSON.parse(keys);
                             result = documentService.updateDocument(dbName, collectionName, _id, newDoc);
+                            Set<String> completeSet = new HashSet<String>();
+                            getNestedKeys(newDoc, completeSet, "");
+                            completeSet.remove("_id");
+                            resultJSON.put("keys", completeSet);
                         }
                         break;
                     }
@@ -250,7 +256,8 @@ public class DocumentController extends BaseController {
                         break;
                     }
                 }
-                return result;
+                resultJSON.put("result", result);
+                return resultJSON;
             }
         });
         return response;

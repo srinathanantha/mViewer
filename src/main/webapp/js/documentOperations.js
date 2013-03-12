@@ -237,9 +237,22 @@ YUI({
                             var targetNode = eventObject.currentTarget;
                             var index = getButtonIndex(targetNode);
                             toggleSaveEdit(targetNode, index, actionMap.save);
+                            var savedKeys = queryExecutor.getKeys();
+                            var newKeys = []
+                            for(var index = 0; index < response.keys.length; index++){
+                                var key = response.keys[index];
+                                if(savedKeys.indexOf(key) == -1){
+                                    newKeys.push(key);
+                                }
+                            }
+                            if(newKeys.length > 0){
+                                var innerHTML = Y.one('#fields').get('innerHTML');
+                                innerHTML = innerHTML + queryExecutor.formatKeys(newKeys);
+                                Y.one('#fields').set('innerHTML', innerHTML);
+                            }
                             MV.showAlertMessage("Document updated successfully.", MV.infoIcon);
                             // Re-execute the cached find query to update the view with the new resultSet
-                            queryExecutor.executeCachedQuery();
+                            queryExecutor.executeCachedQuery(true);
                         } else {
                             var error = parsedResponse.response.error;
                             MV.showAlertMessage("Could not update Document ! [0]", MV.warnIcon, error.code);

@@ -9,6 +9,11 @@ YUI.add('query-executor', function(Y) {
         var cachedQueryParams = {};
         successHandler = sHandler;
         currentSelection = selectedCollection;
+        var keys = [];
+
+        function _getKeys(){
+            return keys;
+        }
 
         /**
          * It sends request to get the keys from first 10 records only. Updates all key with another request.
@@ -90,9 +95,9 @@ YUI.add('query-executor', function(Y) {
                 on: {
                     success: function(ioId, responseObject) {
                         var parsedResponse = Y.JSON.parse(responseObject.responseText);
-                        var keys = parsedResponse.response.result.keys;
+                        keys = parsedResponse.response.result.keys;
                         if (keys !== undefined) {
-                            var innerHTML = formatKeys(keys);
+                            var innerHTML = _formatKeys(keys);
                             Y.one('#fields').set('innerHTML', innerHTML);
                         }
                     },
@@ -148,7 +153,7 @@ YUI.add('query-executor', function(Y) {
                     "<a id='unselectAll' href='javascript:void(0)'>Unselect All</a>"
                 ].join('\n');
                 checkList = "<div id='checkListDiv'><div class='queryBoxlabels'><label for='fields' >Attributes</label>" + selectTemplate + "</div><div><ul id='fields' class='checklist'>";
-                checkList += formatKeys(keys);
+                checkList += _formatKeys(keys);
                 checkList += "</ul>";
                 checkList += "</div>";
                 checkList += "</div>";
@@ -156,7 +161,7 @@ YUI.add('query-executor', function(Y) {
             return upperPartTemplate.format(currentSelection) + checkList + lowerPartTemplate;
         };
 
-        function formatKeys(keys) {
+        function _formatKeys(keys) {
             var checkList = "";
             for (var index = 0; index < keys.length; index++) {
                 checkList += checkListTemplate.format(keys[index], keys[index], keys[index], keys[index]);
@@ -385,6 +390,14 @@ YUI.add('query-executor', function(Y) {
                 if (queryParams.skip == queryParams.totalCount) {
                     queryParams.skip = queryParams.skip - queryParams.limit;
                 }
+            },
+
+            getKeys : function(){
+                return _getKeys();
+            },
+
+            formatKeys : function(keys){
+                return _formatKeys(keys)
             }
         }
     };
