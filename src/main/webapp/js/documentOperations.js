@@ -295,6 +295,7 @@ YUI({
                                 if (response !== undefined) {
                                     MV.showAlertMessage("Document deleted successfully.", MV.infoIcon);
                                     // Re-execute the cached find query to update the view with the new resultSet
+                                    queryExecutor.adjustQueryParamsOnDelete(1);
                                     queryExecutor.executeCachedQuery();
                                 } else {
                                     var error = parsedResponse.response.error;

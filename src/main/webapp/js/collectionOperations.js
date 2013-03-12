@@ -397,9 +397,11 @@ YUI({
                 MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add Document ! [0]", MV.warnIcon, error.code);
-                Y.log("Could not add Document! [0]".format(MV.errorCodeMap[error.code]), "error");
+                MV.showAlertMessage("Could not add Document : " + error.message, MV.warnIcon);
+                Y.log("Could not add Document : " + error.message, "error");
+                return false;
             }
+            return true;
         }
 
         /**
@@ -423,7 +425,9 @@ YUI({
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not update Collection! [0]", MV.warnIcon, error.code);
                 Y.log("Could not update Collection! [0]".format(MV.errorCodeMap[error.code]), "error");
+                return false;
             }
+            return true;
         }
 
         /**

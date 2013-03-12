@@ -149,7 +149,7 @@ public class BaseController {
                 MongoHostUnknownException e = new MongoHostUnknownException("Unknown host", m);
                 response = formErrorResponse(logger, e);
             } catch (MongoException m) {
-                MongoHostUnknownException e = new MongoHostUnknownException("Unknown host", m);
+                MongoHostUnknownException e = new MongoHostUnknownException(m.getMessage(), m.getCause());
                 response = formErrorResponse(logger, e);
             } catch (DatabaseException e) {
                 response = formErrorResponse(logger, e);

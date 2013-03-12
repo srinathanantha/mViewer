@@ -94,4 +94,7 @@ public interface ErrorCodes {
 
     String INVALID_COMMAND = "INVALID_COMMAND";
     String INVALID_QUERY = "INVALID_QUERY";
+
+    //bucket
+    String BUCKET_NAME_EMPTY = "BUCKET_NAME_EMPTY";
 }

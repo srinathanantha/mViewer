@@ -33,7 +33,7 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addCollection() {
-            if(!sm.currentDB()) {
+            if (!sm.currentDB()) {
                 MV.showAlertMessage("No Database Selected!", MV.warnIcon);
                 return false;
             }
@@ -45,7 +45,7 @@ YUI.add('submit-dialog', function(Y) {
                 MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME, MV.warnIcon);
                 return false;
             } else if (newCollInfo.newCollName.match(/^\.|\.$/) != null) {
-                MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME_ENDINGS,  MV.warnIcon);
+                MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME_ENDINGS, MV.warnIcon);
                 return false;
             } else if (newCollInfo.isCapped === true && newCollInfo.capSize === "") {
                 MV.showAlertMessage("Size should be entered to create a Capped Collection!", MV.warnIcon);
@@ -61,7 +61,7 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addGridFS() {
-            if(!sm.currentDB()) {
+            if (!sm.currentDB()) {
                 MV.showAlertMessage("No Database Selected!", MV.warnIcon);
                 return false;
             }
@@ -70,7 +70,7 @@ YUI.add('submit-dialog', function(Y) {
                 MV.showAlertMessage("Enter the bucket name!", MV.warnIcon);
                 return false;
             } else if (newCollInfo.name.match(/^\.|\.$/) != null) {
-                MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME_ENDINGS,  MV.warnIcon);
+                MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME_ENDINGS, MV.warnIcon);
                 return false;
             } else if (newCollInfo.name.match(/[!@#$%^&*,";:()\{\}\[\]'<>?|\/\\]/g) != null) {
                 MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME, MV.warnIcon);
@@ -90,7 +90,7 @@ YUI.add('submit-dialog', function(Y) {
                 MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME, MV.warnIcon);
                 return false;
             } else if (newDBInfo.name.match(/^\.|\.$/) != null) {
-                MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME_ENDINGS,  MV.warnIcon);
+                MV.showAlertMessage(MV.errorCodeMap.INVALID_NAME_ENDINGS, MV.warnIcon);
                 return false;
             } else {
                 MV.appInfo.newName = newDBInfo.name;
@@ -101,31 +101,25 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addDocument() {
-            if(!sm.currentDB()) {
+            if (!sm.currentDB()) {
                 MV.showAlertMessage("No Database Selected!", MV.warnIcon);
                 return false;
             }
-            if(!sm.currentColl()) {
+            if (!sm.currentColl()) {
                 MV.showAlertMessage("No Collection Selected in the Database!", MV.warnIcon);
                 return false;
             }
             var newDoc = this.getData().document;
             if (newDoc === "") {
-                MV.showAlertMessage("Enter a valid Document", MV.warnIcon);
+                MV.showAlertMessage("Enter a valid JSON Document", MV.warnIcon);
                 return false;
             }
-            try {
-                Y.JSON.parse(newDoc);
-                Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.insertDoc());
-            } catch (e) {
-                MV.showAlertMessage("Enter the document in valid JSON format", MV.warnIcon);
-                return false;
-            }
+            Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.insertDoc());
             return true;
         }
 
         function addUser() {
-            if(!sm.currentDB()) {
+            if (!sm.currentDB()) {
                 MV.showAlertMessage("No Database Selected!", MV.warnIcon);
                 return false;
             }
@@ -145,19 +139,11 @@ YUI.add('submit-dialog', function(Y) {
         }
 
         function addIndex() {
-            if(!sm.currentDB()) {
+            if (!sm.currentDB()) {
                 MV.showAlertMessage("No Database Selected!", MV.warnIcon);
                 return false;
             }
-            var indexDocument = this.getData().index_keys;
-            try {
-                Y.JSON.parse(indexDocument);
-                Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.addIndex());
-            } catch (e) {
-                MV.showAlertMessage("Please enter the new index in JSON format", MV.warnIcon);
-                Y.log("New Index format not JSON", "error");
-                return false;
-            }
+            Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.addIndex());
             return true;
         }
 
@@ -170,7 +156,7 @@ YUI.add('submit-dialog', function(Y) {
             "addIndexDialogSubmitHandler": addIndex
         };
 
-        if(activeDialog && activeDialog.id !== form) {
+        if (activeDialog && activeDialog.id !== form) {
             activeDialog.cancel();
         }
         var dialogBox = $("#" + form).data("dialogBox");
@@ -186,6 +172,7 @@ YUI.add('submit-dialog', function(Y) {
                     duration: 0.25
                 },
                 constraintoviewport: true,
+                hideaftersubmit: false,
                 buttons: [
                     {
                         text: "Submit",
@@ -204,7 +191,12 @@ YUI.add('submit-dialog', function(Y) {
                 ]
             });
             dialogBox.callback = {
-                success: successHandler,
+                success: function(response) {
+                    var success = successHandler(response);
+                    if (success) {
+                        hideActiveDialog();
+                    }
+                },
                 failure: failureHandler
             };
             dialogBox.beforeSubmitEvent.subscribe(function() {
@@ -219,7 +211,7 @@ YUI.add('submit-dialog', function(Y) {
     };
 
     var hideActiveDialog = function() {
-        if(activeDialog) {
+        if (activeDialog) {
             activeDialog.cancel();
         }
     };

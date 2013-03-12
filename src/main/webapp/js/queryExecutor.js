@@ -36,7 +36,7 @@ YUI.add('query-executor', function(Y) {
          *and sends a request to get the documents
          */
         function _executeQuery() {
-            var queryParams = getQueryParameters(false);
+            var queryParams = _getQueryParameters(false);
             execute(queryParams);
         }
 
@@ -45,7 +45,7 @@ YUI.add('query-executor', function(Y) {
          *and sends a request to get the documents
          */
         function _executeCachedQuery() {
-            var queryParams = getQueryParameters(true);
+            var queryParams = _getQueryParameters(true);
             execute(queryParams);
         }
 
@@ -246,7 +246,7 @@ YUI.add('query-executor', function(Y) {
             var href = event.currentTarget.get("href");
             if (href == null || href == undefined || href == "")
                 return;
-            var queryParameters = getQueryParameters(true);
+            var queryParameters = _getQueryParameters(true);
             var skipValue = queryParameters.skip, limitValue = queryParameters.limit, countValue = queryParameters.totalCount;
             var id = event.currentTarget.get("id");
             if (id === "first") {
@@ -256,7 +256,8 @@ YUI.add('query-executor', function(Y) {
             } else if (id === "next") {
                 skipValue = skipValue + limitValue;
             } else if (id === "last") {
-                skipValue = countValue - (countValue % limitValue);
+                var docCountInLastPage = (countValue % limitValue == 0) ? limitValue : (countValue % limitValue);
+                skipValue = countValue - docCountInLastPage;
             }
             //update skip value in the cache query parameters
             queryParameters.skip = skipValue;
@@ -267,7 +268,7 @@ YUI.add('query-executor', function(Y) {
             var first = Y.one('#first'), prev = Y.one('#prev'), next = Y.one('#next'), last = Y.one('#last');
             var start = Y.one('#startLabel'), end = Y.one('#endLabel'), countLabel = Y.one('#countLabel');
             // Get the cached query parameter values
-            var queryParameters = getQueryParameters(true);
+            var queryParameters = _getQueryParameters(true);
             var skipValue = queryParameters.skip, limitValue = queryParameters.limit;
             if (skipValue == 0 || skipValue >= count || !showPaginated)
                 disableAnchor(first);
@@ -342,7 +343,7 @@ YUI.add('query-executor', function(Y) {
          * @returns {String} Query parameters
          *
          */
-        function getQueryParameters(fromCache) {
+        function _getQueryParameters(fromCache) {
             if (fromCache) {
                 return cachedQueryParams;
             } else {
@@ -364,13 +365,26 @@ YUI.add('query-executor', function(Y) {
             executeQuery: function() {
                 _executeQuery();
             },
+
             executeCachedQuery: function(selectAllFields) {
                 if (selectAllFields) {
                     Y.one('#selectAll').simulate('click');
-                    var queryParameters = getQueryParameters(true);
+                    var queryParameters = _getQueryParameters(true);
                     _populateCheckedFields(queryParameters);
                 }
                 _executeCachedQuery();
+            },
+
+            getQueryParameters: function(fromCache) {
+                return _getQueryParameters(fromCache);
+            },
+
+            adjustQueryParamsOnDelete: function(numberOfDocs) {
+                var queryParams = _getQueryParameters(true);
+                queryParams.totalCount = queryParams.totalCount - numberOfDocs;
+                if (queryParams.skip == queryParams.totalCount) {
+                    queryParams.skip = queryParams.skip - queryParams.limit;
+                }
             }
         }
     };

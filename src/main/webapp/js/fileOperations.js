@@ -30,12 +30,13 @@ YUI({
             active: true
         }));
 
+        var queryExecutor;
 
         var initQueryBox = function(event) {
             sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentBucket = event.currentTarget.getAttribute("data-bucket-name");
             MV.selectDBItem(event.currentTarget);
-            MV.loadQueryBox(MV.URLMap.getFilesCount(), MV.URLMap.getFiles(), sm.currentBucket(), showTabView);
+            queryExecutor = MV.loadQueryBox(MV.URLMap.getFilesCount(), MV.URLMap.getFiles(), sm.currentBucket() + ".files", showTabView);
         };
 
         /**
@@ -54,6 +55,12 @@ YUI({
                 tabView.appendTo(MV.mainBody.get('id'));
                 var treebleData = MV.getTreebleDataForFiles(response);
                 var treeble = MV.getTreeble(treebleData, "file");
+                if (!response.editable) {
+                    // Remove download column for document operations
+                    treeble.removeColumn(treeble.getColumn("download_column"));
+                    // Remove delete column if not editable
+                    treeble.removeColumn(treeble.getColumn("delete_column"));
+                }
                 treeble.load();
                 treeble.subscribe("rowMouseoverEvent", treeble.onEventHighlightRow);
                 treeble.subscribe("rowMouseoutEvent", treeble.onEventUnhighlightRow);
@@ -75,13 +82,16 @@ YUI({
 
             var trTemplate = ["<div id='file[0]' class='docDiv'>",
                 "<div class='textAreaDiv'><pre> <textarea id='ta[1]' class='disabled non-navigable' disabled='disabled' cols='75'>[2]</textarea></pre></div>",
-                "<div class='actionsDiv'>",
-                "  <button id='open[3]'class='bttn openbtn non-navigable'>open</button>",
-                "  <button id='download[4]'class='bttn downloadbtn non-navigable'>download</button>",
-                "  <button id='delete[5]'class='bttn deletebtn non-navigable'>delete</button>",
-                "</div>" ,
-                "</div>"
-            ].join('\n');
+                "</div>"];
+
+            if (response.editable) {
+                trTemplate.splice(2, 0, "<div class='actionsDiv'>",
+                    "  <button id='open[3]'class='bttn openbtn non-navigable'>open</button>",
+                    "  <button id='download[4]'class='bttn downloadbtn non-navigable'>download</button>",
+                    "  <button id='delete[5]'class='bttn deletebtn non-navigable'>delete</button>",
+                    "</div>");
+            }
+            trTemplate = trTemplate.join('\n');
             jsonView += "<table class='jsonTable'><tbody>";
 
             var documents = response.documents;
@@ -182,9 +192,9 @@ YUI({
                             var parsedResponse = Y.JSON.parse(responseObj.responseText);
                             var response = parsedResponse.response.result;
                             if (response !== undefined) {
-                                //Y.one('#file' + index).remove();
-                                Y.one("#" + MV.getBucketElementId(MV.appInfo.currentBucket)).simulate("click");
-                                MV.showAlertMessage(response, MV.infoIcon);
+                                // Re-execute the cached find query to update the view with the new resultSet
+                                queryExecutor.adjustQueryParamsOnDelete(1);
+                                queryExecutor.executeCachedQuery();
                             } else {
                                 var error = parsedResponse.response.error;
                                 MV.showAlertMessage("Could not delete the file with _id [0]. [1]".format(docId, MV.errorCodeMap[error.code]), MV.warnIcon);

@@ -15,12 +15,10 @@
  */
 package com.imaginea.mongodb.services;
 
-import com.imaginea.mongodb.exceptions.CollectionException;
-import com.imaginea.mongodb.exceptions.DatabaseException;
-import com.imaginea.mongodb.exceptions.DocumentException;
-import com.imaginea.mongodb.exceptions.ValidationException;
+import com.imaginea.mongodb.exceptions.*;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -46,17 +44,16 @@ public interface GridFSService {
     /**
      * Service handler for getting the list of files stored in GridFS of specified database.
      *
-     *
      * @param dbName     Name of Database
      * @param bucketName Name of GridFS Bucket
+     * @param bucketType
      * @param command
-     *@param query
-     * @param keys
+     * @param query
      * @param skip
      * @param limit
-     * @param sortBy      @return JSON representation of list of all files as a String.
+     * @param sortBy     @return JSON representation of list of all files as a String.
      */
-    public JSONObject executeQuery(String dbName, String bucketName, String command, String query, String keys, String skip, String limit, String sortBy) throws ValidationException, DatabaseException, CollectionException;
+    public JSONObject executeQuery(String dbName, String bucketName, String bucketType, String command, String query, String skip, String limit, String sortBy) throws ApplicationException, JSONException;
 
     /**
      * Service handler for retrieving the specified file stored in GridFS.
@@ -71,13 +68,13 @@ public interface GridFSService {
     /**
      * Service handler for uploading a file to GridFS.
      *
-     * @param dbName      Name of Database
-     * @param bucketName  Name of GridFS Bucket
-     * @param formData    formDataBodyPart of the uploaded file
-     * @param inputStream inputStream of the uploaded file
+     * @param dbName       Name of Database
+     * @param bucketName   Name of GridFS Bucket
+     * @param formData     formDataBodyPart of the uploaded file
+     * @param inputStream  inputStream of the uploaded file
      * @param connectionId ConnectionId of the connection
      * @return Success message with additional file details such as name, size,
-     * download url & deletion url as JSON Array string.
+     *         download url & deletion url as JSON Array string.
      */
     public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException;
 
@@ -98,7 +95,7 @@ public interface GridFSService {
      * @param bucketName Name of GridFS Bucket
      * @return Status message.
      */
-    public String dropBucket(String dbName, String bucketName) throws DatabaseException, DocumentException, ValidationException, CollectionException;
+    public String dropBucket(String dbName, String bucketName) throws DatabaseException, DocumentException, ValidationException, CollectionException, JSONException;
 
     /**
      * Service handler for getting count of all files in a GridFS bucket.
@@ -111,6 +108,7 @@ public interface GridFSService {
 
     /**
      * returns all the gridfs buckets for the db
+     *
      * @param dbName
      * @return
      * @throws DatabaseException

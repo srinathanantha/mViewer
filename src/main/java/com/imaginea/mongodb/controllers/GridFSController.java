@@ -102,17 +102,18 @@ public class GridFSController extends BaseController {
                     // In this case the cmsStr = db.gridFSName.
                     throw new InvalidMongoCommandException(ErrorCodes.COMMAND_EMPTY, "Command is empty");
                 }
-                String command = cmdStr.substring(lastIndexOfDot + 1, cmdStr.length());
-                String bucket = null;
                 int firstIndexOfDot = cmdStr.indexOf(".");
+                int indexOfDotAtCollectionName = cmdStr.lastIndexOf(".", lastIndexOfDot - 1);
+                String bucket = cmdStr.substring(firstIndexOfDot + 1, indexOfDotAtCollectionName);
+                String collectionName = cmdStr.substring(indexOfDotAtCollectionName + 1, lastIndexOfDot);
+                String command = cmdStr.substring(lastIndexOfDot + 1, cmdStr.length());
                 if (firstIndexOfDot != lastIndexOfDot) {
                     // when commands are of the form db.bucketName.find
-                    bucket = cmdStr.substring(firstIndexOfDot + 1, lastIndexOfDot);
                 } else {
                     throw new InvalidMongoCommandException(ErrorCodes.INVALID_COMMAND, "Invalid command");
                 }
                 String jsonStr = query.substring(startIndex + 1, endIndex);
-                return gridFSService.executeQuery(dbName, bucket, command, jsonStr, keys, skip, limit, sortBy);
+                return gridFSService.executeQuery(dbName, bucket, collectionName, command, jsonStr, skip, limit, sortBy);
             }
         });
         return response.replace("\\", "").replace("\"{", "{").replace("}\"", "}");

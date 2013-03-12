@@ -448,7 +448,7 @@ YUI({
                                 response = parsedResponse.response.result,
                                 error;
                             if (response !== undefined) {
-                                sm.clearcurrentColl();
+                                sm.clearCurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                                 MV.showAlertMessage(response, MV.infoIcon);
                             } else {
@@ -481,7 +481,9 @@ YUI({
                 error = parsedResponse.response.error;
                 MV.showAlertMessage("Could not add user ! [0]", MV.warnIcon, error.code);
                 Y.log("Could not add user! [0]".format(MV.errorCodeMap[error.code]), "error");
+                return false;
             }
+            return true;
         }
 
         /**
@@ -498,9 +500,11 @@ YUI({
                 MV.showAlertMessage(response, MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add Index ! [0]", MV.warnIcon, error.code);
-                Y.log("Could not add Index ! [0]".format(MV.errorCodeMap[error.code]), "error");
+                MV.showAlertMessage("Could not add Index. " + error.message, MV.warnIcon);
+                Y.log("Could not add Index. " + error.message, "error");
+                return false;
             }
+            return true;
         }
 
         // Make request to load the users/Indexes when a system.users or system.indexes name is clicked

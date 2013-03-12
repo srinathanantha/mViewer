@@ -42,9 +42,32 @@ YUI({
                 MV.showAlertMessage(response, MV.infoIcon);
             } else {
                 error = parsedResponse.response.error;
-                MV.showAlertMessage(MV.getErrorMsgFromServerError(error), MV.warnIcon);
-                Y.log("Could not add Collection! [0]".format(MV.errorCodeMap[error.code]), "error");
+                MV.showAlertMessage("Could not add Collection! " + error.message, MV.warnIcon);
+                Y.log("Could not add Collection! " + error.message, "error");
+                return false;
             }
+            return true;
+        }
+
+        /**
+         * The function handles the successful sending of add gridFS request.
+         * It parses the response and checks if the gridFS is successfully added. If not, the prompt the user
+         * @param response
+         */
+        function addGridFSBucket(response) {
+            var parsedResponse = Y.JSON.parse(response.responseText);
+            var result = parsedResponse.response.result,
+                error;
+            if (result !== undefined) {
+                Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
+                MV.showAlertMessage(result, MV.infoIcon);
+            } else {
+                error = parsedResponse.response.error;
+                MV.showAlertMessage("Could not add gridFS bucket! " + error.message, MV.warnIcon);
+                Y.log("Could not add gridFS bucket! " + error.message, "error");
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -107,19 +130,11 @@ YUI({
                     break;
                 case 2:
                     // add gridfs store
-                    var onSuccess = function(response) {
-                        var parsedResponse = Y.JSON.parse(response.responseText);
-                        var result = parsedResponse.response.result;
-                        if (result !== undefined) {
-                            Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
-                            MV.showAlertMessage(result, MV.infoIcon);
-                        }
-                    };
                     showErrorMessage = function(responseObject) {
                         MV.showAlertMessage("GridFS bucket creation failed!", MV.warnIcon);
                         Y.log("GridFS bucket creation failed. Response Status: [0]".format(responseObject.statusText), "error");
                     };
-                    MV.showSubmitDialog("addGridFSDialog", onSuccess, showErrorMessage);
+                    MV.showSubmitDialog("addGridFSDialog", addGridFSBucket, showErrorMessage);
                     break;
                 case 3:
                     // Delete database
@@ -244,6 +259,7 @@ YUI({
             if (error) {
                 MV.showAlertMessage("DB creation failed ! [0].".format(error.message), MV.warnIcon);
                 Y.log("DB creation failed. Response Status: [0]".format(error.message), "error");
+                return false;
             } else {
                 MV.showLoadingPanel("Loading Databases...");
                 var request = Y.io(MV.URLMap.getConnectionDetails(),
@@ -256,6 +272,7 @@ YUI({
                         }
                     });
             }
+            return true;
         }
 
         /**
