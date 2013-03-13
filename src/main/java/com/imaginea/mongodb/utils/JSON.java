@@ -256,8 +256,9 @@ class JSONParser {
     }
 
     public char read() {
-        if (pos >= s.length())
+        if (pos >= s.length()) {
             throw new IllegalStateException("string done");
+        }
         return s.charAt(pos++);
     }
 
@@ -306,8 +307,9 @@ class JSONParser {
      */
     public char get() {
         skipWS();
-        if (pos < s.length())
+        if (pos < s.length()) {
             return s.charAt(pos);
+        }
         return (char) -1;
     }
 
@@ -320,27 +322,30 @@ class JSONParser {
      */
     public String parseString(boolean needQuote) {
         char quot = 0;
-        if (check('\''))
+        if (check('\'')) {
             quot = '\'';
-        else if (check('\"'))
+        } else if (check('\"'))
             quot = '\"';
         else if (needQuote)
             throw new JSONParseException(s, pos);
 
         char current;
 
-        if (quot > 0)
+        if (quot > 0) {
             read(quot);
+        }
         StringBuilder buf = new StringBuilder();
         int start = pos;
         while (pos < s.length()) {
             current = s.charAt(pos);
             if (quot > 0) {
-                if (current == quot)
+                if (current == quot) {
                     break;
+                }
             } else {
-                if (current == ':' || current == ' ')
+                if (current == ':' || current == ' ') {
                     break;
+                }
             }
 
             if (current == '\\') {
@@ -399,8 +404,9 @@ class JSONParser {
             pos++;
         }
         buf.append(s.substring(start, pos));
-        if (quot > 0)
+        if (quot > 0) {
             read(quot);
+        }
         return buf.toString();
     }
 
@@ -450,12 +456,14 @@ class JSONParser {
             }
         }
 
-        if (isDouble)
+        if (isDouble) {
             return Double.valueOf(s.substring(start, pos));
+        }
 
         Long val = Long.valueOf(s.substring(start, pos));
-        if (val <= Integer.MAX_VALUE)
+        if (val <= Integer.MAX_VALUE) {
             return val.intValue();
+        }
         return val;
     }
 

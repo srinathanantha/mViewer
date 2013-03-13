@@ -51,7 +51,7 @@ public class ApplicationUtils {
     }
 
     private static String valueToString(Object value) throws JSONException {
-        if (value == null || value.equals(null)) {
+        if (value == null) {
             return "null";
         }
         // BasicDBObject & BasicDBList is also an instanceof Map.

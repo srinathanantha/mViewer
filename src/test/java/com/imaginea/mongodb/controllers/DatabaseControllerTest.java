@@ -125,6 +125,7 @@ public class DatabaseControllerTest extends TestingTemplate {
                             mongoInstance.dropDatabase(dbName);
                         }
                     } catch (MongoException m) {
+                        logger.error(m.getMessage(), m);
                         ApplicationException e = new ApplicationException(ErrorCodes.GET_DB_LIST_EXCEPTION, "GET_DB_LIST_EXCEPTION", m.getCause());
                         throw e;
                     }

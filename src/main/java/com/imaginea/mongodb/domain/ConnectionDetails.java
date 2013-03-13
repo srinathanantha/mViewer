@@ -85,16 +85,30 @@ public class ConnectionDetails {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConnectionDetails)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConnectionDetails)) {
+            return false;
+        }
 
         ConnectionDetails that = (ConnectionDetails) o;
 
-        if (hostPort != that.hostPort) return false;
-        if (dbNames != null ? !dbNames.equals(that.dbNames) : that.dbNames != null) return false;
-        if (hostIp != null ? !hostIp.equals(that.hostIp) : that.hostIp != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (username != null ? !username.equals(that.username) : that.username != null) return false;
+        if (hostPort != that.hostPort) {
+            return false;
+        }
+        if (dbNames != null ? !dbNames.equals(that.dbNames) : that.dbNames != null) {
+            return false;
+        }
+        if (hostIp != null ? !hostIp.equals(that.hostIp) : that.hostIp != null) {
+            return false;
+        }
+        if (password != null ? !password.equals(that.password) : that.password != null) {
+            return false;
+        }
+        if (username != null ? !username.equals(that.username) : that.username != null) {
+            return false;
+        }
 
         return true;
     }
