@@ -95,7 +95,6 @@ YUI.add('submit-dialog', function(Y) {
             } else {
                 MV.appInfo.newName = newDBInfo.name;
                 Y.one("#" + form + " .bd form").setAttribute("action", MV.URLMap.insertDB());
-                MV.showAlertMessage("New Database '" + newDBInfo.name + "' added successfully", MV.warnIcon);
             }
             return true;
         }

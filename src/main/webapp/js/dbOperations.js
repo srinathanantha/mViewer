@@ -261,6 +261,9 @@ YUI({
                 Y.log("DB creation failed. Response Status: [0]".format(error.message), "error");
                 return false;
             } else {
+                if (parsedResponse) {
+                    MV.showAlertMessage(parsedResponse.response.result, MV.infoIcon);
+                }
                 MV.showLoadingPanel("Loading Databases...");
                 var request = Y.io(MV.URLMap.getConnectionDetails(),
                     // configuration for loading the database names
