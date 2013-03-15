@@ -37,7 +37,7 @@
     <LINK rel="stylesheet" href="lib/jQuery/css/jquery.fileupload-ui.css"/>
     <LINK href="css/style.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="lib/yui/build/yui/yui-min.js"></script>
-    <script type="text/javascript" src="lib/yui/build/node-menunav/node-menunav-min.js"></script>
+    <script type="text/javascript" src="lib/yui/build/node-menunav/node-menunav-debug.js"></script>
     <script type="text/javascript"
             src="lib/yui2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script type="text/javascript" src="lib/yui2/build/json/json-min.js"></script>
@@ -183,19 +183,16 @@
     </div>
     <div class="nav-bar">
         <ul class="nav-link-top gen-float">
-            <li><a id="serverStats" class="navigable">Server Statistics</a>
+            <li><a id="serverStats"  class="navigable" data-search_name="Server statistics">Server Statistics</a>
             </li>
-            <li><a id="graphs" class="navigable">Mongo Graphs</a>
+            <li><a id="graphs"  class="navigable" data-search_name="Graphs">Mongo Graphs</a>
             </li>
         </ul>
         <ul class="nav-link-top nav-link-right">
-            <li><a id="help" class="navigable" style="font-size: 11px;">Help</a>
-            </li>
-            <label style="color: white; ">|</label>
-            <li><a id="troubleshoot" class="navigable" style="font-size: 11px;">TroubleShoot</a>
+            <li><a id="help" class="navigable" data-search_name="help" style="font-size: 11px;">Help</a>
             </li>
             <label style="color: white;">|</label>
-            <li><a id="disconnect" class="disconnect navigable" style="font-size: 11px;">Disconnect</a>
+            <li><a id="disconnect" class="navigable" data-search_name="Disconnect" style="font-size: 11px;">Disconnect</a>
             </li>
         </ul>
     </div>
@@ -205,14 +202,13 @@
                     <span id="infoIcon"></span>
                     <span id="infoText" class="infoText"></span>
                 </span>
-            <!-- <button id="console" class="bttn navigable">Show Console</button>-->
         </div>
         <div class="generalInfo" style="display:none"> &nbsp;</div>
         <div class="left-cont gen-float">
-            <div id="dbBuffer" class="buffer navigable dbBuffer">
+            <div id="dbBuffer" class="buffer dbBuffer">
                 <div class="list-head">
-                    <div class="db-header-label"><label class="db">Databases</label></div>
-                    <button id="createDB" title="Add new DB"></button>
+                    <div class="db-header-label navigable" data-search_name="databases"><label class="db">Databases</label></div>
+                    <button id="createDB" title="Add new DB" class="navigable" data-search_name="add db"></button>
                 </div>
                 <div id="dbNames" class="yui3-menu yui3-splitbuttonnav">
                     <div class="yui3-menu-content" style="border:none">
@@ -224,8 +220,8 @@
             </div>
 
             <div id="dbOperations" style="display: none">
-                <div id="collectionBuffer" class="buffer navigable collectionBuffer">
-                    <div class="list-head">
+                <div id="collectionBuffer" class="buffer collectionBuffer">
+                    <div class="list-head navigable" data-search_name="collections-list">
                         <label class="collections">Collections</label>
                     </div>
                     <div id="collNames" class="dbOperation yui3-menu yui3-splitbuttonnav">
@@ -236,8 +232,8 @@
                     </div>
                 </div>
 
-                <div id="gridFSBuffer" class="buffer navigable collectionBuffer">
-                    <div class="list-head">
+                <div id="gridFSBuffer" class="buffer collectionBuffer">
+                    <div class="list-head navigable" data-search_name="gridfs">
                         <label class="gridFS">GridFS</label>
                     </div>
                     <div id="bucketNames" class="dbOperation yui3-menu yui3-splitbuttonnav">
@@ -248,8 +244,8 @@
                     </div>
                 </div>
 
-                <div id="systemCollectionsBuffer" class="buffer navigable collectionBuffer">
-                    <div class="list-head">
+                <div id="systemCollectionsBuffer" class="buffer collectionBuffer">
+                    <div class="list-head navigable" data-search_name="Users & Indexes">
                         <label class="collections">Users & Indexes</label>
                     </div>
                     <div id="systemCollections" class="dbOperation yui3-menu yui3-splitbuttonnav">
@@ -266,7 +262,7 @@
         </div>
 
         <div class="right-cont gen-float">
-            <div id="queryBuffer" class="buffer navigable queryBuffer">
+            <div class="buffer">
                 <div id="queryExecutor" class="tab-cont" style="display:none">Query Executor</div>
                 <div id="queryForm"></div>
             </div>
@@ -291,7 +287,7 @@
             </div>
         </div>
 
-        <div id="commandBuffer" class="floatingFooter" style="display:none">
+        <div class="searchBox" style="display:none">
             Command: &nbsp;
             <input type="text" id="assistText" class="assistText"/>
         </div>

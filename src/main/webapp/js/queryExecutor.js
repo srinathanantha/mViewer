@@ -70,8 +70,8 @@ YUI.add('query-executor', function(Y) {
                                 postExecuteQueryProcess(queryParams);
                                 //Update the pagination anchors accordingly
                                 updateAnchors(result.count, result.editable);
-                                sm.publish(sm.events.queryExecuted);
                                 successHandler(result);
+                                sm.publish(sm.events.queryExecuted);
                             } else {
                                 MV.hideLoadingPanel();
                                 var msg = "Could not execute query: " + error;
@@ -146,9 +146,9 @@ YUI.add('query-executor', function(Y) {
             var checkList = "", selectTemplate = "";
             if (keys !== undefined) {
                 selectTemplate = [
-                    "<a id='selectAll' class='navigationRight' href='javascript:void(0)'>Select All</a>",
+                    "<a id='selectAll' class='navigationRight navigable' data-search_name='Select All Attributes' href='javascript:void(0)'>Select All</a>",
                     "<label> / </label>",
-                    "<a id='unselectAll' href='javascript:void(0)'>Unselect All</a>"
+                    "<a id='unselectAll' href='javascript:void(0)' class='navigable' data-search_name='UnSelect All Attributes' >Unselect All</a>"
                 ].join('\n');
                 checkList = "<div id='checkListDiv'><div class='queryBoxlabels'><label for='fields' >Attributes</label>" + selectTemplate + "</div><div><ul id='fields' class='checklist'>";
                 checkList += _formatKeys(keys);
@@ -173,7 +173,7 @@ YUI.add('query-executor', function(Y) {
             "<label>Define Query</label>",
             "</div>",
             "<div>",
-            "<textarea id='queryBox' name='queryBox' class='queryBox'>",
+            "<textarea id='queryBox' name='queryBox' class='queryBox navigable' data-search_name='query'>",
             "db.[0].find({\r\r})",
             "</textarea>",
             "</div>",
@@ -185,21 +185,21 @@ YUI.add('query-executor', function(Y) {
 
         var lowerPartTemplate = [
             "<div id='parametersDiv'>",
-            "<label for='skip'> Skip(No. of records) </label><br/><input id='skip' type='text' name='skip' value='0'/><br/>",
-            "<label for='limit'> Max page size: </label><br/><span><select id='limit' name='limit'><option value='10'>10</option><option value='25'>25</option><option value='50'>50</option></select></span><br/>  ",
-            "<label for='sort'> Sort by fields </label><br/><input id='sort' type='text' name='sort' value='_id:-1'/><br/><br/>",
-            "<button id='execQueryButton' class='bttn'>Execute Query</button>",
+            "<label for='skip'> Skip(No. of records) </label><br/><input id='skip' type='text' name='skip' value='0' class='navigable' data-search_name='skip'/><br/>",
+            "<label for='limit'> Max page size: </label><br/><span><select id='limit' name='limit' class='navigable' data-search_name='max limit'><option value='10'>10</option><option value='25'>25</option><option value='50'>50</option></select></span><br/>  ",
+            "<label for='sort'> Sort by fields </label><br/><input id='sort' type='text' name='sort' value='_id:-1' class='navigable' data-search_name='sort'/><br/><br/>",
+            "<button id='execQueryButton' class='bttn navigable' data-search_name='Execute Query'>Execute Query</button>",
             "</div>"
         ].join('\n');
 
         var paginatorTemplate = [
             "<div id='paginator'>",
-            "<a id='first' href='javascript:void(0)'>&laquo; First</a>",
-            "<a id='prev'  href='javascript:void(0)'>&lsaquo; Previous</a>",
+            "<a id='first' href='javascript:void(0)' data-search_name='First'>&laquo; First</a>",
+            "<a id='prev'  href='javascript:void(0)' data-search_name='Previous'>&lsaquo; Previous</a>",
             "<label>Showing</label>", "<label id='startLabel'> 1 </label>", "<label> - </label>",
             "<label id='endLabel'> [0] </label>", "<label> of </label>", "<label id='countLabel'> [1] </label>",
-            "<a id='next' href='javascript:void(0)'>Next &rsaquo;</a>",
-            "<a id='last' href='javascript:void(0)'>Last &raquo;</a>",
+            "<a id='next' href='javascript:void(0)' data-search_name='Next'>Next &rsaquo;</a>",
+            "<a id='last' href='javascript:void(0)' data-search_name='Last'>Last &raquo;</a>",
             "</div>"
         ].join('\n');
 
@@ -304,12 +304,16 @@ YUI.add('query-executor', function(Y) {
 
         function enableAnchor(obj) {
             obj.setAttribute('href', 'javascript:void(0)');
-            obj.setStyle('color', '#39C');
+            obj.removeClass('disabledAnchor');
+            obj.addClass('navigable');
+            obj.addClass('enabledAnchor');
         }
 
         function disableAnchor(obj) {
             obj.removeAttribute('href');
-            obj.setStyle('color', 'grey');
+            obj.removeClass('enabledAnchor');
+            obj.addClass('disabledAnchor');
+            obj.removeClass('navigable');
         }
 
         function getCommand(queryParams) {

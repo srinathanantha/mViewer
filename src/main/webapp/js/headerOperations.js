@@ -37,8 +37,6 @@ YUI({
                 window.open(MV.URLMap.graphs(), '_newtab');
             } else if (menuOpt === 'help') {
                 window.open(MV.URLMap.help(), '_newtab');
-            } else if (menuOpt === 'troubleshoot') {
-                window.open(MV.URLMap.troubleShootPage(), '_newtab');
             }
         }
 

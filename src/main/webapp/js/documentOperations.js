@@ -82,19 +82,19 @@ YUI({
          * @param response The response Object containing all the documents
          */
         function populateJSONTab(response) {
-            var jsonView = "<div class='buffer jsonBuffer navigable navigateTable' id='jsonBuffer'>";
+            var jsonView = "<div class='buffer jsonBuffer'>";
             var trTemplate = [
-                "<div class='docDiv' id='doc[0]'>",
-                "<div class='textAreaDiv'><pre><textarea id='ta[1]' class='non-navigable' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
+                "<div class='docDiv navigable' id='doc[0]' data-search_name='json'>",
+                "<div class='textAreaDiv'><pre><textarea id='ta[1]' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
                 "</div>"
             ];
 
             if (response.editable) {
                 trTemplate.splice(2, 0, "<div class='actionsDiv'>",
-                    "<button id='edit[3]'class='bttn editbtn non-navigable'>edit</button>",
-                    "<button id='delete[4]'class='bttn deletebtn non-navigable'>delete</button>",
-                    "<button id='save[5]'class='bttn savebtn non-navigable invisible'>save</button>",
-                    "<button id='cancel[6]'class='bttn cancelbtn non-navigable invisible'>cancel</button>",
+                    "<button id='edit[3]' class='bttn editbtn navigableChild'>edit</button>",
+                    "<button id='delete[4]' class='bttn deletebtn navigableChild'>delete</button>",
+                    "<button id='save[5]' class='bttn savebtn invisible navigableChild'>save</button>",
+                    "<button id='cancel[6]' class='bttn cancelbtn invisible navigableChild'>cancel</button>",
                     "</div>")
             }
             trTemplate = trTemplate.join('\n');
@@ -124,11 +124,11 @@ YUI({
             }
             var trSelectionClass = 'selected';
             // add click listener to select and deselect rows.
-            Y.all('.jsonTable tr').on("click", function(eventObject) {
+            Y.all('div.jsonBuffer .docDiv').on("click", function(eventObject) {
                 var currentTR = eventObject.currentTarget;
                 var alreadySelected = currentTR.hasClass(trSelectionClass);
 
-                Y.all('.jsonTable tr').each(function(item) {
+                Y.all('div.jsonBuffer .docDiv').each(function(item) {
                     item.removeClass(trSelectionClass);
                 });
 
@@ -147,7 +147,7 @@ YUI({
                     resetAll = false;
                 }
                 if (resetAll) {
-                    Y.all('tr.selected').each(function(item) {
+                    Y.all('div.selected').each(function(item) {
                         item.removeClass(trSelectionClass);
                     });
                 }

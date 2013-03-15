@@ -68,12 +68,12 @@ YUI({
             try {
                 parsedResult = MV.getResponseResult(responseObj);
                 var collTemplate = '' +
-                    '<li class="yui3-menuitem" data-collection-name="[0]"> \
+                    '<li class="yui3-menuitem navigable" data-collection-name=[0] data-search_name=[3] > \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] data-collection-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
-                             <a href="#[5]" class="yui3-menu-toggle"></a>\
+                             <a id=[1] data-collection-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                             <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                          </span>\
-                         <div id="[6]" class="yui3-menu menu-width">\
+                         <div id="[7]" class="yui3-menu menu-width">\
                              <div class="yui3-menu-content">\
                                  <ul>\
                                      <li class="yui3-menuitem">\
@@ -93,12 +93,12 @@ YUI({
                          </div>\
                          </li>';
                 var bucketTemplate = '' +
-                    '<li class="yui3-menuitem" data-bucket-name="[0]"> \
+                    '<li class="yui3-menuitem navigable" data-bucket-name=[0] data-search_name=[3]> \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] data-bucket-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
-                             <a href="#[5]" class="yui3-menu-toggle"></a>\
+                             <a id=[1] data-bucket-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                             <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                          </span>\
-                         <div id="[6]" class="yui3-menu menu-width">\
+                         <div id="[7]" class="yui3-menu menu-width">\
                              <div class="yui3-menu-content">\
                                  <ul>\
                                      <li class="yui3-menuitem">\
@@ -115,12 +115,12 @@ YUI({
                          </div>\
                          </li>';
                 var usersTemplate = '' +
-                    '<li class="yui3-menuitem" data-collection-name="[0]"> \
+                    '<li class="yui3-menuitem navigable" data-collection-name=[0] data-search_name=[3]> \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] data-collection-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
-                        <a href="#[5]" class="yui3-menu-toggle"></a>\
+                        <a id=[1] data-collection-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                        <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                     </span>\
-                    <div id="[6]" class="yui3-menu menu-width">\
+                    <div id="[7]" class="yui3-menu menu-width">\
                         <div class="yui3-menu-content">\
                             <ul>\
                                 <li class="yui3-menuitem">\
@@ -134,12 +134,12 @@ YUI({
                     </div>\
                     </li>';
                 var indexesTemplate = '' +
-                    '<li class="yui3-menuitem" data-collection-name="[0]"> \
+                    '<li class="yui3-menuitem navigable" data-collection-name=[0] data-search_name=[3] > \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] data-collection-name="[2]" title=[3] href="javascript:void(0)" class="collectionLabel navigable"><span class="wrap_listitem">[4]</span></a> \
-                        <a href="#[5]" class="yui3-menu-toggle"></a>\
+                        <a id=[1] data-collection-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                        <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                     </span>\
-                    <div id="[6]" class="yui3-menu menu-width">\
+                    <div id="[7]" class="yui3-menu menu-width">\
                         <div class="yui3-menu-content">\
                             <ul>\
                                 <li class="yui3-menuitem">\
@@ -160,24 +160,24 @@ YUI({
                         var id;
                         if (collectionName == 'system.users') {
                             id = MV.getCollectionElementId(collectionName);
-                            systemCollections += usersTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
+                            systemCollections += usersTemplate.format(collectionName, id, collectionName, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                             hasUsersAndIndexes = true;
                         } else if (collectionName == 'system.indexes') {
                             id = MV.getCollectionElementId(collectionName);
-                            systemCollections += indexesTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
+                            systemCollections += indexesTemplate.format(collectionName, id, collectionName, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                             hasUsersAndIndexes = true;
                         } else {
                             var pos = collectionName.lastIndexOf(".files");
                             if (pos > 0) {
                                 collectionName = collectionName.substring(0, pos);
                                 id = MV.getBucketElementId(collectionName);
-                                gridFSBuckets += bucketTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
+                                gridFSBuckets += bucketTemplate.format(collectionName, id, collectionName, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                                 hasFiles = true;
                             }
                             // Issue 17 https://github.com/Imaginea/mViewer/issues/17
                             if (pos < 0 && collectionName.search(".chunks") < 0) {
                                 id = MV.getCollectionElementId(collectionName);
-                                collections += collTemplate.format(collectionName, id, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
+                                collections += collTemplate.format(collectionName, id, collectionName, collectionName, collectionName, collectionName, id + "_subMenu", id + "_subMenu");
                                 hasCollections = true;
                             }
                         }

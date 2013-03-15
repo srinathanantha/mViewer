@@ -89,20 +89,20 @@ YUI({
          * @param response The response Object containing all the documents
          */
         function populateJSONTab(response) {
-            var jsonView = "<div class='buffer jsonBuffer navigable navigateTable' id='jsonBuffer'>";
+            var jsonView = "<div class='buffer jsonBuffer'>";
             var template = [
-                "<div id='doc[0]'class='docDiv'>",
-                "<div class='textAreaDiv'><pre><textarea id='ta[1]' class='disabled non-navigable' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
+                "<div id='doc[0]' class='docDiv navigable' data-search_name='json'>",
+                "<div class='textAreaDiv'><pre><textarea id='ta[1]' class='disabled' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
                 "<div class='actionsDiv'>",
-                "<button id='edit[3]'class='bttn editbtn non-navigable'>edit</button>",
-                "<button id='delete[4]'class='bttn deletebtn non-navigable'>delete</button>",
+                "<button id='edit[3]'class='bttn editbtn navigableChild'>edit</button>",
+                "<button id='delete[4]'class='bttn deletebtn'>delete</button>",
                 "</div>" ,
                 "</div>"
             ].join('\n');
 
             var nonEditableTemplate = [
                 "<div id='doc[0]' style='display: inline-block;width:99%;position: relative;'>",
-                "<div style='display: inline; float: left; width: 98%;padding: 10px;'><pre> <textarea id='ta[1]' class='disabled non-navigable' disabled='disabled' cols='74' style='width: 99%'>[2]</textarea></pre></div>",
+                "<div style='display: inline; float: left; width: 98%;padding: 10px;'><pre> <textarea id='ta[1]' class='disabled' disabled='disabled' cols='74' style='width: 99%'>[2]</textarea></pre></div>",
                 "<div style='display: inline; float: left;left:85%;position: absolute;top: 15%;'>",
                 "</div>",
                 "</div>"

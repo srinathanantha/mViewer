@@ -23,6 +23,7 @@ input {
 
 .ui-accordion .ui-accordion-content {
     padding: 0px;
+    border-top:1px solid;
 }
 
 #dbOperations .dbOperation {
@@ -192,8 +193,8 @@ ul.nav-link-top li a {
     cursor: pointer;
 }
 
-ul.nav-link-top li a.sel, ul.nav-link-top li a:hover, ul.lists li.simulatedHover, ul.lists a.simulatedHover, ul.lists li.sel.simulatedHover,
-ul.lists li:hover, ul.lists li.sel:hover, .floatingFooter, .nav-link-home:hover {
+ul.nav-link-top li a.sel, ul.nav-link-top li a:hover, ul.lists li.simulatedHover, ul.nav-link-top li a.highlighted, ul.lists a.simulatedHover, ul.lists li.sel.simulatedHover,
+ul.lists li:hover, ul.lists li.sel:hover, .nav-link-home:hover {
     text-decoration: none;
     background: rgb(208, 228, 247); /* Old browsers */
     background: -moz-linear-gradient(top, rgba(208, 228, 247, 1) 0%, rgba(115, 177, 231, 1) 24%, rgba(10, 119, 213, 1) 50%, rgba(83, 159, 225, 1) 79%, rgba(135, 188, 234, 1) 100%); /* FF3.6+ */
@@ -329,7 +330,7 @@ ul.nav-link-right li label {
     margin-top: 25px;
 }
 
-ul.nav-link-right li label.disconnect {
+#disconnect {
     color: #ccc !important;
     cursor: pointer
 }
@@ -916,17 +917,17 @@ textarea .disabled {
     border: 1px solid #ccc;
 }
 
-.floatingFooter {
-    border: 1px solid black;
-    border-radius: 5px 5px 5px 5px;
-    right: 250px;
-    top: 16px;
+.searchBox {
+    border: 1px solid #a9a9a9;
+    left: 0px;
+    bottom: 0px;
     padding: 5px;
     position: fixed;
     font-weight: bold;
+    background-color: #c0c0c0;
 }
 
-*html .floatingFooter {
+*html .searchBox {
     position: absolute;
     right: 250px;
     top: 16px;
@@ -934,7 +935,7 @@ textarea .disabled {
 
 .assistText {
     border: 1px solid #888888;
-    width: 180px;
+    width: 137px;
 }
 
 .shadow-original {
@@ -953,6 +954,12 @@ textarea .disabled {
     -webkit-box-shadow: 0 0 2px 2px rgb(255, 255, 255);
     -moz-box-shadow: 0 0 2px 2px highlight !important;
     outline: none;
+}
+
+.highlighted {
+    border: 2px solid #007700;
+    text-decoration: underline;
+    text-decoration-color: #007700;
 }
 
 div.navigable ul.lists li {
@@ -995,4 +1002,12 @@ div.generalInfo {
 
 .yui-skin-sam .yui-navset .yui-nav a:hover {
     background: #1874CD !important;
+}
+
+a.enabledAnchor {
+    color: #39C;
+}
+
+a.disabledAnchor {
+    color: #808080;
 }

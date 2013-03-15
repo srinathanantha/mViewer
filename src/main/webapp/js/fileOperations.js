@@ -79,17 +79,17 @@ YUI({
          * @param response The response Object containing all the files
          */
         function populateJSONTab(response) {
-            var jsonView = "<div class='buffer jsonBuffer navigable navigateTable' id='jsonBuffer'>";
+            var jsonView = "<div class='buffer jsonBuffer'>";
 
-            var trTemplate = ["<div id='file[0]' class='docDiv'>",
-                "<div class='textAreaDiv'><pre> <textarea id='ta[1]' class='disabled non-navigable' disabled='disabled' cols='75'>[2]</textarea></pre></div>",
+            var trTemplate = ["<div id='file[0]' class='docDiv navigable' data-search_name='json'>",
+                "<div class='textAreaDiv'><pre> <textarea id='ta[1]' class='disabled' disabled='disabled' cols='75'>[2]</textarea></pre></div>",
                 "</div>"];
 
             if (response.editable) {
                 trTemplate.splice(2, 0, "<div class='actionsDiv'>",
-                    "  <button id='open[3]'class='bttn openbtn non-navigable'>open</button>",
-                    "  <button id='download[4]'class='bttn downloadbtn non-navigable'>download</button>",
-                    "  <button id='delete[5]'class='bttn deletebtn non-navigable'>delete</button>",
+                    "  <button id='open[3]'class='bttn openbtn navigableChild'>open</button>",
+                    "  <button id='download[4]'class='bttn downloadbtn navigableChild'>download</button>",
+                    "  <button id='delete[5]'class='bttn deletebtn navigableChild'>delete</button>",
                     "</div>");
             }
             trTemplate = trTemplate.join('\n');
