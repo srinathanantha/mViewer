@@ -79,18 +79,17 @@ YUI({
                 data: "username=" + username + "&password=" + password + "&port=" + port + "&host=" + host + "&databases=" + databases,
                 method: "POST",
                 on: {
-                    success: function(ioId, responseObject) {
-                        var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                            response = parsedResponse.response.result,
-                            error = parsedResponse.response.error, errorDiv;
-                        if (error == undefined) {
-                            window.location = "home.html?connectionId=" + parsedResponse.response.connectionId;
+                    success: function(ioId, responseObj) {
+                        var response = MV.getResponseResult(responseObj),
+                            errorMsg = MV.getErrorMessage(responseObj), errorDiv;
+                        if (errorMsg == undefined) {
+                            window.location = "home.html?connectionId=" + response.connectionId;
                         } else {
                             errorDiv = Y.one("#errorMsg");
                             errorDiv.set("innerHTML", MV.errorCodeMap[error.code] || "Error!");
                             errorDiv.setStyle("display", "inline");
-                            errorHandlerMap[error.code]();
-                            Y.log("Could not login. Message: [0]".format(error.message), "error");
+//                            errorHandlerMap[error.code]();
+                            Y.log("Could not login: " + errorMsg, "error");
                             Y.one('#loginMsg').setStyle('visibility', 'hidden');
                         }
                     },

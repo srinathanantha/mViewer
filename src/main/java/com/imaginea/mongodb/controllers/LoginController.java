@@ -89,18 +89,16 @@ public class LoginController extends BaseController {
                     session.setAttribute("existingConnectionIdsInSession", existingConnectionIdsInSession);
                 }
                 existingConnectionIdsInSession.add(connectionId);
-                JSONObject tempResult = new JSONObject();
-                JSONObject jsonResponse = new JSONObject();
+                JSONObject response = new JSONObject();
                 try {
-                    tempResult.put("result", "Login Success");
-                    tempResult.put("connectionId", connectionId);
-                    jsonResponse.put("response", tempResult);
+                    response.put("success", true);
+                    response.put("connectionId", connectionId);
                 } catch (JSONException e) {
                     logger.error(e);
                 }
-                return jsonResponse;
+                return response;
             }
-        }, false);
+        }, true);
         return response;
     }
 

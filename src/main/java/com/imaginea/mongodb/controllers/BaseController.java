@@ -85,8 +85,8 @@ public class BaseController {
         JSONObject jsonErrorResponse = new JSONObject();
         JSONObject error = new JSONObject();
         try {
-            error.put("message", e.getMessage());
             error.put("code", e.getErrorCode());
+            error.put("message", e.getMessage());
             logger.error(error, e);
 
             JSONObject tempResponse = new JSONObject();

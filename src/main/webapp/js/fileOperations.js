@@ -68,8 +68,9 @@ YUI({
                 MV.hideLoadingPanel();
             } catch (error) {
                 MV.hideLoadingPanel();
-                Y.log("Failed to initailise data tabs. Reason: [0]".format(error), "error");
-                MV.showAlertMessage("Failed to initailise data tabs. [0]".format(error), MV.warnIcon);
+                var msg = "Failed to initailise data tabs. Reason: [0]".format(error);
+                Y.log(msg, "error");
+                MV.showAlertMessage(msg, MV.warnIcon);
             }
         };
 
@@ -189,21 +190,20 @@ YUI({
                 var request = Y.io(MV.URLMap.deleteFile(docId), {
                     on: {
                         success: function(ioId, responseObj) {
-                            var parsedResponse = Y.JSON.parse(responseObj.responseText);
-                            var response = parsedResponse.response.result;
+                            var response = MV.getResponseResult(responseObj);
                             if (response !== undefined) {
+                                MV.showAlertMessage(response, MV.infoIcon);
                                 // Re-execute the cached find query to update the view with the new resultSet
                                 queryExecutor.adjustQueryParamsOnDelete(1);
                                 queryExecutor.executeCachedQuery();
                             } else {
-                                var error = parsedResponse.response.error;
-                                MV.showAlertMessage("Could not delete the file with _id [0]. [1]".format(docId, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                Y.log("Could not delete the file with _id =  [0], Error message: [1], Error Code: [2]".format(docId, error.message, error.code), "error");
+                                var errorMsg = "Could not delete the file: " + MV.getErrorMessage(responseObj);
+                                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                Y.log(errorMsg, "error");
                             }
                         },
-                        failure: function(ioId, responseObj) {
-                            Y.log("Could not delete the file. Status text: ".format(MV.appInfo.currentBucket, responseObj.statusText), "error");
-                            MV.showAlertMessage("Could not drop the file! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
+                        failure: function(ioId, responseObject) {
+                            MV.showServerErrorMessage(responseObject);
                         }
                     }
                 });

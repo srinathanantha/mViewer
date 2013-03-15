@@ -25,16 +25,15 @@ YUI({
                 data: "level=" + logValue,
                 method: "GET",
                 on: {
-                    success: function(ioId, responseObject) {
-                        parsedResponse = Y.JSON.parse(responseObject.responseText);
-                        var response = parsedResponse.response.result;
+                    success: function(ioId, responseObj) {
+                        var response = MV.getResponseResult(responseObj);
                         if (response !== undefined) {
                             Y.one("#logMessage").set("innerHTML", response + "<br> Please log the issue at httsp://github.com/Imaginea/mViewer, do attach the mViewer.log ");
                         } else {
-                            var error = parsedResponse.response.error;
+                            var error = MV.getErrorMessage(responseObj);
                             var errorDiv = Y.one("#logMessage");
                             errorDiv.set("innerHTML", MV.errorCodeMap[error.code] || "Error!");
-                            Y.log("Could not set logging level. Message: [0]".format(error.message), "error");
+                            Y.log("Could not set logging level: Message: [0]".format(error.message), "error");
                         }
                     },
                     failure: function(ioId, responseObject) {

@@ -173,19 +173,18 @@ YUI({
         Y.on('click', stopAnimation, '#animation');
 
         //Subscribe our handlers to IO's global custom events:
-        Y.on('io:success', function(ioId, responseObject) {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText);
-            response = parsedResponse.response.result;
+        Y.on('io:success', function(ioId, responseObj) {
+            var response = MV.getResponseResult(responseObj);
             if (response !== undefined) {
                 drawChart();
             } else {
-                MV.showAlertMessage("Error: [0]".format(parsedResponse.response.error.message), MV.warnIcon);
-                Y.log("Error: [0]".format(parsedResponse.response.error.message), "error");
+                var errorMsg = "Error: " + MV.getErrorMessage(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
             }
         });
 
         Y.on('io:failure', function(ioId, responseObject) {
-            MV.showAlertMessage("Could not send request!", MV.warnIcon);
-            Y.log("Sending request to initiate the graph failed. Response Status: [0]".format(responseObject.statusText), "error", "chart");
+            MV.showServerErrorMessage(responseObject);
         });
     });

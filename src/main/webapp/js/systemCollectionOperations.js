@@ -78,8 +78,9 @@ YUI({
                 MV.hideLoadingPanel();
             } catch (error) {
                 MV.hideLoadingPanel();
-                Y.log("Failed to initailise data tabs. Reason: [0]".format(error), "error");
-                MV.showAlertMessage("Failed to initailise data tabs. [0]".format(error), MV.warnIcon);
+                var msg = "Failed to initailise data tabs: " + error;
+                Y.log(msg, "error");
+                MV.showAlertMessage(msg, MV.warnIcon);
             }
         };
 
@@ -222,29 +223,26 @@ YUI({
                             data: "username=" + username,
                             on: {
                                 success: function(ioId, responseObj) {
-                                    var parsedResponse = Y.JSON.parse(responseObj.responseText);
-                                    var response = parsedResponse.response.result;
+                                    var response = MV.getResponseResult(responseObj);
                                     if (response !== undefined) {
                                         /**
                                          * The alert message need to be shown after simulating the click event,otherwise the message will be hidden by click event
                                          */
-                                        // Re-execute the cached find query to update the view with the new resultSet
+                                            // Re-execute the cached find query to update the view with the new resultSet
                                         queryExecutor.executeCachedQuery();
                                         MV.showAlertMessage(response, MV.infoIcon);
                                     }
                                     else {
-                                        var error = parsedResponse.response.error;
-                                        MV.showAlertMessage("Could not delete the user with username [0]. [1]".format(username, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                        Y.log("Could not delete the user with username =  [0], Error message: [1], Error Code: [2]".format(username, error.message, error.code), "error");
+                                        var errorMsg = "Could not delete the user : " + MV.getErrorMessage(responseObj);
+                                        MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                        Y.log(errorMsg, "error");
                                     }
                                 },
-                                failure: function(ioId, responseObj) {
-                                    Y.log("Could not delete the user Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
-                                    MV.showAlertMessage("Could not delete the user! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
+                                failure: function(ioId, responseObject) {
+                                    MV.showServerErrorMessage(responseObject);
                                 }
                             }
                         });
-
                 }
                 //If the collection is from system.indexes we need to remove the index
                 else if (collName == MV.indexes) {
@@ -259,22 +257,20 @@ YUI({
                             data: "nameSpace=" + nameSpace + "&indexName=" + indexName,
                             on: {
                                 success: function(ioId, responseObj) {
-                                    var parsedResponse = Y.JSON.parse(responseObj.responseText);
-                                    var response = parsedResponse.response.result;
+                                    var response = MV.getResponseResult(responseObj);
                                     if (response !== undefined) {
                                         // Re-execute the cached find query to update the view with the new resultSet
                                         queryExecutor.executeCachedQuery();
                                         MV.showAlertMessage(response, MV.infoIcon);
                                     }
                                     else {
-                                        var error = parsedResponse.response.error;
-                                        MV.showAlertMessage("Could not delete the index with IndexName [0]. [1]".format(indexName, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                        Y.log("Could not delete the index with Index name =  [0], Error message: [1], Error Code: [2]".format(indexName, error.message, error.code), "error");
+                                        var errorMsg = "Could not delete the index: " + MV.getErrorMessage(responseObj);
+                                        MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                        Y.log(errorMsg, "error");
                                     }
                                 },
-                                failure: function(ioId, responseObj) {
-                                    Y.log("Could not delete the index Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
-                                    MV.showAlertMessage("Could not delete the index! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
+                                failure: function(ioId, responseObject) {
+                                    MV.showServerErrorMessage(responseObject);
                                 }
                             }
                         });
@@ -312,8 +308,7 @@ YUI({
                 var readOnlyValue = parsedDoc["readOnly"];
 
                 var showError = function(responseObject) {
-                    MV.showAlertMessage("Adding user failed! Please check if your app server is running and then refresh the page.", MV.warnIcon);
-                    Y.log("Editing user failed. Response Status: [0]".format(responseObject.statusText), "error");
+                    MV.showServerErrorMessage(responseObject);
                 };
                 MV.showSubmitDialog("addUserDialog", addUser, showError);
                 setTimeout(function() {
@@ -347,8 +342,7 @@ YUI({
                     //Add User
                     case 1:
                         var showError = function(responseObject) {
-                            MV.showAlertMessage("Adding user failed! Please check if your app server is running and then refresh the page.", MV.warnIcon);
-                            Y.log("Add user failed. Response Status: [0]".format(responseObject.statusText), "error");
+                            MV.showServerErrorMessage(responseObject);
                         };
 
                         //Clear the dialog box before showing for adding the user(not working)
@@ -376,8 +370,7 @@ YUI({
                 switch (index) {
                     case 1:
                         var showError = function(responseObject) {
-                            MV.showAlertMessage("Adding Index failed! Please check if your app server is running and then refresh the page.", MV.warnIcon);
-                            Y.log("Add Index failed. Response Status: [0]".format(responseObject.statusText), "error");
+                            MV.showServerErrorMessage(responseObject);
                         };
                         MV.showSubmitDialog("addIndexDialog", addIndex, showError);
                         break;
@@ -407,22 +400,20 @@ YUI({
                     method: "POST",
                     on: {
                         success: function(ioId, responseObj) {
-                            var parsedResponse = Y.JSON.parse(responseObj.responseText),
-                                response = parsedResponse.response.result,
-                                error;
+                            var response = MV.getResponseResult(responseObj),
+                                errorMsg;
                             if (response !== undefined) {
                                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                                 Y.one("#" + collection).simulate("click");
                                 MV.showAlertMessage(response, MV.infoIcon);
                             } else {
-                                error = parsedResponse.response.error;
-                                MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                Y.log("Could not drop [0], Error message: [1], Error Code: [2]".format(MV.appInfo.currentColl, error.message, error.code), "error");
+                                errorMsg = "Could not drop users: " + MV.getErrorMessage(responseObj);
+                                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                Y.log(errorMsg, "error");
                             }
                         },
-                        failure: function(ioId, responseObj) {
-                            Y.log("Could not drop [0].Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
-                            MV.showAlertMessage("Could not drop [0]!  Please check if your app server is running and try again. Status Text: [1]".format(MV.appInfo.currentColl, responseObj.statusText), MV.warnIcon);
+                        failure: function(ioId, responseObject) {
+                            MV.showServerErrorMessage(responseObject);
                         }
                     }
                 });
@@ -444,22 +435,22 @@ YUI({
                     method: "POST",
                     on: {
                         success: function(ioId, responseObj) {
-                            var parsedResponse = Y.JSON.parse(responseObj.responseText),
-                                response = parsedResponse.response.result,
-                                error;
+                            var response = MV.getResponseResult(responseObj),
+                                errorMsg;
                             if (response !== undefined) {
                                 sm.clearCurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                                 MV.showAlertMessage(response, MV.infoIcon);
                             } else {
-                                error = parsedResponse.response.error;
-                                MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                Y.log("Could not drop [0], Error message: [1], Error Code: [2]".format(MV.appInfo.currentColl, error.message, error.code), "error");
+                                errorMsg = "Could not drop index: " + MV.getErrorMessage(responseObj);
+                                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                Y.log(errorMsg, "error");
                             }
                         },
                         failure: function(ioId, responseObj) {
-                            Y.log("Could not drop [0].Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
-                            MV.showAlertMessage("Could not drop [0]!  Please check if your app server is running and try again. Status Text: [1]".format(MV.appInfo.currentColl, responseObj.statusText), MV.warnIcon);
+                            var msg = "Could not drop index [0]: Resposne status: [0]".format(responseObj.statusText);
+                            Y.log(msg, "error");
+                            MV.showAlertMessage(msg, MV.warnIcon);
                         }
                     }
                 });
@@ -469,18 +460,17 @@ YUI({
          * This method is the response handler for the addUser request.
          * @param responseObject
          */
-        function addUser(responseObject) {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                response = parsedResponse.response.result,
-                error;
+        function addUser(responseObj) {
+            var response = MV.getResponseResult(responseObj),
+                errorMsg;
             if (response !== undefined) {
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
                 MV.showAlertMessage(response, MV.infoIcon);
             } else {
-                error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add user ! [0]", MV.warnIcon, error.code);
-                Y.log("Could not add user! [0]".format(MV.errorCodeMap[error.code]), "error");
+                errorMsg = "Could not add user: " + MV.getErrorMessage(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
                 return false;
             }
             return true;
@@ -490,18 +480,17 @@ YUI({
          * This method is the response handler for the addIndex request
          * @param responseObject
          */
-        function addIndex(responseObject) {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                response = parsedResponse.response.result,
-                error;
+        function addIndex(responseObj) {
+            var response = MV.getResponseResult(responseObj),
+                errorMsg;
             if (response !== undefined) {
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
                 MV.showAlertMessage(response, MV.infoIcon);
             } else {
-                error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add Index. " + error.message, MV.warnIcon);
-                Y.log("Could not add Index. " + error.message, "error");
+                errorMsg = "Could not add Index: " + MV.getErrorMessage(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
                 return false;
             }
             return true;

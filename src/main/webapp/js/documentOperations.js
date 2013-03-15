@@ -71,8 +71,9 @@ YUI({
                 MV.hideLoadingPanel();
             } catch (error) {
                 MV.hideLoadingPanel();
-                Y.log("Failed to initailise data tabs. Reason: [0]".format(error), "error");
-                MV.showAlertMessage("Failed to initailise data tabs. [0]".format(error), MV.warnIcon);
+                var msg = "Failed to initailise data tabs. Reason: [0]".format(error);
+                Y.log(msg, "error");
+                MV.showAlertMessage(msg, MV.warnIcon);
             }
         };
 
@@ -230,22 +231,21 @@ YUI({
                 method: "POST",
                 data: "_id=" + docId + "&keys=" + doc,
                 on: {
-                    success: function(ioId, responseObject) {
-                        var parsedResponse = Y.JSON.parse(responseObject.responseText);
-                        var response = parsedResponse.response.result;
+                    success: function(ioId, responseObj) {
+                        var response = MV.getResponseResult(responseObj);
                         if (response !== undefined) {
                             var targetNode = eventObject.currentTarget;
                             var index = getButtonIndex(targetNode);
                             toggleSaveEdit(targetNode, index, actionMap.save);
                             var savedKeys = queryExecutor.getKeys();
                             var newKeys = []
-                            for(var index = 0; index < response.keys.length; index++){
+                            for (var index = 0; index < response.keys.length; index++) {
                                 var key = response.keys[index];
-                                if(savedKeys.indexOf(key) == -1){
+                                if (savedKeys.indexOf(key) == -1) {
                                     newKeys.push(key);
                                 }
                             }
-                            if(newKeys.length > 0){
+                            if (newKeys.length > 0) {
                                 var innerHTML = Y.one('#fields').get('innerHTML');
                                 innerHTML = innerHTML + queryExecutor.formatKeys(newKeys);
                                 Y.one('#fields').set('innerHTML', innerHTML);
@@ -254,14 +254,13 @@ YUI({
                             // Re-execute the cached find query to update the view with the new resultSet
                             queryExecutor.executeCachedQuery(true);
                         } else {
-                            var error = parsedResponse.response.error;
-                            MV.showAlertMessage("Could not update Document ! [0]", MV.warnIcon, error.code);
-                            Y.log("Could not update Document ! [0]".format(MV.errorCodeMap[error.code]), "error");
+                            var errorMsg = "Could not update Document: " + MV.getErrorMessage(responseObj);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            Y.log(errorMsg, "error");
                         }
                     },
                     failure: function(ioId, responseObject) {
-                        MV.showAlertMessage("Unexpected Error: Could not update the document. Check if app server is running", MV.warnIcon);
-                        Y.log("Could not send the request to update the document. Response Status: [0]".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     }
                 }
             });
@@ -303,22 +302,20 @@ YUI({
                         data: "_id=" + docId,
                         on: {
                             success: function(ioId, responseObj) {
-                                var parsedResponse = Y.JSON.parse(responseObj.responseText);
-                                var response = parsedResponse.response.result;
+                                var response = MV.getResponseResult(responseObj);
                                 if (response !== undefined) {
                                     MV.showAlertMessage("Document deleted successfully.", MV.infoIcon);
                                     // Re-execute the cached find query to update the view with the new resultSet
                                     queryExecutor.adjustQueryParamsOnDelete(1);
                                     queryExecutor.executeCachedQuery();
                                 } else {
-                                    var error = parsedResponse.response.error;
-                                    MV.showAlertMessage("Could not delete the document with _id [0]. [1]".format(docId, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                    Y.log("Could not delete the document with _id =  [0], Error message: [1], Error Code: [2]".format(docId, error.message, error.code), "error");
+                                    var errorMsg = "Could not delete the document: " + MV.getErrorMessage(responseObj);
+                                    MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                    Y.log(errorMsg, "error");
                                 }
                             },
-                            failure: function(ioId, responseObj) {
-                                Y.log("Could not delete the document .Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
-                                MV.showAlertMessage("Could not drop the document! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
+                            failure: function(ioId, responseObject) {
+                                MV.showServerErrorMessage(responseObject);
                             }
                         }
                     });

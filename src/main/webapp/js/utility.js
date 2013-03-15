@@ -7,7 +7,7 @@ YUI.add('utility', function(Y) {
     // format function can be added
     if (typeof String.prototype.format !== 'function') {
         String.prototype.format = function() {
-            var formatted = this,i;
+            var formatted = this, i;
             for (i = 0; i < arguments.length; i++) {
                 formatted = formatted.replace("[" + i + "]", arguments[i]);
             }
@@ -211,7 +211,7 @@ YUI.add('utility', function(Y) {
         exports.events = {
             dbListUpdated: 1,
             collectionListUpdated: 2,
-            actionTriggered : 3,
+            actionTriggered: 3,
             queryExecuted: 4
         };
         return exports;
@@ -337,12 +337,36 @@ YUI.add('utility', function(Y) {
         }
     };
 
-    MV.getErrorMsgFromServerError = function(error) {
-        var messageJSONStr = error.message.substr(error.message.indexOf(":") + 1);
-        return Y.JSON.parse(messageJSONStr).errmsg;
-    }
+    MV.getResponseResult = function(responseObject) {
+        try {
+            var parsedResponse = Y.JSON.parse(responseObject.responseText);
+            return parsedResponse.response.result;
+        } catch (e) {
+            var msg = "Could not parse the JSON response.";
+            Y.log(msg, "error");
+            MV.showAlertMessage(msg, MV.warnIcon);
+        }
+    };
+
+    MV.getErrorMessage = function(responseObject) {
+        var parsedResponse = Y.JSON.parse(responseObject.responseText);
+        var serverError = parsedResponse.response.error;
+        if (serverError) {
+            if (serverError.message.indexOf("errmsg") > 0) {
+                var messageJSONStr = serverError.message.substr(serverError.message.indexOf(":") + 1);
+                serverError.message = Y.JSON.parse(messageJSONStr).errmsg;
+            }
+            return serverError.message;
+        }
+    };
+
+    MV.showServerErrorMessage = function(responseObject) {
+        MV.showAlertMessage(MV.errorCodeMap.SERVER_ERROR, MV.warnIcon);
+        Y.log(MV.errorCodeMap.SERVER_ERROR, "error");
+    };
 
     MV.errorCodeMap = {
+        "SERVER_ERROR" : "Could not execute your request. Please check if server is running.",
         "HOST_UNKNOWN": "Connection Failed ! Please check if MongoDB is running at the given host and port !",
         "MISSING_LOGIN_FIELDS": "Please fill in all the login fields !",
         "ERROR_PARSING_PORT": "You have entered an invalid port number !",
@@ -388,5 +412,5 @@ YUI.add('utility', function(Y) {
         "INDEX_EMPTY": "Index name is empty"
     };
 }, '3.3.0', {
-    requires: ["node"]
+    requires: ["node", "json-parse", "io"]
 });

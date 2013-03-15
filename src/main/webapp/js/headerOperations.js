@@ -60,8 +60,7 @@ YUI({
                     treeble.load();
                 },
                 failure: function(request, responseObject) {
-                    MV.showAlertMessage("Failed: ServerStats could not be loaded! Please check if the app server is still running.", MV.warnIcon);
-                    Y.log("Server Statistics could not be loaded. Response Status: [0]".format(responseObject.statusText), "error");
+                    MV.showServerErrorMessage(responseObject);
                 }
             });
         }
@@ -70,20 +69,18 @@ YUI({
             Y.io(MV.URLMap.disconnect(), {
                 method: "GET",
                 on: {
-                    success: function(ioId, responseObject) {
-                        var parsedResponse = Y.JSON.parse(responseObject.responseText);
-                        var response = parsedResponse.response.result;
+                    success: function(ioId, responseObj) {
+                        var response = MV.getResponseResult(responseObj);
                         if (response !== undefined) {
                             window.location = "index.html";
                         } else {
-                            var error = parsedResponse.response.error;
-                            MV.showAlertMessage("Cannot disconnect! [0]", MV.warnIcon, error.code);
-                            Y.log("Could not disconnect. Message: [0], Code: [1]".format(error.message, error.code), "error");
+                            var errorMsg = "Cannot disconnect: " + MV.getErrorMessage(responseObj);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            Y.log(errorMsg, "error");
                         }
                     },
                     failure: function(ioId, responseObject) {
-                        MV.showAlertMessage("Could not send request. Check if app server is running. Response message: [0]".format(responseObject.statusText), MV.warnIcon);
-                        Y.log("Could not send request to disconnect. Status text: [0] ".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     }
                 }
             });

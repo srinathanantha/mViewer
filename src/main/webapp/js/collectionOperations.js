@@ -19,7 +19,7 @@
  */
 YUI({
     filter: 'raw'
-}).use("loading-panel", "alert-dialog", "query-executor", "utility", "submit-dialog", "yes-no-dialog", "io", "node", "node-menunav", "json-parse", "event-delegate", "node-event-simulate", "custom-datatable", function(Y) {
+}).use("loading-panel", "alert-dialog", "query-executor", "utility", "submit-dialog", "yes-no-dialog", "io", "node", "node-menunav", "event-delegate", "node-event-simulate", "custom-datatable", function(Y) {
         var MV = YUI.com.imaginea.mongoV,
             sm = MV.StateManager,
             collDiv = Y.one("#collNames ul.lists"),
@@ -63,12 +63,10 @@ YUI({
          * @param oId the event Id object
          * @param responseObject The response Object
          */
-        function displayCollectionNames(oId, responseObject) {
-            var parsedResponse, parsedResult, info, index, error, collections = "", gridFSBuckets = "", systemCollections = "";
+        function displayCollectionNames(oId, responseObj) {
+            var parsedResult, index, errorMsg, collections = "", gridFSBuckets = "", systemCollections = "";
             try {
-                parsedResponse = Y.JSON.parse(responseObject.responseText);
-                parsedResult = parsedResponse.response.result;
-
+                parsedResult = MV.getResponseResult(responseObj);
                 var collTemplate = '' +
                     '<li class="yui3-menuitem" data-collection-name="[0]"> \
                          <span class="yui3-menu-label"> \
@@ -201,10 +199,10 @@ YUI({
                     sm.publish(sm.events.collectionListUpdated);
                     MV.hideLoadingPanel();
                 } else {
-                    error = parsedResponse.response.error;
-                    Y.log("Could not load collections. Message: [0]".format(error.message), "error");
+                    errorMsg = "Could not load collections: " + MV.getErrorMessage(responseObj);
+                    Y.log(errorMsg, "error");
                     MV.hideLoadingPanel();
-                    MV.showAlertMessage("Could not load Collections! [0]", MV.warnIcon, error.code);
+                    MV.showAlertMessage(errorMsg, MV.warnIcon);
                 }
             } catch (e) {
                 MV.hideLoadingPanel();
@@ -227,8 +225,7 @@ YUI({
                 case 1:
                     // Add Document
                     var showError = function(responseObject) {
-                        MV.showAlertMessage("Document creation failed! Please check if your app server is running and then refresh the page.", MV.warnIcon);
-                        Y.log("Document creation failed. Response Status: [0]".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     };
                     MV.showSubmitDialog("addDocDialog", addDocument, showError);
                     break;
@@ -241,8 +238,7 @@ YUI({
                 case 3:
                     // Update collection
                     var showErrorMessage = function(responseObject) {
-                        MV.showAlertMessage("Failed to update collection!", MV.warnIcon);
-                        Y.log("Collection creation failed. Response Status: [0]".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     };
                     MV.showSubmitDialog("addColDialog", updateCollection, showErrorMessage);
                     setTimeout(function() {
@@ -253,23 +249,16 @@ YUI({
                         Y.io(MV.URLMap.isCappedCollection(), {
                             method: "GET",
                             on: {
-                                success: function(ioId, responseObject) {
-                                    var parsedResponse, isCapped;
-                                    try {
-                                        parsedResponse = Y.JSON.parse(responseObject.responseText);
-                                        isCapped = parsedResponse.response.result;
-                                        if (isCapped) {
-                                            $("#isCapped").attr('checked', 'checked');
-                                            $("#cappedSection").removeClass('disabled');
-                                            $("#cappedSection input").removeAttr('disabled');
-                                        } else {
-                                            $("#isCapped").removeAttr('checked');
-                                            $("#cappedSection").addClass('disabled');
-                                            $("#cappedSection input").attr('disabled', 'disabled');
-                                        }
-                                    } catch (e) {
-                                        Y.log("Could not parse the JSON response to get the keys", "error");
-                                        MV.showAlertMessage("Invalid JSON Response!", MV.warnIcon);
+                                success: function(ioId, responseObj) {
+                                    var isCapped = MV.getResponseResult(responseObj);
+                                    if (isCapped) {
+                                        $("#isCapped").attr('checked', 'checked');
+                                        $("#cappedSection").removeClass('disabled');
+                                        $("#cappedSection input").removeAttr('disabled');
+                                    } else {
+                                        $("#isCapped").removeAttr('checked');
+                                        $("#cappedSection").addClass('disabled');
+                                        $("#cappedSection input").attr('disabled', 'disabled');
                                     }
                                 }
                             }
@@ -299,8 +288,7 @@ YUI({
                 case 1:
                     // Add File
                     var showErrorMessage = function(responseObject) {
-                        MV.showAlertMessage("File upload failed! Please check if your app server is running and then refresh the page.", MV.warnIcon);
-                        Y.log("File upload failed. Response Status: [0]".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     };
                     MV.showUploadDialog("addFileDialog");
                     break;
@@ -329,20 +317,18 @@ YUI({
             var request = Y.io(MV.URLMap.dropBucket(), {
                 on: {
                     success: function(ioId, responseObj) {
-                        var parsedResponse = Y.JSON.parse(responseObj.responseText);
-                        var response = parsedResponse.response.result;
+                        var response = MV.getResponseResult(responseObj);
                         if (response !== undefined) {
                             Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                             MV.showAlertMessage(response, MV.infoIcon);
                         } else {
-                            var error = parsedResponse.response.error;
-                            MV.showAlertMessage("Could not delete all files : [0]", MV.warnIcon, error.code);
-                            Y.log("Could not delete all files, Error message: [0], Error Code: [1]".format(error.message, error.code), "error");
+                            var errorMsg = "Could not drop bucket: " + MV.getErrorMessage(responseObj);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            Y.log(errorMsg, "error");
                         }
                     },
-                    failure: function(ioId, responseObj) {
-                        Y.log("Could not delete the file. Status text: ".format(MV.appInfo.currentBucket, responseObj.statusText), "error");
-                        MV.showAlertMessage("Could not drop the file! Please check if your app server is running and try again. Status Text: [1]".format(responseObj.statusText), MV.warnIcon);
+                    failure: function(ioId, responseObject) {
+                        MV.showServerErrorMessage(responseObject);
                     }
                 }
             });
@@ -363,22 +349,19 @@ YUI({
                     method: "POST",
                     on: {
                         success: function(ioId, responseObj) {
-                            var parsedResponse = Y.JSON.parse(responseObj.responseText),
-                                response = parsedResponse.response.result,
-                                error;
+                            var response = MV.getResponseResult(responseObj);
                             if (response !== undefined) {
                                 sm.clearCurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                                 MV.showAlertMessage(response, MV.infoIcon);
                             } else {
-                                error = parsedResponse.response.error;
-                                MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentColl, MV.errorCodeMap[error.code]), MV.warnIcon);
-                                Y.log("Could not drop [0], Error message: [1], Error Code: [2]".format(MV.appInfo.currentColl, error.message, error.code), "error");
+                                var errorMsg = "Could not drop collection: " + MV.getErrorMessage(responseObj);
+                                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                Y.log(errorMsg, "error");
                             }
                         },
-                        failure: function(ioId, responseObj) {
-                            Y.log("Could not drop [0].Status text: ".format(MV.appInfo.currentColl, responseObj.statusText), "error");
-                            MV.showAlertMessage("Could not drop [0]!  Please check if your app server is running and try again. Status Text: [1]".format(MV.appInfo.currentColl, responseObj.statusText), MV.warnIcon);
+                        failure: function(ioId, responseObject) {
+                            MV.showServerErrorMessage(responseObject);
                         }
                     }
                 });
@@ -388,17 +371,15 @@ YUI({
          * THe function handles the successful sending of the add Document request
          * @param responseObject the response object
          */
-        function addDocument(responseObject) {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                response = parsedResponse.response.result,
-                error;
+        function addDocument(responseObj) {
+            var response = MV.getResponseResult(responseObj);
             if (response !== undefined) {
                 Y.one("#" + MV.getCollectionElementId(MV.appInfo.currentColl)).simulate("click");
                 MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
             } else {
-                error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add Document : " + error.message, MV.warnIcon);
-                Y.log("Could not add Document : " + error.message, "error");
+                var errorMsg = "Could not add Document: " + MV.getErrorMessage(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
                 return false;
             }
             return true;
@@ -410,10 +391,8 @@ YUI({
          * then prompt the user
          * @param responseObject The response Object
          */
-        function updateCollection(responseObject) {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                response = parsedResponse.response.result,
-                error;
+        function updateCollection(responseObj) {
+            var response = MV.getResponseResult(responseObj);
             if (response !== undefined) {
                 sm.clearCurrentColl();
                 /**
@@ -422,9 +401,9 @@ YUI({
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                 MV.showAlertMessage(response, MV.infoIcon);
             } else {
-                error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not update Collection! [0]", MV.warnIcon, error.code);
-                Y.log("Could not update Collection! [0]".format(MV.errorCodeMap[error.code]), "error");
+                var errorMsg = "Could not update Collection: " + MV.getResponseResult(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
                 return false;
             }
             return true;
@@ -437,10 +416,9 @@ YUI({
          * @param responseObject The response Object
          */
 
-        function displayError(ioId, responseObj) {
-            if (responseObj.responseText) {
-                Y.log("Could not load collections. Status message: [0]".format(responseObj.statusText), "error");
-                MV.showAlertMessage("Could not load collections! Check if your app server is running and refresh the page.", MV.warnIcon);
+        function displayError(ioId, responseObject) {
+            if (responseObject.responseText) {
+                MV.showServerErrorMessage(responseObject);
             }
             MV.hideLoadingPanel();
         }

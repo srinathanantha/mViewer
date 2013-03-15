@@ -15,7 +15,7 @@
  */
 YUI({
     filter: 'raw'
-}).use("loading-panel", "alert-dialog", "utility", "submit-dialog", "yes-no-dialog", "io-base", "node", "node-menunav", "json-parse", "event-delegate", "node-event-simulate", "custom-datatable", function(Y) {
+}).use("loading-panel", "alert-dialog", "utility", "submit-dialog", "yes-no-dialog", "io-base", "node", "node-menunav", "event-delegate", "node-event-simulate", "custom-datatable", function(Y) {
         // TODO: make loading panel module
         var dbDiv = Y.one('#dbNames ul.lists');
         dbDiv.delegate('click', handleMenuClickEvent, 'a.onclick');
@@ -29,10 +29,8 @@ YUI({
          * then prompt the user
          * @param responseObject The response Object
          */
-        function addCollection(responseObject) {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                response = parsedResponse.response.result,
-                error;
+        function addCollection(responseObj) {
+            var response = MV.getResponseResult(responseObj);
             if (response !== undefined) {
                 sm.clearCurrentColl();
                 /**
@@ -41,9 +39,9 @@ YUI({
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                 MV.showAlertMessage(response, MV.infoIcon);
             } else {
-                error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add Collection! " + error.message, MV.warnIcon);
-                Y.log("Could not add Collection! " + error.message, "error");
+                var errorMsg = "Could not add Collection: " + MV.getErrorMessage(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
                 return false;
             }
             return true;
@@ -54,17 +52,15 @@ YUI({
          * It parses the response and checks if the gridFS is successfully added. If not, the prompt the user
          * @param response
          */
-        function addGridFSBucket(response) {
-            var parsedResponse = Y.JSON.parse(response.responseText);
-            var result = parsedResponse.response.result,
-                error;
+        function addGridFSBucket(responseObj) {
+            var result = MV.getResponseResult(responseObj);
             if (result !== undefined) {
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
                 MV.showAlertMessage(result, MV.infoIcon);
             } else {
-                error = parsedResponse.response.error;
-                MV.showAlertMessage("Could not add gridFS bucket! " + error.message, MV.warnIcon);
-                Y.log("Could not add gridFS bucket! " + error.message, "error");
+                var errorMsg = "Could not add gridFS bucket: " + MV.getErrorMessage(responseObj);
+                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                Y.log(errorMsg, "error");
                 return false;
             }
             return true;
@@ -81,22 +77,20 @@ YUI({
             var request = Y.io(MV.URLMap.dropDB(), {
                 method: "POST",
                 on: {
-                    success: function(ioId, responseObject) {
-                        var parsedResponse = Y.JSON.parse(responseObject.responseText),
-                            error;
-                        if (parsedResponse.response.result !== undefined) {
+                    success: function(ioId, responseObj) {
+                        var response = MV.getResponseResult(responseObj);
+                        if (response !== undefined) {
                             MV.appInfo.currentDB = "";
-                            alert(parsedResponse.response.result);
+                            alert(response);
                             window.location.reload();
                         } else {
-                            error = parsedResponse.response.error;
-                            MV.showAlertMessage("Could not drop: [0]. [1]".format(MV.appInfo.currentDB, MV.errorCodeMap[error.code]), MV.warnIcon);
-                            Y.log("Could not drop: [0], Response Recieved: [1], ErrorCode: [2]".format(MV.appInfo.currentDB, error.message, error.code), "error");
+                            var errorMsg = "Could not drop db: " + MV.getErrorMessage(responseObj);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            Y.log(errorMsg, "error");
                         }
                     },
                     failure: function(ioId, responseObject) {
-                        Y.log("Could not drop: [0]. Status Text: [1]".format(MV.appInfo.currentDB, responseObject.statusText), "error");
-                        MV.showAlertMessage("Could not drop: [0], Status Text: [2]".format(MV.appInfo.currentDB, responseObject.statusText), MV.warnIcon);
+                        MV.showServerErrorMessage(responseObject);
                     }
                 }
             });
@@ -119,8 +113,7 @@ YUI({
                 case 1:
                     // add collection
                     showErrorMessage = function(responseObject) {
-                        MV.showAlertMessage("Collection creation failed!", MV.warnIcon);
-                        Y.log("Collection creation failed. Response Status: [0]".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     };
                     MV.showSubmitDialog("addColDialog", addCollection, showErrorMessage);
                     setTimeout(function() {
@@ -131,8 +124,7 @@ YUI({
                 case 2:
                     // add gridfs store
                     showErrorMessage = function(responseObject) {
-                        MV.showAlertMessage("GridFS bucket creation failed!", MV.warnIcon);
-                        Y.log("GridFS bucket creation failed. Response Status: [0]".format(responseObject.statusText), "error");
+                        MV.showServerErrorMessage(responseObject);
                     };
                     MV.showSubmitDialog("addGridFSDialog", addGridFSBucket, showErrorMessage);
                     break;
@@ -173,10 +165,9 @@ YUI({
          *  @param ioId eventId
          *  @param responseObject The response Object
          */
-        function showConnectionDetails(ioId, responseObject) {
+        function showConnectionDetails(ioId, responseObj) {
             try {
-                var parsedResponse = Y.JSON.parse(responseObject.responseText);
-                var result = parsedResponse.response.result;
+                var result = MV.getResponseResult(responseObj);
                 if (result !== undefined) {
                     setUserInfo(result);
                     if (result.hasAdminLoggedIn || !result.authMode) {
@@ -229,9 +220,9 @@ YUI({
                     sm.publish(sm.events.dbListUpdated);
                 } else {
                     MV.hideLoadingPanel();
-                    var error = parsedResponse.response.error;
-                    Y.log("Could not load databases. Message from server: [0]. Error Code from server:[1] ".format(error.message, error.code), "error");
-                    MV.showAlertMessage("[0]", MV.warnIcon, error.code);
+                    var errorMsg = "Could not load databases: " + MV.getErrorMessage(responseObj);
+                    Y.log(errorMsg, "error");
+                    MV.showAlertMessage(errorMsg, MV.warnIcon);
                 }
             } catch (e) {
                 MV.showAlertMessage(e, MV.warnIcon);
@@ -244,9 +235,10 @@ YUI({
          * @param responseObject The response Object
          */
         function displayError(ioId, responseObject) {
-            Y.log("Could not load the databases. [0]".format(responseObject.statusText), "error");
+            var msg = "Could not load Databases: Status Text: [0]".format(responseObject.statusText);
+            Y.log(msg, "error");
             MV.hideLoadingPanel();
-            MV.showAlertMessage("Could not load Databases ! Please check if the app server is running. Status Text: [0]".format(responseObject.statusText), MV.warnIcon);
+            MV.showAlertMessage(msg, MV.warnIcon);
         }
 
         /**
@@ -254,15 +246,15 @@ YUI({
          * It sends request to get the DB names
          */
         function requestConnectionDetails(response, a, b, c) {
-            var parsedResponse = (response != undefined && response.responseText != undefined) ? Y.JSON.parse(response.responseText) : null;
-            var error = parsedResponse == undefined ? undefined : parsedResponse.response.error;
+            var error = (response != undefined && response.responseText != undefined) ? MV.getErrorMessage(response) : undefined;
             if (error) {
-                MV.showAlertMessage("DB creation failed ! [0].".format(error.message), MV.warnIcon);
-                Y.log("DB creation failed. Response Status: [0]".format(error.message), "error");
+                var msg = "DB creation failed: " + error;
+                MV.showAlertMessage(msg, MV.warnIcon);
+                Y.log(msg, "error");
                 return false;
             } else {
-                if (parsedResponse) {
-                    MV.showAlertMessage(parsedResponse.response.result, MV.infoIcon);
+                if (response != undefined && response.responseText != undefined) {
+                    MV.showAlertMessage(MV.getResponseResult(response), MV.infoIcon);
                 }
                 MV.showLoadingPanel("Loading Databases...");
                 var request = Y.io(MV.URLMap.getConnectionDetails(),

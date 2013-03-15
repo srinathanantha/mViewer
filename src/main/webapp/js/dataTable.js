@@ -64,9 +64,9 @@ YUI.add('custom-datatable', function(Y) {
             columnset: cols,
             width: "685px"
         }).plug(Y.Plugin.DataTableDataSource, {
-                datasource: ds,
-                initialRequest: ""
-            });
+            datasource: ds,
+            initialRequest: ""
+        });
 
         ds.sendRequest({
             callback: {
@@ -77,9 +77,9 @@ YUI.add('custom-datatable', function(Y) {
                 },
                 failure: function(e) {
                     var parsedResponse = Y.JSON.parse(e.data.response),
-                        error = parsedResponse.response.error;
-                    Y.log("Could not get the statistics, Error message: [0], Error Code: [1]".format(error.message, error.code), "error");
-                    MV.showAlertMessage("Could not get the statistics. [0]", MV.warnIcon, error.code);
+                        errMsg = "Could not get the statistics: " + parsedResponse.response.error.message;
+                    Y.log(errMsg, "error");
+                    MV.showAlertMessage(errMsg, MV.warnIcon);
                 }
             }
         });
