@@ -62,7 +62,13 @@ YUI({
 
             try {
                 MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
-                tabView.appendTo(MV.mainBody.get('id'));
+                var mainBody = MV.mainBody;
+                var mainBodyId = mainBody.get('id');
+                tabView.appendTo(mainBodyId);
+                mainBody.all("div.yui-navset li").each(function(item){
+                    item.addClass('navigable');
+                    item.setAttribute('data-search_name',item.one('em').getContent());
+                });
                 var treebleData = MV.getTreebleDataForDocs(response);
                 var treeble = MV.getTreeble(treebleData, "document");
                 // Remove download column for document operations
@@ -91,17 +97,17 @@ YUI({
         function populateJSONTab(response) {
             var jsonView = "<div class='buffer jsonBuffer'>";
             var trTemplate = [
-                "<div class='docDiv navigable' id='doc[0]' data-search_name='json'>",
+                "<div class='docDiv navigable' id='doc[0]'>",
                 "<div class='textAreaDiv'><pre><textarea id='ta[1]' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
                 "</div>"
             ];
 
             if (response.editable) {
                 trTemplate.splice(2, 0, "<div class='actionsDiv'>",
-                    "<button id='edit[3]' class='bttn editbtn navigableChild'>edit</button>",
-                    "<button id='delete[4]' class='bttn deletebtn navigableChild'>delete</button>",
-                    "<button id='save[5]' class='bttn savebtn invisible navigableChild'>save</button>",
-                    "<button id='cancel[6]' class='bttn cancelbtn invisible navigableChild'>cancel</button>",
+                    "<button id='edit[3]' class='bttn editbtn navigableChild' data-search_name='edit'>edit</button>",
+                    "<button id='delete[4]' class='bttn deletebtn navigableChild' data-search_name='delete'>delete</button>",
+                    "<button id='save[5]' class='bttn savebtn invisible navigableChild' data-search_name='save'>save</button>",
+                    "<button id='cancel[6]' class='bttn cancelbtn invisible navigableChild' data-search_name='cancel'>cancel</button>",
                     "</div>")
             }
             trTemplate = trTemplate.join('\n');

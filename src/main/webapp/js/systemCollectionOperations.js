@@ -66,7 +66,13 @@ YUI({
 
             try {
                 MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
-                tabView.appendTo(MV.mainBody.get('id'));
+                var mainBody = MV.mainBody;
+                var mainBodyId = mainBody.get('id');
+                tabView.appendTo(mainBodyId);
+                mainBody.all("div.yui-navset li").each(function(item){
+                    item.addClass('navigable');
+                    item.setAttribute('data-search_name',item.one('em').getContent());
+                });
                 var treebleData = MV.getTreebleDataForDocs(response);
                 var treeble = MV.getTreeble(treebleData, "document");
                 // Remove download column for document operations
@@ -98,11 +104,11 @@ YUI({
         function populateJSONTab(response) {
             var jsonView = "<div class='buffer jsonBuffer'>";
             var template = [
-                "<div id='doc[0]' class='docDiv navigable' data-search_name='json'>",
+                "<div id='doc[0]' class='docDiv navigable'>",
                 "<div class='textAreaDiv'><pre><textarea id='ta[1]' class='disabled' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
                 "<div class='actionsDiv'>",
-                "<button id='edit[3]'class='bttn editbtn navigableChild'>edit</button>",
-                "<button id='delete[4]'class='bttn deletebtn'>delete</button>",
+                "<button id='edit[3]'class='bttn editbtn navigableChild' data-search_name='edit'>edit</button>",
+                "<button id='delete[4]'class='bttn deletebtn' data-search_name='delete'>delete</button>",
                 "</div>" ,
                 "</div>"
             ].join('\n');

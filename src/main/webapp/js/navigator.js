@@ -1,235 +1,238 @@
-YUI.add('navigator', function (Y) {
+YUI.add('navigator', function(Y) {
     YUI.namespace('com.imaginea.mongoV');
     var MV = YUI.com.imaginea.mongoV;
     var sm = MV.StateManager;
-    var arrowKeys = {
-        up:38,
-        down:40,
-        left: 37,
-        right: 39
+    var ARROW_KEYS = {
+        UP: 38,
+        DOWN: 40,
+        LEFT: 37,
+        RIGHT: 39
     };
+    var ESCAPE_KEY = 27;
+    var SPACE_KEY = ' '.charCodeAt(0);
+    var ENTER_KEY = 13;
+    var MIN_CHARACTERS_REQUIRED_FOR_SEARCHING = 3;
 
-    function Navigator(selectorString) {
-        // associative array to hold the navigable links
-        this.regions = [];
-        this.selectorString = selectorString;
+    function Navigator() {
+        this.selectorString = '.navigable';
+
+        //boolean representing whether the navigator is visible or not
         this.isNavigatorVisible = false;
-        this.searchElementsFound = null;
-        this.highlightedElementIndex = -1;
-        this.navigableChilds = null;
-        this.navigableChildElementIndex = -1;
+
+        // associative array to hold the navigable links
+        this.navigableRegions = [];
+
+        //holds all the search elements found in an array
+        this.searchElementsFound = [];
+        //holds the index of the active search element
+        this.activeElementIndex = -1;
+
+        //holds all the navigable siblings(kind of actions) on the active element
+        this.navigableSiblings = [];
+        //holds the index of the active navigable sibling of the active element
+        this.activeSiblingIndex = -1;
+
+        //holds the map of searchElementIndex vs the active sibling index.It is used when the search elements are found
+        this.siblingIndexes = null;
+
         this.searchBox = Y.one('.searchBox');
         this.searchInput = this.searchBox.one('input');
-        this.lastSearchString = null;
+        this.currentSearchString = null;
+
+        this.subscribeToDataChangeEvents();
+
         this.keyListeners = {};
         this.bindKeyListeners();
-        var self = this;
-        var navigatorCallback = function () {
-            if (self.isNavigatorVisible) {
-                self.buildIndexes();
-            }
-        };
-        sm.subscribe(navigatorCallback, [sm.events.collectionListUpdated, sm.events.dbListUpdated, sm.events.queryExecuted]);
     }
 
     Navigator.prototype = {
-        buildIndexes:function () {
-            this.regions = [];
+        indexNavigableRegions: function() {
+            this.navigableRegions = [];
             var self = this;
-            Y.all(self.selectorString).each(function (item) {
-                self.add(item);
+            Y.all(self.selectorString).each(function(item) {
+                self.navigableRegions.push(item);
             });
         },
-        add:function (section) {
-            var regionId = section.getAttribute('data-search_name');
-            if (regionId && regionId.length > 0) {
-                this.regions.push(section);
-            }
-        },
-        showCommandBar:function () {
-            this.buildIndexes();
+        showCommandBar: function() {
+            this.indexNavigableRegions();
             this.clearText();
-            this.enableOtherSearchShortCuts();
+            this.enableSearchShortCuts();
             this.searchBox.show();
             this.searchInput.focus();
             this.isNavigatorVisible = true;
         },
-        hideCommandBar:function () {
+        hideCommandBar: function() {
             this.searchBox.hide();
-            this.disableOtherSearchShortCuts();
-            this.clearStyles();
+            this.disableSearchShortCuts();
+            this.clearCurrentSearches();
             this.isNavigatorVisible = false;
         },
-        isSearchInputBoxFocused:function () {
-            return (document.activeElement.id === this.searchInput.getAttribute('id'));
-        },
-        bindKeyListeners:function () {
-            var self = this;
-            this.keyListeners.spaceListener = new YAHOO.util.KeyListener(document, {
-                ctrl:true,
-                keys:' '.charCodeAt(0)
-            }, {
-                fn:function (event) {
-                    self.showCommandBar();
-                }
-            });
-            this.keyListeners.spaceListener.enable();
-
-            this.keyListeners.escapeListener = new YAHOO.util.KeyListener(document, {
-                keys:27
-            }, {
-                fn:function (event) {
-                    self.hideCommandBar();
-                }
-            }, 'keyup');
-
-            this.keyListeners.enterKeyListener = new YAHOO.util.KeyListener(document, {
-                keys: 13
-            }, {
-                fn:function (event) {
-                    if(self.isNavigatorVisible && self.isSearchInputBoxFocused()) {
-                        self.selectElement();
-                    }
-                }
-            },'keyup');
-
-            this.keyListeners.downKeyListener = new YAHOO.util.KeyListener(document, {
-                keys: arrowKeys.down
-            }, {
-                fn:function (event) {
-                    if (self.isSearchInputBoxFocused() && self.searchElementsFound && self.searchElementsFound.length > 0) {
-                        var allSearchElementsFoundLength = self.searchElementsFound.length;
-                        self.deHighlightCurrentSelection();
-                        self.highlightedElementIndex = (self.highlightedElementIndex + 1) % allSearchElementsFoundLength;
-                        self.highlightCurrentSelection();
-                    }
-                }
-            },'keyup');
-
-            this.keyListeners.upKeyListener = new YAHOO.util.KeyListener(document, {
-                keys: arrowKeys.up
-            }, {
-                fn:function (event) {
-                    if (self.isSearchInputBoxFocused() && self.searchElementsFound && self.searchElementsFound.length > 0) {
-                        var allSearchElementsFoundLength = self.searchElementsFound.length;
-                        self.deHighlightCurrentSelection();
-                        self.highlightedElementIndex = (self.highlightedElementIndex + allSearchElementsFoundLength - 1) % allSearchElementsFoundLength;
-                        self.highlightCurrentSelection();
-                    }
-                }
-            },'keyup');
-
-            this.keyListeners.ctrlLeftKeyListener = new YAHOO.util.KeyListener(document, {
-                ctrl: true,
-                keys: arrowKeys.left
-            }, {
-                fn:function (event) {
-                    if (self.getHighlightedElement() != null && self.navigableChilds && self.navigableChilds.length > 0) {
-                        var allNavigableElementsFoundLength = self.navigableChilds.length;
-                        self.deHighlightCurrentNavigableChildElement();
-                        self.navigableChildElementIndex = (self.navigableChildElementIndex + allNavigableElementsFoundLength - 1) % allNavigableElementsFoundLength;
-                        self.highlightCurrentNavigableChildElement();
-                    }
-                }
-            });
-
-            this.keyListeners.ctrlRightKeyListener = new YAHOO.util.KeyListener(document, {
-                ctrl: true,
-                keys: arrowKeys.right
-            }, {
-                fn:function (event) {
-                    if (self.getHighlightedElement() != null && self.navigableChilds && self.navigableChilds.length > 0) {
-                        var allNavigableElementsFoundLength = self.navigableChilds.length;
-                        self.deHighlightCurrentNavigableChildElement();
-                        self.navigableChildElementIndex = (self.navigableChildElementIndex + 1) % allNavigableElementsFoundLength;
-                        self.highlightCurrentNavigableChildElement();
-                    }
-                }
-            });
-
-            this.searchInput.on("keyup", function (eventObject) {
-                if (eventObject.keyCode !== arrowKeys.up && eventObject.keyCode !== arrowKeys.down && eventObject.keyCode !== arrowKeys.left && eventObject.keyCode !== arrowKeys.right && eventObject.keyCode !== '\r'.charCodeAt(0)) {
-                    self.highlightSearchElements();
-                }
-            });
-        },
-        highlightSearchElements:function () {
-            var searchString = this.searchInput.get('value').trim();
-            if(searchString === this.lastSearchString) {
-                return;
-            }
-            this.lastSearchString = searchString;
-            this.clearStyles();
-            if (searchString && searchString.length > 2) {
-                this.highlightedElementIndex = 0;
+        highlightSearchElements: function() {
+            this.clearCurrentSearches();
+            var searchString = this.currentSearchString;
+            if (searchString && searchString.length >= MIN_CHARACTERS_REQUIRED_FOR_SEARCHING) {
+                this.activeElementIndex = 0;//Initially active element is pointed to first matched serach result
                 this.searchElementsFound = [];
+                this.siblingIndexes = {};
                 var searchStringUpperCaseValue = searchString.toUpperCase();
-                for (var index = 0; index < this.regions.length; index++) {
-                    var navigableElement = this.regions[index];
-                    if (navigableElement.getAttribute('data-search_name').toUpperCase().indexOf(searchStringUpperCaseValue) !== -1) {
-                        this.searchElementsFound.push(navigableElement);
-                        navigableElement.addClass('shadow');
-                        navigableElement.addClass('simulatedHover');
+                for (var i = 0; i < this.navigableRegions.length; i++) {
+                    var navigableElement = this.navigableRegions[i];
+                    var searchKey = navigableElement.getAttribute('data-search_name');
+                    if (searchKey && searchKey.length > 0 && searchKey.toUpperCase().indexOf(searchStringUpperCaseValue) !== -1) {
+                        this.addToSearchElementsFoundList(navigableElement);
+                    } else {
+                        var siblingIndex = 0;
+                        var self = this;
+                        navigableElement.all('.navigableChild[data-search_name]:not(.invisible)').some(function(subItem) {
+                            var searchKey = subItem.getAttribute('data-search_name');
+                            if (searchKey && searchKey.length > 0 && searchKey.toUpperCase().indexOf(searchStringUpperCaseValue) !== -1) {
+                                self.addToSearchElementsFoundList(navigableElement);
+                                var elementIndex = self.searchElementsFound.length - 1;
+                                self.siblingIndexes[elementIndex] = siblingIndex;
+                                //Highlight only the first matched navigable sibling and exit the loop.
+                                return true;
+                            }
+                            siblingIndex++;
+                        });
                     }
                 }
-                this.highlightCurrentSelection();
+                this.highlightActiveElement();
             }
         },
-        getHighlightedElement:function () {
-            return (this.searchElementsFound && this.searchElementsFound.length > 0) ? this.searchElementsFound[this.highlightedElementIndex] : null;
+        addToSearchElementsFoundList: function(navigableElement) {
+            this.searchElementsFound.push(navigableElement);
+            navigableElement.addClass('shadow');
+            navigableElement.addClass('simulatedHover');
         },
-        highlightCurrentSelection:function() {
-            var highlightedElement = this.getHighlightedElement();
-            if(highlightedElement) {
-                this.updateAllVisibleNavigableChilds(highlightedElement);
-                highlightedElement.scrollIntoView();
-                highlightedElement.addClass("highlighted");
-                this.highlightCurrentNavigableChildElement();
+        /**
+         * returns the active search element found if exists
+         */
+        getActiveElement: function() {
+            return (this.searchElementsFound && this.searchElementsFound.length > 0) ? this.searchElementsFound[this.activeElementIndex] : null;
+        },
+        /**
+         * highlights the active element if exists and updates its navigable siblings and then highlights the active sibling.
+         * Note:Before highlighting active sibling, it updates active sibling if there is any property found in siblingIndexes which means a search pattern is found on
+         * a navigable sibling
+         */
+        highlightActiveElement: function() {
+            var activeElement = this.getActiveElement();
+            if (activeElement) {
+                this.updateNavigableSiblings();
+                activeElement.scrollIntoView();
+                activeElement.addClass("highlighted");
+                var activeSiblingIndex = this.siblingIndexes[this.activeElementIndex];
+                if (activeSiblingIndex) {
+                    this.activeSiblingIndex = activeSiblingIndex;
+                }
+                this.highlightActiveSibling();
             }
         },
-        deHighlightCurrentSelection:function() {
-            var highlightedElement = this.getHighlightedElement();
-            if(highlightedElement) {
-                highlightedElement.removeClass("highlighted");
-                this.deHighlightCurrentNavigableChildElement();
-                this.navigableChilds = null;
-                this.navigableChildElementIndex = -1;
+        /**
+         * deHighlights the active element if exists and deHighlights the navigable sibling of the active navigable sibling.
+         */
+        deHighlightActiveElement: function() {
+            var activeElement = this.getActiveElement();
+            if (activeElement) {
+                activeElement.removeClass("highlighted");
+                this.deHighlightActiveSibling();
+                this.navigableSiblings = null;
+                this.activeSiblingIndex = -1;
             }
         },
-        updateAllVisibleNavigableChilds:function(highlightedElement) {
-            this.navigableChilds = [];
-            this.navigableChildElementIndex = 0;
+        /**
+         * deHighlights the current navigable element and highlights the next navigable element
+         */
+        goToNextSearchResult: function() {
+            if (this.isSearchInputBoxFocused() && this.searchElementsFound && this.searchElementsFound.length > 0) {
+                var allSearchElementsFoundLength = this.searchElementsFound.length;
+                this.deHighlightActiveElement();
+                this.activeElementIndex = (this.activeElementIndex + 1) % allSearchElementsFoundLength;
+                this.highlightActiveElement();
+            }
+        },
+        /**
+         * deHighlights the current navigable element and highlights the previous navigable element
+         */
+        goToPreviousSearchResult: function() {
+            if (this.isSearchInputBoxFocused() && this.searchElementsFound && this.searchElementsFound.length > 0) {
+                var allSearchElementsFoundLength = this.searchElementsFound.length;
+                this.deHighlightActiveElement();
+                this.activeElementIndex = (this.activeElementIndex + allSearchElementsFoundLength - 1) % allSearchElementsFoundLength;
+                this.highlightActiveElement();
+            }
+        },
+        /**
+         * deHighlights the current navigable sibling and highlights the previous navigable sibling
+         */
+        goToPreviousNavigableSibling: function() {
+            if (this.getActiveElement() != null && this.navigableSiblings && this.navigableSiblings.length > 0) {
+                var allNavigableElementsFoundLength = this.navigableSiblings.length;
+                this.deHighlightActiveSibling();
+                this.activeSiblingIndex = (this.activeSiblingIndex + allNavigableElementsFoundLength - 1) % allNavigableElementsFoundLength;
+                this.highlightActiveSibling();
+            }
+        },
+        /**
+         * deHighlights the current navigable sibling and highlights the next navigable sibling
+         */
+        goToNextNavigableSibling: function() {
+            if (this.getActiveElement() != null && this.navigableSiblings && this.navigableSiblings.length > 0) {
+                var allNavigableElementsFoundLength = this.navigableSiblings.length;
+                this.deHighlightActiveSibling();
+                this.activeSiblingIndex = (this.activeSiblingIndex + 1) % allNavigableElementsFoundLength;
+                this.highlightActiveSibling();
+            }
+        },
+        /**
+         * initialises the property 'navigableSiblings' and add to it all the navigable siblings of the current navigable element
+         */
+        updateNavigableSiblings: function() {
+            this.navigableSiblings = [];
+            this.activeSiblingIndex = 0;
             var self = this;
-            highlightedElement.all('.navigableChild:not(.invisible)').each(
+            this.getActiveElement().all('.navigableChild:not(.invisible)').each(
                 function(item) {
-                    self.navigableChilds.push(item);
+                    self.navigableSiblings.push(item);
                 }
             );
         },
-        getCurrentVisibleNavigableChild:function () {
-            if(this.navigableChilds && this.navigableChilds.length >0 ) {
-                return this.navigableChilds[this.navigableChildElementIndex];
+        /**
+         * returns the active Sibling element
+         */
+        getActiveSibling: function() {
+            if (this.navigableSiblings && this.navigableSiblings.length > 0) {
+                return this.navigableSiblings[this.activeSiblingIndex];
             }
             return null;
         },
-        highlightCurrentNavigableChildElement:function() {
-            var navigableChild = this.getCurrentVisibleNavigableChild();
-            if(navigableChild) {
-                navigableChild.addClass('shadow');
-                navigableChild.addClass('simulatedHover');
+        /**
+         * highlights the active sibling element if present
+         */
+        highlightActiveSibling: function() {
+            var activeSibling = this.getActiveSibling();
+            if (activeSibling) {
+                activeSibling.addClass('shadow');
+                activeSibling.addClass('simulatedHover');
             }
         },
-        deHighlightCurrentNavigableChildElement:function() {
-            var navigableChild = this.getCurrentVisibleNavigableChild();
-            if(navigableChild) {
-                navigableChild.removeClass('shadow');
-                navigableChild.removeClass('simulatedHover');
+        /**
+         * deHighlights the active sibling element if present
+         */
+        deHighlightActiveSibling: function() {
+            var activeSibling = this.getActiveSibling();
+            if (activeSibling) {
+                activeSibling.removeClass('shadow');
+                activeSibling.removeClass('simulatedHover');
             }
         },
-        selectElement:function () {
-            var highlightedElement = this.getHighlightedElement();
+        /**
+         * Used for Selecting the active highlighted element
+         */
+        selectElement: function() {
+            var highlightedElement = this.getActiveElement();
             this.clearText();
-            this.clearStyles();
+            this.clearCurrentSearches();
             var self = this;
             var setFocus = function() {
                 self.searchInput.focus();
@@ -239,15 +242,15 @@ YUI.add('navigator', function (Y) {
                 if ('INPUT' === selectedNodeName || 'TEXTAREA' === selectedNodeName) {
                     highlightedElement.focus();
                 } else if ('DIV' === selectedNodeName || 'LI' === selectedNodeName) {
-                    var currentNavigableChild = this.getCurrentVisibleNavigableChild();
-                    if (currentNavigableChild) {
-                        if(currentNavigableChild.hasClass('yui3-menu-toggle')) {
-                            currentNavigableChild.simulate('mousedown');
+                    var activeSibling = this.getActiveSibling();
+                    if (activeSibling) {
+                        if (activeSibling.hasClass('yui3-menu-toggle')) {
+                            activeSibling.simulate('mousedown');
                         } else {
-                            currentNavigableChild.simulate('click');
+                            activeSibling.simulate('click');
                             // TODO Instead of checking for anchor tag, we need to have a better way to decide
                             // if the focus needs to be reset to the searchInput or not after the click
-                            selectedNodeName = currentNavigableChild.get('nodeName');
+                            selectedNodeName = activeSibling.get('nodeName');
                             if ('A' === selectedNodeName) {
                                 setTimeout(setFocus, 500);
                             }
@@ -263,19 +266,113 @@ YUI.add('navigator', function (Y) {
                 }
             }
         },
-        clearText:function () {
-            this.lastSearchString = null;
+        /**
+         * empties the text in the search Input Box
+         */
+        clearText: function() {
+            this.currentSearchString = null;
             this.searchInput.set('value', '');
         },
-        clearStyles:function () {
-            Y.all('.shadow').each(function (item) {
+        /**
+         * clears the styles on all the previous search elements found and removes all the searchElementsFound
+         */
+        clearCurrentSearches: function() {
+            Y.all('.shadow').each(function(item) {
                 item.removeClass('shadow');
                 item.removeClass('simulatedHover');
                 item.removeClass('highlighted');
             });
             this.searchElementsFound = null;
         },
-        enableOtherSearchShortCuts:function() {
+        /**
+         * returns true if the search Input box is currently focused,else returns false
+         * @return {Boolean}
+         */
+        isSearchInputBoxFocused: function() {
+            return (document.activeElement.id === this.searchInput.getAttribute('id'));
+        },
+        /**
+         * binds listeners for the key board based shortcuts
+         */
+        bindKeyListeners: function() {
+            var self = this;
+            this.keyListeners.spaceListener = new YAHOO.util.KeyListener(document, {
+                ctrl: true,
+                keys: SPACE_KEY
+            }, {
+                fn: function() {
+                    self.showCommandBar();
+                }
+            });
+            this.keyListeners.spaceListener.enable();
+
+            this.keyListeners.escapeListener = new YAHOO.util.KeyListener(document, {
+                keys: ESCAPE_KEY
+            }, {
+                fn: function() {
+                    self.hideCommandBar();
+                }
+            }, 'keyup');
+
+            this.keyListeners.enterKeyListener = new YAHOO.util.KeyListener(document, {
+                keys: ENTER_KEY
+            }, {
+                fn: function() {
+                    if (self.isNavigatorVisible && self.isSearchInputBoxFocused()) {
+                        self.selectElement();
+                    }
+                }
+            }, 'keyup');
+
+            this.keyListeners.downKeyListener = new YAHOO.util.KeyListener(document, {
+                keys: ARROW_KEYS.DOWN
+            }, {
+                fn: function() {
+                    self.goToNextSearchResult();
+                }
+            }, 'keyup');
+
+            this.keyListeners.upKeyListener = new YAHOO.util.KeyListener(document, {
+                keys: ARROW_KEYS.UP
+            }, {
+                fn: function() {
+                    self.goToPreviousSearchResult();
+                }
+            }, 'keyup');
+
+            this.keyListeners.ctrlLeftKeyListener = new YAHOO.util.KeyListener(document, {
+                ctrl: true,
+                keys: ARROW_KEYS.LEFT
+            }, {
+                fn: function() {
+                    self.goToPreviousNavigableSibling();
+                }
+            });
+
+            this.keyListeners.ctrlRightKeyListener = new YAHOO.util.KeyListener(document, {
+                ctrl: true,
+                keys: ARROW_KEYS.RIGHT
+            }, {
+                fn: function() {
+                    self.goToNextNavigableSibling();
+                }
+            });
+
+            this.searchInput.on("keyup", function(eventObject) {
+                if (eventObject.keyCode !== ARROW_KEYS.UP && eventObject.keyCode !== ARROW_KEYS.DOWN && eventObject.keyCode !== ARROW_KEYS.LEFT && eventObject.keyCode !== ARROW_KEYS.RIGHT && eventObject.keyCode !== '\r'.charCodeAt(0)) {
+                    var searchString = self.searchInput.get('value').trim();
+                    if (searchString === self.currentSearchString) {
+                        return;
+                    }
+                    self.currentSearchString = searchString;
+                    self.highlightSearchElements();
+                }
+            });
+        },
+        /**
+         * enables all the search short cuts which are used once the search box is opened
+         */
+        enableSearchShortCuts: function() {
             this.keyListeners.escapeListener.enable();
             this.keyListeners.enterKeyListener.enable();
             this.keyListeners.downKeyListener.enable();
@@ -283,16 +380,30 @@ YUI.add('navigator', function (Y) {
             this.keyListeners.ctrlLeftKeyListener.enable();
             this.keyListeners.ctrlRightKeyListener.enable();
         },
-        disableOtherSearchShortCuts:function() {
+        /**
+         * disables all the search short cuts which are no more once the search box is closed
+         */
+        disableSearchShortCuts: function() {
             this.keyListeners.escapeListener.disable();
             this.keyListeners.enterKeyListener.disable();
             this.keyListeners.downKeyListener.disable();
             this.keyListeners.upKeyListener.disable();
             this.keyListeners.ctrlLeftKeyListener.disable();
             this.keyListeners.ctrlRightKeyListener.disable();
+        },
+        /**
+         * Whenever the collections list/db list is updated or a query is executed we re-index the navigable regions.
+         */
+        subscribeToDataChangeEvents: function() {
+            var self = this;
+            sm.subscribe(function() {
+                if (self.isNavigatorVisible) {
+                    self.indexNavigableRegions();
+                }
+            }, [sm.events.collectionListUpdated, sm.events.dbListUpdated, sm.events.queryExecuted]);
         }
     };
-    new Navigator('.navigable');
+    new Navigator();
 }, '3.3.0', {
-    requires:["event-key", "node", "utility", "node-event-simulate"]
+    requires: ["event-key", "node", "utility", "node-event-simulate"]
 });

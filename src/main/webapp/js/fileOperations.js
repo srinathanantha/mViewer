@@ -59,7 +59,13 @@ YUI({
 
             try {
                 MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
-                tabView.appendTo(MV.mainBody.get('id'));
+                var mainBody = MV.mainBody;
+                var mainBodyId = mainBody.get('id');
+                tabView.appendTo(mainBodyId);
+                mainBody.all("div.yui-navset li").each(function(item){
+                    item.addClass('navigable');
+                    item.setAttribute('data-search_name',item.one('em').getContent());
+                });
                 var treebleData = MV.getTreebleDataForFiles(response);
                 var treeble = MV.getTreeble(treebleData, "file");
                 if (!response.editable) {
@@ -88,15 +94,15 @@ YUI({
         function populateJSONTab(response) {
             var jsonView = "<div class='buffer jsonBuffer'>";
 
-            var trTemplate = ["<div id='file[0]' class='docDiv navigable' data-search_name='json'>",
+            var trTemplate = ["<div id='file[0]' class='docDiv navigable'>",
                 "<div class='textAreaDiv'><pre> <textarea id='ta[1]' class='disabled' disabled='disabled' cols='75'>[2]</textarea></pre></div>",
                 "</div>"];
 
             if (response.editable) {
                 trTemplate.splice(2, 0, "<div class='actionsDiv'>",
-                    "  <button id='open[3]'class='bttn openbtn navigableChild'>open</button>",
-                    "  <button id='download[4]'class='bttn downloadbtn navigableChild'>download</button>",
-                    "  <button id='delete[5]'class='bttn deletebtn navigableChild'>delete</button>",
+                    "  <button id='open[3]'class='bttn openbtn navigableChild' data-search_name='open'>open</button>",
+                    "  <button id='download[4]'class='bttn downloadbtn navigableChild' data-search_name='download'>download</button>",
+                    "  <button id='delete[5]'class='bttn deletebtn navigableChild' data-search_name='delete'>delete</button>",
                     "</div>");
             }
             trTemplate = trTemplate.join('\n');
