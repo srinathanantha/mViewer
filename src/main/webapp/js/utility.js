@@ -69,6 +69,7 @@ YUI.add('utility', function(Y) {
 
     MV.setHeader = function(value) {
         MV.header.set("innerHTML", value);
+        MV.header.addClass('tab-cont');
     };
 
     MV.clearHeader = function() {
@@ -227,6 +228,9 @@ YUI.add('utility', function(Y) {
         getDBs: function() {
             return "services/db?connectionId=[0]&ts=[1]".format(sm.connectionId());
         },
+        runDbCommand: function() {
+            return "services/db/[0]?connectionId=[1]&ts=[2]".format(sm.currentDB(), sm.connectionId(), sm.now());
+        },
         insertDB: function() {
             return "services/db/[0]?connectionId=[1]&action=PUT&ts=[2]".format(sm.newName(), sm.connectionId(), sm.now());
         },
@@ -360,7 +364,7 @@ YUI.add('utility', function(Y) {
     };
 
     MV.errorCodeMap = {
-        "SERVER_ERROR" : "Could not execute your request. Please check if server is running.",
+        "SERVER_ERROR": "Could not execute your request. Please check if server is running.",
         "HOST_UNKNOWN": "Connection Failed ! Please check if MongoDB is running at the given host and port !",
         "MISSING_LOGIN_FIELDS": "Please fill in all the login fields !",
         "ERROR_PARSING_PORT": "You have entered an invalid port number !",

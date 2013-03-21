@@ -118,7 +118,7 @@ public class DocumentControllerTest extends TestingTemplate {
 
                                 String fields = "test,_id";
 
-                                String docList = testDocumentController.executeQuery(dbName, collName, "db." + collName + ".find()", connectionId, fields, "100", "0", "", request);
+                                String docList = testDocumentController.executeQuery(dbName, collName, "db." + collName + ".find()", connectionId, fields, "100", "0", "", false, request);
 
                                 DBObject response = (BasicDBObject) JSON.parse(docList);
 

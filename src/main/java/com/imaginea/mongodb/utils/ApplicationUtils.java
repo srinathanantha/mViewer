@@ -2,6 +2,7 @@ package com.imaginea.mongodb.utils;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
 import org.json.JSONArray;
@@ -139,5 +140,18 @@ public class ApplicationUtils {
             sb.append(valueToString(value.get(i)));
         }
         return '[' + sb.toString() + ']';
+    }
+
+    public static JSONObject constructResponse(boolean isEditable, long size, List docs) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("documents", docs);
+        result.put("count", size);
+        result.put("editable", isEditable);
+        return result;
+    }
+
+    public static JSONObject constructResponse(boolean isEditable, DBObject... dbObject) throws JSONException {
+        List<DBObject> docs = Arrays.asList(dbObject);
+        return constructResponse(isEditable, docs.size(), docs);
     }
 }

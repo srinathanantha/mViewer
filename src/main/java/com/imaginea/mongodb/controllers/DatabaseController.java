@@ -17,6 +17,7 @@ package com.imaginea.mongodb.controllers;
 
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.exceptions.InvalidHTTPRequestException;
+import com.imaginea.mongodb.exceptions.InvalidMongoCommandException;
 import com.imaginea.mongodb.services.DatabaseService;
 import com.imaginea.mongodb.services.impl.DatabaseServiceImpl;
 import org.apache.log4j.Logger;
@@ -25,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * Defines resources for performing create/drop operations on databases present
@@ -122,6 +122,56 @@ public class DatabaseController extends BaseController {
                 return status;
             }
         });
+        return response;
+    }
+
+    /**
+     * executes the given query against a database and returns a json response.
+     *
+     * @param dbName
+     * @param query
+     * @param connectionId
+     * @param fields
+     * @param limit
+     * @param skip
+     * @param sortBy
+     * @param request
+     * @return
+     */
+    @GET
+    @Path("/{dbName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String executeQuery(@PathParam("dbName") final String dbName,
+                               @QueryParam("query") final String query,
+                               @QueryParam("connectionId") final String connectionId,
+                               @QueryParam("fields") final String fields,
+                               @QueryParam("limit") final String limit,
+                               @QueryParam("skip") final String skip,
+                               @QueryParam("sortBy") final String sortBy,
+                               @Context final HttpServletRequest request) {
+        String response = new ResponseTemplate().execute(logger, connectionId, request,
+            new ResponseCallback() {
+                @Override
+                public Object execute() throws Exception {
+                    // Get query
+                    int startIndex = query.indexOf("("), endIndex = query.lastIndexOf(")");
+                    if (startIndex == -1 || endIndex == -1) {
+                        throw new InvalidMongoCommandException(ErrorCodes.INVALID_QUERY, "Invalid query");
+                    }
+                    String cmdStr = query.substring(0, startIndex);
+                    int lastIndexOfDot = cmdStr.lastIndexOf(".");
+                    if (lastIndexOfDot + 1 == cmdStr.length()) {
+                        // In this case the cmsStr = db.collectionName.
+                        throw new InvalidMongoCommandException(ErrorCodes.COMMAND_EMPTY, "Command is empty");
+                    }
+                    String command = cmdStr.substring(lastIndexOfDot + 1, cmdStr.length());
+                    DatabaseService databaseService = new DatabaseServiceImpl(connectionId);
+                    int docsLimit = Integer.parseInt(limit);
+                    int docsSkip = Integer.parseInt(skip);
+                    String jsonStr = query.substring(startIndex + 1, endIndex);
+                    return databaseService.executeQuery(dbName, command, jsonStr, fields, sortBy, docsLimit, docsSkip);
+                }
+            });
         return response;
     }
 }

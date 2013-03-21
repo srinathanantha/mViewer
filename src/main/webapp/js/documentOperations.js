@@ -41,7 +41,14 @@ YUI({
             sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentColl = event.currentTarget.getAttribute("data-collection-name");
             MV.selectDBItem(event.currentTarget);
-            queryExecutor = MV.loadQueryBox(MV.URLMap.getDocKeys(), MV.URLMap.getDocs(), sm.currentColl(), showTabView);
+            var config = {
+                keysUrl: MV.URLMap.getDocKeys(),
+                dataUrl: MV.URLMap.getDocs(),
+                query: "db.[0].find({\r\r})".format(sm.currentColl()),
+                currentSelection: sm.currentColl(),
+                showKeys: true
+            };
+            queryExecutor = MV.loadQueryBox(config, showTabView);
         };
 
         /**
@@ -238,7 +245,7 @@ YUI({
                             var index = getButtonIndex(targetNode);
                             toggleSaveEdit(targetNode, index, actionMap.save);
                             var savedKeys = queryExecutor.getKeys();
-                            var newKeys = []
+                            var newKeys = [];
                             for (var index = 0; index < response.keys.length; index++) {
                                 var key = response.keys[index];
                                 if (savedKeys.indexOf(key) == -1) {
@@ -246,9 +253,7 @@ YUI({
                                 }
                             }
                             if (newKeys.length > 0) {
-                                var innerHTML = Y.one('#fields').get('innerHTML');
-                                innerHTML = innerHTML + queryExecutor.formatKeys(newKeys);
-                                Y.one('#fields').set('innerHTML', innerHTML);
+                                queryExecutor.updateKeysList(newKeys);
                             }
                             MV.showAlertMessage("Document updated successfully.", MV.infoIcon);
                             // Re-execute the cached find query to update the view with the new resultSet

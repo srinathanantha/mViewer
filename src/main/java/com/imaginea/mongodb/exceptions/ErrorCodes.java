@@ -97,4 +97,6 @@ public interface ErrorCodes {
 
     //bucket
     String BUCKET_NAME_EMPTY = "BUCKET_NAME_EMPTY";
+
+    String MONGO_EXCEPTION = "MONGO_EXCEPTION";
 }

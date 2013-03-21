@@ -33,17 +33,14 @@ YUI({
          * sends he request to get the list of collections
          * @param e The event Object
          */
-        function requestCollNames(e) {
+        function requestCollNames() {
             sm.publish(sm.events.actionTriggered);
-            MV.appInfo.currentDB = e.currentTarget.getAttribute("data-db-name");
             MV.appInfo.currentColl = "";
             Y.one("#collNames").unplug(Y.Plugin.NodeMenuNav);
             Y.one("#bucketNames").unplug(Y.Plugin.NodeMenuNav);
             Y.one("#systemCollections").unplug(Y.Plugin.NodeMenuNav);
 
-            MV.createDatatable(MV.URLMap.dbStatistics(), MV.appInfo.currentDB);
-            MV.selectDatabase(e.currentTarget);
-            MV.hideQueryForm();
+//            MV.hideQueryForm();
             MV.showLoadingPanel("Loading Collections...");
             var request = Y.io(MV.URLMap.getColl(), {
                 // configuration for loading the collections
@@ -68,9 +65,9 @@ YUI({
             try {
                 parsedResult = MV.getResponseResult(responseObj);
                 var collTemplate = '' +
-                    '<li class="yui3-menuitem navigable" data-collection-name=[0] data-search_name=[3] > \
+                    '<li class="yui3-menuitem navigable" data-collection-name="[0]" data-search_name="[3]" > \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] data-collection-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                             <a id="[1]" data-collection-name="[2]" title="[4]" href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
                              <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                          </span>\
                          <div id="[7]" class="yui3-menu menu-width">\
@@ -93,9 +90,9 @@ YUI({
                          </div>\
                          </li>';
                 var bucketTemplate = '' +
-                    '<li class="yui3-menuitem navigable" data-bucket-name=[0] data-search_name=[3]> \
+                    '<li class="yui3-menuitem navigable" data-bucket-name="[0]" data-search_name="[3]"> \
                          <span class="yui3-menu-label"> \
-                             <a id=[1] data-bucket-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                             <a id="[1]" data-bucket-name="[2]" title="[4]" href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
                              <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                          </span>\
                          <div id="[7]" class="yui3-menu menu-width">\
@@ -115,9 +112,9 @@ YUI({
                          </div>\
                          </li>';
                 var usersTemplate = '' +
-                    '<li class="yui3-menuitem navigable" data-collection-name=[0] data-search_name=[3]> \
+                    '<li class="yui3-menuitem navigable" data-collection-name="[0]" data-search_name="[3]"> \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] data-collection-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                        <a id="[1]" data-collection-name="[2]" title="[4]" href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
                         <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                     </span>\
                     <div id="[7]" class="yui3-menu menu-width">\
@@ -134,9 +131,9 @@ YUI({
                     </div>\
                     </li>';
                 var indexesTemplate = '' +
-                    '<li class="yui3-menuitem navigable" data-collection-name=[0] data-search_name=[3] > \
+                    '<li class="yui3-menuitem navigable" data-collection-name="[0]" data-search_name="[3]" > \
                     <span class="yui3-menu-label"> \
-                        <a id=[1] data-collection-name="[2]" title=[4] href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                        <a id="[1]" data-collection-name="[2]" title="[4]" href="javascript:void(0)" class="collectionLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
                         <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                     </span>\
                     <div id="[7]" class="yui3-menu menu-width">\

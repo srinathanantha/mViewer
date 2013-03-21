@@ -33,6 +33,7 @@ public interface DocumentService {
      * Gets the list of documents inside a collection in a database in mongo to
      * which user is connected to.
      *
+     *
      * @param dbName         Name of Database
      * @param collectionName Name of Collection from which to get all Documents
      * @param command        Name of the Command to be executed
@@ -41,6 +42,7 @@ public interface DocumentService {
      * @param keys           Keys to be present in the resulted docs.
      * @param limit          Number of docs to show.
      * @param skip           Docs to skip from the front.
+     * @param allKeys
      * @return List of all documents.
      * @throws DatabaseException   throw super type of UndefinedDatabaseException
      * @throws ValidationException throw super type of
@@ -49,7 +51,7 @@ public interface DocumentService {
      * @throws DocumentException   exception while performing get doc list
      */
 
-    public JSONObject getQueriedDocsList(String dbName, String collectionName, String command, String queryStr, String keys, String sortBy, int limit, int skip) throws ApplicationException, CollectionException,
+    public JSONObject getQueriedDocsList(String dbName, String collectionName, String command, String queryStr, String keys, String sortBy, int limit, int skip, boolean allKeys) throws ApplicationException, CollectionException,
             DocumentException, ValidationException, JSONException;
 
     /**

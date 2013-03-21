@@ -70,6 +70,7 @@ public class DocumentServiceImpl implements DocumentService {
      * @param keys           Keys to be present in the resulted docs.
      * @param limit          Number of docs to show.
      * @param skip           Docs to skip from the front.
+     * @param allKeys
      * @return List of all documents.
      * @throws DatabaseException   throw super type of UndefinedDatabaseException
      * @throws ValidationException throw super type of
@@ -78,8 +79,8 @@ public class DocumentServiceImpl implements DocumentService {
      * @throws DocumentException   exception while performing get doc list
      */
 
-    public JSONObject getQueriedDocsList(String dbName, String collectionName, String command, String queryStr, String keys, String sortBy, int limit, int skip) throws ApplicationException, CollectionException,
-            DocumentException, ValidationException, JSONException {
+    public JSONObject getQueriedDocsList(String dbName, String collectionName, String command, String queryStr, String keys, String sortBy, int limit, int skip, boolean allKeys) throws ApplicationException, CollectionException,
+        DocumentException, ValidationException, JSONException {
 
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
@@ -88,33 +89,27 @@ public class DocumentServiceImpl implements DocumentService {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Empty");
         }
 
-        JSONObject result = new JSONObject();
         try {
             List<String> databaseNames = databaseService.getDbList();
             if (!databaseNames.contains(dbName)) {
                 throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS, "DB with name [" + dbName + "]DOES_NOT_EXIST");
             }
             DB db = mongoInstance.getDB(dbName);
-            if (command.equals("runCommand")) {
-                result = QueryExecutor.executeCommand(db, queryStr);
-            } else {
-                if (collectionName == null) {
-                    throw new CollectionException(ErrorCodes.COLLECTION_NAME_EMPTY, "Collection name is null");
-                }
-                if (collectionName.equals("")) {
-                    throw new CollectionException(ErrorCodes.COLLECTION_NAME_EMPTY, "Collection Name Empty");
-                }
-                if (!db.getCollectionNames().contains(collectionName)) {
-                    throw new CollectionException(ErrorCodes.COLLECTION_DOES_NOT_EXIST, "Collection with name [" + collectionName + "] DOES NOT EXIST in Database [" + dbName + "]");
-                }
-
-                DBCollection dbCollection = db.getCollection(collectionName);
-                result = QueryExecutor.executeQuery(db, dbCollection, command, queryStr, keys, sortBy, limit, skip);
+            if (collectionName == null) {
+                throw new CollectionException(ErrorCodes.COLLECTION_NAME_EMPTY, "Collection name is null");
             }
+            if (collectionName.equals("")) {
+                throw new CollectionException(ErrorCodes.COLLECTION_NAME_EMPTY, "Collection Name Empty");
+            }
+            if (!db.getCollectionNames().contains(collectionName)) {
+                throw new CollectionException(ErrorCodes.COLLECTION_DOES_NOT_EXIST, "Collection with name [" + collectionName + "] DOES NOT EXIST in Database [" + dbName + "]");
+            }
+
+            DBCollection dbCollection = db.getCollection(collectionName);
+            return QueryExecutor.executeQuery(db, dbCollection, command, queryStr, keys, sortBy, limit, skip, allKeys);
         } catch (MongoException e) {
             throw new DocumentException(ErrorCodes.GET_DOCUMENT_LIST_EXCEPTION, e.getMessage());
         }
-        return result;
     }
 
     /**

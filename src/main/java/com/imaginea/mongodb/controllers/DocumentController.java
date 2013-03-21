@@ -21,7 +21,6 @@ import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.exceptions.InvalidMongoCommandException;
 import com.imaginea.mongodb.services.DocumentService;
 import com.imaginea.mongodb.services.impl.DocumentServiceImpl;
-import com.imaginea.mongodb.utils.ApplicationUtils;
 import com.imaginea.mongodb.utils.JSON;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -82,6 +81,7 @@ public class DocumentController extends BaseController {
                                @QueryParam("limit") final String limit,
                                @QueryParam("skip") final String skip,
                                @QueryParam("sortBy") final String sortBy,
+                               @QueryParam("allKeys") final boolean allKeys,
                                @Context final HttpServletRequest request) throws JSONException {
 
         String response = new ResponseTemplate().execute(logger, connectionId, request,
@@ -103,13 +103,12 @@ public class DocumentController extends BaseController {
                     String collection = null;
                     int firstIndexOfDot = cmdStr.indexOf(".");
                     if (firstIndexOfDot != lastIndexOfDot) {
-                        // when commands are not of the form db.runCommand ie., they contain collection name as in db.collectionName.find
                         collection = cmdStr.substring(firstIndexOfDot + 1, lastIndexOfDot);
                     }
                     String jsonStr = query.substring(startIndex + 1, endIndex);
                     int docsLimit = Integer.parseInt(limit);
                     int docsSkip = Integer.parseInt(skip);
-                    return documentService.getQueriedDocsList(dbName, collection, command, jsonStr, fields, sortBy, docsLimit, docsSkip);
+                    return documentService.getQueriedDocsList(dbName, collection, command, jsonStr, fields, sortBy, docsLimit, docsSkip, allKeys);
                 }
             });
 

@@ -18,12 +18,10 @@ package com.imaginea.mongodb.services.impl;
 
 import com.imaginea.mongodb.domain.ConnectionDetails;
 import com.imaginea.mongodb.domain.MongoConnectionDetails;
-import com.imaginea.mongodb.exceptions.ApplicationException;
-import com.imaginea.mongodb.exceptions.DatabaseException;
-import com.imaginea.mongodb.exceptions.ErrorCodes;
-import com.imaginea.mongodb.exceptions.ValidationException;
+import com.imaginea.mongodb.exceptions.*;
 import com.imaginea.mongodb.services.AuthService;
 import com.imaginea.mongodb.services.DatabaseService;
+import com.imaginea.mongodb.utils.DatabaseQueryExecutor;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
@@ -207,5 +205,36 @@ public class DatabaseServiceImpl implements DatabaseService {
         }
 
         return dbStats;
+    }
+
+    /**
+     * Gets the result of the command
+     *
+     * @param dbName   Name of Database
+     * @param command  Name of the Command to be executed
+     * @param queryStr query to be performed. In case of empty query {} return all
+     * @param keys     Keys to be present in the resulted docs.
+     * @param limit    Number of docs to show.
+     * @param skip     Docs to skip from the front.
+     * @return Result of executing the command.
+     * @throws DatabaseException throw super type of UndefinedDatabaseException
+     */
+    public JSONObject executeQuery(String dbName, String command, String queryStr, String keys, String sortBy, int limit, int skip) throws DatabaseException, JSONException, InvalidMongoCommandException {
+        if (dbName == null) {
+            throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
+        }
+        if (dbName.equals("")) {
+            throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Empty");
+        }
+        List<String> databaseNames = getDbList();
+        if (!databaseNames.contains(dbName)) {
+            throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS, "DB with name [" + dbName + "]DOES_NOT_EXIST");
+        }
+        try {
+            DB db = mongoInstance.getDB(dbName);
+            return DatabaseQueryExecutor.executeQuery(db, command, queryStr, keys, sortBy, limit, skip);
+        } catch (MongoException e) {
+            throw new DatabaseException(ErrorCodes.MONGO_EXCEPTION, e.getMessage());
+        }
     }
 }

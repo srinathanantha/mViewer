@@ -45,7 +45,14 @@ YUI({
             sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentColl = event.currentTarget.getAttribute("data-collection-name");
             MV.selectDBItem(event.currentTarget);
-            queryExecutor = MV.loadQueryBox(MV.URLMap.getDocKeys(), MV.URLMap.getDocs(), sm.currentColl(), showTabView);
+            var config = {
+                keysUrl: MV.URLMap.getDocKeys(),
+                dataUrl: MV.URLMap.getDocs(),
+                query: "db.[0].find({\r\r})".format(sm.currentColl()),
+                currentSelection: sm.currentColl(),
+                showKeys: true
+            };
+            queryExecutor = MV.loadQueryBox(config, showTabView);
         };
 
         /**

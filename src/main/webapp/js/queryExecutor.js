@@ -1,38 +1,87 @@
 YUI.add('query-executor', function(Y) {
     YUI.namespace('com.imaginea.mongoV');
     var MV = YUI.com.imaginea.mongoV;
-    var successHandler, currentSelection;
     var sm = MV.StateManager;
 
-    MV.loadQueryBox = function(keysUrl, dataUrl, selectedCollection, sHandler) {
+    MV.loadQueryBox = function(config, sHandler) {
 
         var cachedQueryParams = {};
-        successHandler = sHandler;
-        currentSelection = selectedCollection;
+        var successHandler = sHandler;
+        var keysUrl = config.keysUrl;
+        var dataUrl = config.dataUrl;
+
+        var _queryTextTemplate = [
+            "<div id='queryBoxDiv'>",
+            "<div class='queryBoxlabels'>",
+            "<label>Define Query</label>",
+            "</div>",
+            "<div>",
+            "<textarea id='queryBox' name='queryBox' class='queryBox navigable' data-search_name='query'>",
+            "[0]",
+            "</textarea>",
+            "</div>",
+            "</div>"
+
+        ].join('\n');
+
+        var _docKeysCheckListTemplate = [
+            "<div id='checkListDiv'>",
+            "<div class='queryBoxlabels'><label for='fields' >Attributes</label>",
+            "<a id='selectAll' class='navigationRight navigable' data-search_name='Select All Attributes' href='javascript:void(0)'>Select All</a>",
+            "<label> / </label>",
+            "<a id='unselectAll' href='javascript:void(0)' class='navigable' data-search_name='UnSelect All Attributes' >Unselect All</a>",
+            "</div>",
+            "<div><ul id='fields' class='checklist'></ul></div>",
+            "</div>"
+        ].join('\n');
+
+        var _docKeysListItemTemplate = "<li><label for='[0]'><input id='[1]' name='[2]' type='checkbox' checked=true />[3]</label></li>";
+
+        var _queryFiltersTemplate = [
+            "<div id='parametersDiv'>",
+            "<label for='skip'> Skip(No. of records) </label><br/><input id='skip' type='text' name='skip' value='0' class='navigable' data-search_name='skip'/><br/>",
+            "<label for='limit'> Max page size: </label><br/><span><select id='limit' name='limit' class='navigable' data-search_name='max limit'><option value='10'>10</option><option value='25'>25</option><option value='50'>50</option></select></span><br/>  ",
+            "<label for='sort'> Sort by fields </label><br/><input id='sort' type='text' name='sort' value='_id:-1' class='navigable' data-search_name='sort'/><br/><br/>",
+            "<button id='execQueryButton' class='bttn navigable' data-search_name='Execute Query'>Execute Query</button>",
+            "</div>"
+        ].join('\n');
+
+        var _paginatorTemplate = [
+            "<div id='paginator'>",
+            "<a id='first' href='javascript:void(0)' data-search_name='First'>&laquo; First</a>",
+            "<a id='prev'  href='javascript:void(0)' data-search_name='Previous'>&lsaquo; Previous</a>",
+            "<label>Showing</label>", "<label id='startLabel'></label>", "<label> - </label>",
+            "<label id='endLabel'></label>", "<label> of </label>", "<label id='countLabel'></label>",
+            "<a id='next' href='javascript:void(0)' data-search_name='Next'>Next &rsaquo;</a>",
+            "<a id='last' href='javascript:void(0)' data-search_name='Last'>Last &raquo;</a>",
+            "</div>"
+        ].join('\n');
+
+        var getForm = function(showKeys) {
+            if (showKeys) {
+                return _queryTextTemplate.format(config.query) + _docKeysCheckListTemplate + _queryFiltersTemplate;
+            } else {
+                return _queryTextTemplate.format(config.query) + _queryFiltersTemplate;
+            }
+        };
 
         function _getKeys() {
             return cachedQueryParams.checkedFields;
         }
 
-        /**
-         * It sends request to get the keys from first 10 records only. Updates all key with another request.
-         */
-        Y.io(keysUrl, {
-            method: "GET",
-            data: 'allKeys=false',
-            on: {
-                success: function(ioId, responseObject) {
-                    populateQueryBox(ioId, responseObject);
-                    _executeQuery(null);
-                    // Now sending request to fetch all keys
-                    populateAllKeys();
-                },
-                failure: function(ioId, responseObject) {
-                    MV.hideLoadingPanel();
-                    MV.showServerErrorMessage(responseObject);
-                }
-            }
-        });
+        showQueryBox();
+        _executeQuery();
+        var areKeysLoaded = false;
+
+        function showQueryBox() {
+            MV.clearHeader();
+            document.getElementById('queryExecutor').style.display = 'block';
+            var queryForm = Y.one('#queryForm');
+            queryForm.addClass('form-cont');
+            queryForm.set("innerHTML", getForm(config.showKeys));
+            MV.mainBody.set("innerHTML", _paginatorTemplate);
+            initListeners();
+        }
 
         /**
          *The function is an event handler for the execute query button. It gets the query parameters from UI components
@@ -40,7 +89,7 @@ YUI.add('query-executor', function(Y) {
          */
         function _executeQuery() {
             var queryParams = _getQueryParameters(false);
-            execute(queryParams);
+            _execute(queryParams);
         }
 
         /**
@@ -49,13 +98,16 @@ YUI.add('query-executor', function(Y) {
          */
         function _executeCachedQuery() {
             var queryParams = _getQueryParameters(true);
-            execute(queryParams);
+            _execute(queryParams);
         }
 
-        function execute(queryParams) {
+        function _execute(queryParams) {
             sm.publish(sm.events.actionTriggered);
             var queryStr = "&query=[0]&limit=[1]&skip=[2]&fields=[3]&sortBy=[4]".format(
                 encodeURIComponent(queryParams.query), queryParams.limit, queryParams.skip, queryParams.checkedFields, queryParams.sortBy);
+            if (config.showKeys && !areKeysLoaded) {
+                queryStr = queryStr + "&allKeys=true";
+            }
             if (queryStr !== undefined) {
                 MV.showLoadingPanel("Loading Documents...");
                 Y.io(dataUrl, {
@@ -68,6 +120,9 @@ YUI.add('query-executor', function(Y) {
                                 //TotalCount may vary from request to request. so update the same in cache.
                                 queryParams.totalCount = result.count;
                                 postExecuteQueryProcess(queryParams);
+                                if (config.showKeys && !areKeysLoaded) {
+                                    populateAllKeys();
+                                }
                                 //Update the pagination anchors accordingly
                                 updateAnchors(result.count, result.editable);
                                 successHandler(result);
@@ -95,9 +150,10 @@ YUI.add('query-executor', function(Y) {
                 on: {
                     success: function(ioId, responseObj) {
                         var keys = MV.getResponseResult(responseObj).keys;
-                        if (keys !== undefined) {
-                            var innerHTML = _formatKeys(keys);
-                            Y.one('#fields').set('innerHTML', innerHTML);
+                        areKeysLoaded = true;
+                        if (keys) {
+                            _addKeys(keys);
+                            cachedQueryParams.checkedFields = keys;
                         }
                     },
                     failure: function(ioId, responseObject) {
@@ -108,100 +164,14 @@ YUI.add('query-executor', function(Y) {
             });
         }
 
-        /**
-         *The function is success handler for the request of getting all the keys in a collections.
-         *It parses the response, gets the keys and makes the query box. It also sends the request to load the
-         *documents after the query box has been populated,
-         * @param {Number} e Id
-         * @param {Object} The response Object
-         */
-        function populateQueryBox(ioId, responseObj) {
-            var keys, count, queryForm, error;
-            try {
-                var response = MV.getResponseResult(responseObj)
-                keys = response.keys;
-                count = response.count;
-                if (keys !== undefined || count !== undefined) {
-                    document.getElementById('queryExecutor').style.display = 'block';
-                    queryForm = Y.one('#queryForm');
-                    queryForm.addClass('form-cont');
-                    MV.clearHeader();
-                    MV.mainBody.empty(true);
-                    queryForm.set("innerHTML", getForm(keys, count));
-                    MV.mainBody.set("innerHTML", paginatorTemplate.format(count < 25 ? count : 25, count));
-                    initListeners();
-                } else {
-                    error = "Could not get keys: " + MV.getErrorMessage(responseObj);
-                    Y.log(error, "error");
-                    MV.showAlertMessage(error, MV.warnIcon);
-                }
-            } catch (e) {
-                Y.log("Could not parse the JSON response to get the keys", "error");
-                Y.log("Response received: [0]".format(responseObj.responseText), "error");
-                MV.showAlertMessage("Cannot parse Response to get keys", MV.warnIcon);
-            }
-        }
-
-        var getForm = function(keys, count) {
-            var checkList = "", selectTemplate = "";
-            if (keys !== undefined) {
-                selectTemplate = [
-                    "<a id='selectAll' class='navigationRight navigable' data-search_name='Select All Attributes' href='javascript:void(0)'>Select All</a>",
-                    "<label> / </label>",
-                    "<a id='unselectAll' href='javascript:void(0)' class='navigable' data-search_name='UnSelect All Attributes' >Unselect All</a>"
-                ].join('\n');
-                checkList = "<div id='checkListDiv'><div class='queryBoxlabels'><label for='fields' >Attributes</label>" + selectTemplate + "</div><div><ul id='fields' class='checklist'>";
-                checkList += _formatKeys(keys);
-                checkList += "</ul>";
-                checkList += "</div>";
-                checkList += "</div>";
-            }
-            return upperPartTemplate.format(currentSelection) + checkList + lowerPartTemplate;
-        };
-
-        function _formatKeys(keys) {
-            var checkList = "";
+        function _addKeys(keys) {
+            var checkList = Y.one("#fields");
             for (var index = 0; index < keys.length; index++) {
-                checkList += checkListTemplate.format(keys[index], keys[index], keys[index], keys[index]);
+                var listItem = _docKeysListItemTemplate.format(keys[index], keys[index], keys[index], keys[index]);
+                checkList.appendChild(listItem);
             }
             return checkList;
         }
-
-        var upperPartTemplate = [
-            "<div id='queryBoxDiv'>",
-            "<div class='queryBoxlabels'>",
-            "<label>Define Query</label>",
-            "</div>",
-            "<div>",
-            "<textarea id='queryBox' name='queryBox' class='queryBox navigable' data-search_name='query'>",
-            "db.[0].find({\r\r})",
-            "</textarea>",
-            "</div>",
-            "</div>"
-
-        ].join('\n');
-
-        var checkListTemplate = "<li><label for='[0]'><input id='[1]' name='[2]' type='checkbox' checked=true />[3]</label></li>";
-
-        var lowerPartTemplate = [
-            "<div id='parametersDiv'>",
-            "<label for='skip'> Skip(No. of records) </label><br/><input id='skip' type='text' name='skip' value='0' class='navigable' data-search_name='skip'/><br/>",
-            "<label for='limit'> Max page size: </label><br/><span><select id='limit' name='limit' class='navigable' data-search_name='max limit'><option value='10'>10</option><option value='25'>25</option><option value='50'>50</option></select></span><br/>  ",
-            "<label for='sort'> Sort by fields </label><br/><input id='sort' type='text' name='sort' value='_id:-1' class='navigable' data-search_name='sort'/><br/><br/>",
-            "<button id='execQueryButton' class='bttn navigable' data-search_name='Execute Query'>Execute Query</button>",
-            "</div>"
-        ].join('\n');
-
-        var paginatorTemplate = [
-            "<div id='paginator'>",
-            "<a id='first' href='javascript:void(0)' data-search_name='First'>&laquo; First</a>",
-            "<a id='prev'  href='javascript:void(0)' data-search_name='Previous'>&lsaquo; Previous</a>",
-            "<label>Showing</label>", "<label id='startLabel'> 1 </label>", "<label> - </label>",
-            "<label id='endLabel'> [0] </label>", "<label> of </label>", "<label id='countLabel'> [1] </label>",
-            "<a id='next' href='javascript:void(0)' data-search_name='Next'>Next &rsaquo;</a>",
-            "<a id='last' href='javascript:void(0)' data-search_name='Last'>Last &raquo;</a>",
-            "</div>"
-        ].join('\n');
 
         function initListeners() {
             Y.on("click", _executeQuery, "#execQueryButton");
@@ -327,7 +297,7 @@ YUI.add('query-executor', function(Y) {
          */
         function postExecuteQueryProcess(queryParams) {
             var command = getCommand(queryParams);
-            if (command && (command === "find" || command === "findOne")) {
+            if (command && (command === "find" || command === "findOne" || command === "runCommand")) {
                 cachedQueryParams = queryParams;
             } else if (command === "drop") {
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
@@ -382,10 +352,6 @@ YUI.add('query-executor', function(Y) {
                 _executeCachedQuery();
             },
 
-            getQueryParameters: function(fromCache) {
-                return _getQueryParameters(fromCache);
-            },
-
             adjustQueryParamsOnDelete: function(numberOfDocs) {
                 var queryParams = _getQueryParameters(true);
                 queryParams.totalCount = queryParams.totalCount - numberOfDocs;
@@ -398,8 +364,8 @@ YUI.add('query-executor', function(Y) {
                 return _getKeys();
             },
 
-            formatKeys: function(keys) {
-                return _formatKeys(keys)
+            updateKeysList: function(keys) {
+                return _addKeys(keys)
             }
         }
     };

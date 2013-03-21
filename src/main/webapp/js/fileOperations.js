@@ -36,7 +36,14 @@ YUI({
             sm.publish(sm.events.actionTriggered);
             MV.appInfo.currentBucket = event.currentTarget.getAttribute("data-bucket-name");
             MV.selectDBItem(event.currentTarget);
-            queryExecutor = MV.loadQueryBox(MV.URLMap.getFilesCount(), MV.URLMap.getFiles(), sm.currentBucket() + ".files", showTabView);
+            var config = {
+                keysUrl: MV.URLMap.getFilesCount(),
+                dataUrl: MV.URLMap.getFiles(),
+                query: "db.[0].files.find({\r\r})".format(sm.currentBucket()),
+                currentSelection: sm.currentBucket(),
+                showKeys: false
+            };
+            queryExecutor = MV.loadQueryBox(config, showTabView);
         };
 
         /**

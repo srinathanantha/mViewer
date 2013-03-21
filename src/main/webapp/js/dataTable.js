@@ -71,7 +71,6 @@ YUI.add('custom-datatable', function(Y) {
         ds.sendRequest({
             callback: {
                 success: function(e) {
-                    MV.header.addClass('tab-cont');
                     MV.setHeader(MV.headerConstants.STATISTICS);
                     dt.render("#" + MV.mainBody.get('id'));
                 },

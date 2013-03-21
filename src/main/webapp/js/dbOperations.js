@@ -176,9 +176,9 @@ YUI({
                         Y.on("click", createDB, "#createDB");
                     }
                     var index, dbNames = "";
-                    var dbTemplate = '<li class="yui3-menuitem navigable" data-db-name=[0] data-search_name=[3]> \
+                    var dbTemplate = '<li class="yui3-menuitem navigable" data-db-name="[0]" data-search_name="[3]"> \
                                 <span class="yui3-menu-label"> \
-                                      <a id=[1] data-db-name=[2] href="javascript:void(0)" title=[4] class="dbLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
+                                      <a id="[1]" data-db-name="[2]" href="javascript:void(0)" title="[4]" class="dbLabel navigableChild"><span class="wrap_listitem">[5]</span></a> \
                                       <a href="#[6]" class="yui3-menu-toggle navigableChild"></a>\
                                 </span>\
                                 <div id="[7]" class="yui3-menu menu-width">\
@@ -213,7 +213,7 @@ YUI({
                     dbDiv.set("innerHTML", dbNames);
                     var menu = Y.one("#dbNames");
                     menu.unplug(Y.Plugin.NodeMenuNav);
-                    menu.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0, _hasFocus : true });
+                    menu.plug(Y.Plugin.NodeMenuNav, { autoSubmenuDisplay: false, mouseOutHideDelay: 0, _hasFocus: true });
                     menu.set("style.display", "block");
                     MV.hideLoadingPanel();
                     sm.publish(sm.events.dbListUpdated);
@@ -289,6 +289,110 @@ YUI({
             collapsible: true,
             active: 0
         });
+
+        var queryExecutor = {};
+
+        function initQueryBox(event) {
+            sm.publish(sm.events.actionTriggered);
+            MV.appInfo.currentDB = event.currentTarget.getAttribute("data-db-name");
+            MV.selectDatabase(event.currentTarget);
+            var config = {
+                keysUrl : MV.URLMap.dbStatistics(),
+                dataUrl : MV.URLMap.runDbCommand(),
+                query: "db.runCommand({dbStats:1})",
+                currentSelection: sm.currentDB(),
+                showKeys: false
+            };
+            queryExecutor = MV.loadQueryBox(config, showTabView);
+        }
+
+        var tabView = new YAHOO.widget.TabView();
+        tabView.addTab(new YAHOO.widget.Tab({
+            label: 'JSON',
+            cacheData: true,
+            active: true
+        }));
+        tabView.addTab(new YAHOO.widget.Tab({
+            label: 'Tree Table',
+            content: ' <div id="treeTable"></div><div id="table-pagination"></div> '
+        }));
+
+        /**
+         * The function is an event handler to show the documents whenever a column name is clicked
+         * @param {object} e It is an event object
+         *
+         */
+        var showTabView = function(response) {
+            try {
+                MV.setHeader(MV.headerConstants.QUERY_RESPONSE);
+                tabView.appendTo(MV.mainBody.get('id'));
+                var treebleData = MV.getTreebleDataForDocs(response);
+                var treeble = MV.getTreeble(treebleData, "document");
+                treeble.load();
+                treeble.subscribe("rowMouseoverEvent", treeble.onEventHighlightRow);
+                treeble.subscribe("rowMouseoutEvent", treeble.onEventUnhighlightRow);
+                populateJSONTab(response);
+                MV.hideLoadingPanel();
+            } catch (error) {
+                MV.hideLoadingPanel();
+                var msg = "Failed to initailise data tabs. Reason: [0]".format(error);
+                Y.log(msg, "error");
+                MV.showAlertMessage(msg, MV.warnIcon);
+            }
+        };
+
+        /**
+         * The function creates the json view and adds the edit,delete,save and cancel buttons for each document
+         * @param response The response Object containing all the documents
+         */
+        function populateJSONTab(response) {
+            var trTemplate = [
+                "<div class='docDiv navigable' id='doc[0]' data-search_name='json'>",
+                "<div class='textAreaDiv'><pre><textarea id='ta[1]' disabled='disabled' cols='74'>[2]</textarea></pre></div>",
+                "</div>"
+            ].join('\n');
+            var jsonView = "<div class='buffer jsonBuffer'>";
+            jsonView += "<table class='jsonTable'><tbody>";
+
+            var documents = response.documents;
+            if (documents.length === 0) {
+                jsonView = jsonView + "No documents to be displayed";
+            } else {
+                for (var i = 0; i < documents.length; i++) {
+                    jsonView += trTemplate.format(i, i, Y.JSON.stringify(documents[i], null, 4));
+                }
+            }
+            jsonView = jsonView + "</tbody></table></div>";
+            tabView.getTab(0).setAttributes({
+                content: jsonView
+            }, false);
+            for (i = 0; i < documents.length; i++) {
+                fitToContent(500, document.getElementById("ta" + i));
+            }
+        }
+
+        /**
+         * Sets the size of the text area according to the content in the text area.
+         * @param maxHeight The maximum height if the text area
+         * @param text The text of the text area
+         */
+        function fitToContent(maxHeight, text) {
+            if (text) {
+                var adjustedHeight = text.clientHeight;
+                if (!maxHeight || maxHeight > adjustedHeight) {
+                    adjustedHeight = Math.max(text.scrollHeight, adjustedHeight) + 4;
+                    if (maxHeight) {
+                        adjustedHeight = Math.min(maxHeight, adjustedHeight);
+                    }
+                    if (adjustedHeight > text.clientHeight) {
+                        text.style.height = adjustedHeight + "px";
+                    }
+                }
+            }
+        }
+
+        // Make request to load collection names when a database name is clicked
+        Y.delegate("click", initQueryBox, "#dbNames", "a.dbLabel");
 
         // Make a request to load Database names when the page loads
         Y.on("load", requestConnectionDetails);

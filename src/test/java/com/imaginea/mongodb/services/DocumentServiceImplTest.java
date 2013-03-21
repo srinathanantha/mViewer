@@ -33,10 +33,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -110,7 +108,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 DBObject keys = new BasicDBObject();
                                 keys.put("p", 1);
 
-                                JSONObject result = testDocumentService.getQueriedDocsList(dbName, collectionName, "find", null, "p", "", 0, 0);
+                                JSONObject result = testDocumentService.getQueriedDocsList(dbName, collectionName, "find", null, "p", "", 0, 0, false);
 
                                 ArrayList<DBObject> documentList = (ArrayList<DBObject>) result.get("documents");
                                 boolean flag = false;

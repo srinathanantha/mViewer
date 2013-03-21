@@ -16,9 +16,11 @@
 package com.imaginea.mongodb.services;
 
 import com.imaginea.mongodb.exceptions.DatabaseException;
+import com.imaginea.mongodb.exceptions.InvalidMongoCommandException;
 import com.imaginea.mongodb.exceptions.ValidationException;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -77,5 +79,20 @@ public interface DatabaseService {
      * @throws ValidationException throw super type of EmptyDatabaseNameException
      */
     public String dropDb(String dbName) throws DatabaseException, ValidationException;
+
+    /**
+     *
+     * @param dbName
+     * @param command
+     * @param queryStr
+     * @param keys
+     * @param sortBy
+     * @param limit
+     * @param skip
+     * @return
+     * @throws DatabaseException
+     * @throws JSONException
+     */
+    public JSONObject executeQuery(String dbName, String command, String queryStr, String keys, String sortBy, int limit, int skip) throws DatabaseException, JSONException, InvalidMongoCommandException;
 
 }
