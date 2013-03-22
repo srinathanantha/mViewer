@@ -163,9 +163,9 @@ public class QueryExecutor {
     private static JSONObject executeFind(DBCollection dbCollection, String queryStr, DBObject keysObj, DBObject sortObj, int limit, int skip, boolean allKeys) throws JSONException {
         DBObject queryObj = (DBObject) JSON.parse(queryStr);
         DBCursor cursor = null;
-        if(allKeys){
+        if (allKeys) {
             cursor = dbCollection.find(queryObj);
-        }else{
+        } else {
             cursor = dbCollection.find(queryObj, keysObj);
         }
         cursor = cursor.sort(sortObj).skip(skip).limit(limit);
@@ -226,38 +226,68 @@ public class QueryExecutor {
         return ApplicationUtils.constructResponse(false, groupQueryResult);
     }
 
-    private static JSONObject executeMapReduce(DBCollection dbCollection, String queryString, int limit) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryString);
+    private static JSONObject executeMapReduce(DBCollection dbCollection, String queryString, int limit) throws JSONException, InvalidMongoCommandException {
+        DBObject queryObj = (DBObject) JSON.parse("[" + queryString + "]");
 
-        String map = (String) queryObj.get("map");
-        String reduce = (String) queryObj.get("reduce");
-        DBObject out = (DBObject) queryObj.get("out");
-        DBObject query = (DBObject) out.get("query");
+        String map = (String) queryObj.get("0");
+        String reduce = (String) queryObj.get("1");
+        DBObject params = (DBObject) queryObj.get("2");
+        String outputDb = null;
         MapReduceCommand.OutputType outputType = MapReduceCommand.OutputType.REPLACE;
         String outputCollection = null;
-        if (out.get("replace") != null) {
-            outputCollection = (String) out.get("replace");
-            outputType = MapReduceCommand.OutputType.REPLACE;
-        } else if (out.get("merge") != null) {
-            outputCollection = (String) out.get("merge");
-            outputType = MapReduceCommand.OutputType.INLINE;
-        } else if (out.get("reduce") != null) {
-            outputCollection = (String) out.get("reduce");
-            outputType = MapReduceCommand.OutputType.INLINE;
-        } else if (out.get("inline") != null) {
-            outputType = MapReduceCommand.OutputType.INLINE;
+
+        if (params.get("out") instanceof DBObject) {
+            DBObject out = (DBObject) params.get("out");
+            if (out.get("sharded") != null) {
+                throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "sharded is not yet supported. Please remove it and run again");
+            }
+            if (out.get("replace") != null) {
+                if (out.get("nonAtomic") != null) {
+                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "nonAtomic is not supported in replace mode. Please remove it and run again");
+                }
+                outputCollection = (String) out.get("replace");
+                outputDb = (String) out.get("db");
+                outputType = MapReduceCommand.OutputType.REPLACE;
+            } else if (out.get("merge") != null) {
+                outputCollection = (String) out.get("merge");
+                outputDb = (String) out.get("db");
+                outputType = MapReduceCommand.OutputType.INLINE;
+            } else if (out.get("reduce") != null) {
+                outputCollection = (String) out.get("reduce");
+                outputDb = (String) out.get("db");
+                outputType = MapReduceCommand.OutputType.INLINE;
+            } else if (out.get("inline") != null) {
+                outputType = MapReduceCommand.OutputType.INLINE;
+                if (out.get("nonAtomic") != null) {
+                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "nonAtomic is not supported in inline mode. Please remove it and run again");
+                }
+            }
+        } else if (params.get("out") instanceof String) {
+            outputCollection = (String) params.get("out");
+        }
+
+        DBObject query = (DBObject) params.get("query");
+        DBObject sort = (DBObject) params.get("sort");
+        if (params.get("limit") != null) {
+            limit = (Integer) params.get("limit");
+        }
+        String finalize = (String) params.get("finalize");
+        Map scope = (Map) params.get("scope");
+        if (params.get("jsMode") != null) {
+            throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "jsMode is not yet supported. Please remove it and run again");
+        }
+        boolean verbose = true;
+        if (params.get("verbose") != null) {
+            verbose = (Boolean) params.get("verbose ");
         }
 
         MapReduceCommand mapReduceCommand = new MapReduceCommand(dbCollection, map, reduce, outputCollection, outputType, query);
-        if (out != null) {
-            mapReduceCommand.setFinalize((String) out.get("finalize "));
-            mapReduceCommand.setLimit(limit);
-            mapReduceCommand.setScope((Map) out.get("scope"));
-            mapReduceCommand.setSort((DBObject) out.get("sort"));
-            if (out.get("verbose") != null) {
-                mapReduceCommand.setVerbose((Boolean) out.get("verbose"));
-            }
-        }
+        mapReduceCommand.setSort(sort);
+        mapReduceCommand.setLimit(limit);
+        mapReduceCommand.setFinalize(finalize);
+        mapReduceCommand.setScope(scope);
+        mapReduceCommand.setVerbose(verbose);
+        mapReduceCommand.setOutputDB(outputDb);
 
         MapReduceOutput mapReduceOutput = dbCollection.mapReduce(mapReduceCommand);
         return ApplicationUtils.constructResponse(false, mapReduceOutput.getCommandResult());

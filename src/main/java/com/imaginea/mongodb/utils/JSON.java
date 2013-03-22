@@ -137,6 +137,7 @@ class JSONParser {
                         read('n');
                         StringBuilder funcStr = new StringBuilder("function");
                         char currentCharacter = get();
+                        funcStr.append(" ");
                         while (currentCharacter != '{' && pos < s.length()) {
                             funcStr.append(currentCharacter);
                             currentCharacter = s.charAt(++pos);
