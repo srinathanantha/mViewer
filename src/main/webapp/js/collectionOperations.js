@@ -60,10 +60,11 @@ YUI({
          * @param oId the event Id object
          * @param responseObject The response Object
          */
-        function displayCollectionNames(oId, responseObj) {
-            var parsedResult, index, errorMsg, collections = "", gridFSBuckets = "", systemCollections = "";
+        function displayCollectionNames(oId, responseObject) {
+            var responseResult, index, collections = "", gridFSBuckets = "", systemCollections = "";
             try {
-                parsedResult = MV.getResponseResult(responseObj);
+                var jsonObject = MV.toJSON(responseObject);
+                responseResult = MV.getResponseResult(jsonObject);
                 var collTemplate = '' +
                     '<li class="yui3-menuitem navigable" data-collection-name="[0]" data-search_name="[3]" > \
                          <span class="yui3-menu-label"> \
@@ -151,9 +152,9 @@ YUI({
                     </li>';
 
                 var hasCollections = false, hasFiles = false, hasUsersAndIndexes = false;
-                if (parsedResult) {
-                    for (index = 0; index < parsedResult.length; index++) {
-                        var collectionName = parsedResult[index];
+                if (responseResult) {
+                    for (index = 0; index < responseResult.length; index++) {
+                        var collectionName = responseResult[index];
                         var id;
                         if (collectionName == 'system.users') {
                             id = MV.getCollectionElementId(collectionName);
@@ -196,10 +197,10 @@ YUI({
                     sm.publish(sm.events.collectionListUpdated);
                     MV.hideLoadingPanel();
                 } else {
-                    errorMsg = "Could not load collections: " + MV.getErrorMessage(responseObj);
+                    var errorMsg = "Could not load collections: " + MV.getErrorMessage(jsonObject);
                     Y.log(errorMsg, "error");
                     MV.hideLoadingPanel();
-                    MV.showAlertMessage(errorMsg, MV.warnIcon);
+                    MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                 }
             } catch (e) {
                 MV.hideLoadingPanel();
@@ -246,8 +247,9 @@ YUI({
                         Y.io(MV.URLMap.isCappedCollection(), {
                             method: "GET",
                             on: {
-                                success: function(ioId, responseObj) {
-                                    var isCapped = MV.getResponseResult(responseObj);
+                                success: function(ioId, responseObject) {
+                                    var jsonObject = MV.toJSON(responseObject);
+                                    var isCapped = MV.getResponseResult(jsonObject);
                                     if (isCapped) {
                                         $("#isCapped").attr('checked', 'checked');
                                         $("#cappedSection").removeClass('disabled');
@@ -313,14 +315,15 @@ YUI({
             this.hide();
             var request = Y.io(MV.URLMap.dropBucket(), {
                 on: {
-                    success: function(ioId, responseObj) {
-                        var response = MV.getResponseResult(responseObj);
-                        if (response !== undefined) {
+                    success: function(ioId, responseObject) {
+                        var jsonObject = MV.toJSON(responseObject);
+                        var responseResult = MV.getResponseResult(jsonObject);
+                        if (responseResult) {
                             Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
-                            MV.showAlertMessage(response, MV.infoIcon);
+                            MV.showAlertMessage(responseResult, MV.infoIcon);
                         } else {
-                            var errorMsg = "Could not drop bucket: " + MV.getErrorMessage(responseObj);
-                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            var errorMsg = "Could not drop bucket: " + MV.getErrorMessage(jsonObject);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                             Y.log(errorMsg, "error");
                         }
                     },
@@ -345,15 +348,16 @@ YUI({
                 {
                     method: "POST",
                     on: {
-                        success: function(ioId, responseObj) {
-                            var response = MV.getResponseResult(responseObj);
-                            if (response !== undefined) {
+                        success: function(ioId, responseObject) {
+                            var jsonObject = MV.toJSON(responseObject);
+                            var responseResult = MV.getResponseResult(jsonObject);
+                            if (responseResult) {
                                 sm.clearCurrentColl();
                                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
-                                MV.showAlertMessage(response, MV.infoIcon);
+                                MV.showAlertMessage(responseResult, MV.infoIcon);
                             } else {
-                                var errorMsg = "Could not drop collection: " + MV.getErrorMessage(responseObj);
-                                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                var errorMsg = "Could not drop collection: " + MV.getErrorMessage(jsonObject);
+                                MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                                 Y.log(errorMsg, "error");
                             }
                         },
@@ -368,14 +372,15 @@ YUI({
          * THe function handles the successful sending of the add Document request
          * @param responseObject the response object
          */
-        function addDocument(responseObj) {
-            var response = MV.getResponseResult(responseObj);
-            if (response !== undefined) {
+        function addDocument(responseObject) {
+            var jsonObject = MV.toJSON(responseObject);
+            var responseResult = MV.getResponseResult(jsonObject);
+            if (responseResult) {
                 Y.one("#" + MV.getCollectionElementId(MV.appInfo.currentColl)).simulate("click");
                 MV.showAlertMessage("New document added successfully to collection '[0]'".format(MV.appInfo.currentColl), MV.infoIcon);
             } else {
-                var errorMsg = "Could not add Document: " + MV.getErrorMessage(responseObj);
-                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                var errorMsg = "Could not add Document: " + MV.getErrorMessage(jsonObject);
+                MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                 Y.log(errorMsg, "error");
                 return false;
             }
@@ -388,18 +393,19 @@ YUI({
          * then prompt the user
          * @param responseObject The response Object
          */
-        function updateCollection(responseObj) {
-            var response = MV.getResponseResult(responseObj);
-            if (response !== undefined) {
+        function updateCollection(responseObject) {
+            var jsonObject = MV.toJSON(responseObject);
+            var responseResult = MV.getResponseResult(jsonObject);
+            if (responseResult) {
                 sm.clearCurrentColl();
                 /**
                  * The alert message need to be shown after simulating the click event,otherwise the message will be hidden by click event
                  */
                 Y.one("#" + MV.getDatabaseElementId(MV.appInfo.currentDB)).simulate("click");
-                MV.showAlertMessage(response, MV.infoIcon);
+                MV.showAlertMessage(responseResult, MV.infoIcon);
             } else {
-                var errorMsg = "Could not update Collection: " + MV.getResponseResult(responseObj);
-                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                var errorMsg = "Could not update Collection: " + MV.getErrorMessage(jsonObject);
+                MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                 Y.log(errorMsg, "error");
                 return false;
             }

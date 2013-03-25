@@ -21,7 +21,6 @@ YUI.add('alert-dialog', function(Y) {
     var MV = YUI.com.imaginea.mongoV, timeoutId;
 
     MV.showAlertMessage = function(msg, icon, errorCode) {
-        msg = errorCode != undefined ? msg.format(MV.errorCodeMap[errorCode]) : msg;
         if (errorCode === "INVALID_SESSION") {
             window.location = "index.html?code=INVALID_SESSION";
         } else if (errorCode === "INVALID_CONNECTION") {

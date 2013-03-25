@@ -335,26 +335,36 @@ YUI.add('utility', function(Y) {
         }
     };
 
-    MV.getResponseResult = function(responseObject) {
-        try {
-            var parsedResponse = Y.JSON.parse(responseObject.responseText);
-            return parsedResponse.response.result;
-        } catch (e) {
-            var msg = "Could not parse the JSON response.";
-            Y.log(msg, "error");
-            MV.showAlertMessage(msg, MV.warnIcon);
-        }
+    MV.toJSON = function(responseObject) {
+        return Y.JSON.parse(responseObject.responseText);
     };
 
-    MV.getErrorMessage = function(responseObject) {
-        var parsedResponse = Y.JSON.parse(responseObject.responseText);
-        var serverError = parsedResponse.response.error;
+    MV.getResponseResult = function(jsonObject) {
+        return jsonObject.response.result;
+    };
+
+    MV.getErrorMessage = function(jsonObject) {
+        var errorCode = MV.getErrorCode(jsonObject);
+        if(errorCode) {
+            var errorMessage = MV.errorCodeMap[errorCode];
+            if(errorMessage) {
+                return errorMessage;
+            }
+        }
+        var serverError = jsonObject.response.error;
         if (serverError) {
-            if (serverError.message.indexOf("errmsg") > 0) {
+            if (serverError.message && serverError.message.indexOf("errmsg") > 0) {
                 var messageJSONStr = serverError.message.substr(serverError.message.indexOf(":") + 1);
                 serverError.message = Y.JSON.parse(messageJSONStr).errmsg;
             }
-            return serverError.message;
+            return serverError.message ? serverError.message : '';
+        }
+    };
+
+    MV.getErrorCode = function(jsonObject) {
+        var serverError = jsonObject.response.error;
+        if (serverError) {
+            return serverError.code;
         }
     };
 
@@ -365,7 +375,7 @@ YUI.add('utility', function(Y) {
 
     MV.errorCodeMap = {
         "SERVER_ERROR": "Could not execute your request. Please check if server is running.",
-        "HOST_UNKNOWN": "Connection Failed ! Please check if MongoDB is running at the given host and port !",
+        "HOST_UNKNOWN": "Connection Failed ! Check if MongoDB is running at the given host and port !",
         "MISSING_LOGIN_FIELDS": "Please fill in all the login fields !",
         "ERROR_PARSING_PORT": "You have entered an invalid port number !",
         "INVALID_ARGUMENT": "You have entered an invalid input data !",

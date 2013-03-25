@@ -193,6 +193,7 @@ YUI.add('submit-dialog', function(Y) {
                 success: function(response) {
                     var success = successHandler(response);
                     if (success) {
+                        sm.publish(sm.events.actionTriggered);
                         hideActiveDialog();
                     }
                 },

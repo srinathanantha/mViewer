@@ -114,23 +114,24 @@ YUI.add('query-executor', function(Y) {
                     method: "GET",
                     data: queryStr,
                     on: {
-                        success: function(request, responseObj) {
-                            var result = MV.getResponseResult(responseObj), error = MV.getErrorMessage(responseObj);
-                            if (result && !error) {
+                        success: function(request, responseObject) {
+                            var jsonObject = MV.toJSON(responseObject);
+                            var responseResult = MV.getResponseResult(jsonObject);
+                            if (responseResult) {
                                 //TotalCount may vary from request to request. so update the same in cache.
-                                queryParams.totalCount = result.count;
+                                queryParams.totalCount = responseResult.count;
                                 postExecuteQueryProcess(queryParams);
                                 if (config.showKeys && !areKeysLoaded) {
                                     populateAllKeys();
                                 }
                                 //Update the pagination anchors accordingly
-                                updateAnchors(result.count, result.editable);
-                                successHandler(result);
+                                updateAnchors(responseResult.count, responseResult.editable);
+                                successHandler(responseResult);
                                 sm.publish(sm.events.queryExecuted);
                             } else {
                                 MV.hideLoadingPanel();
-                                var msg = "Could not execute query: " + error;
-                                MV.showAlertMessage(msg, MV.warnIcon);
+                                var msg = "Could not execute query: " + MV.getErrorMessage(jsonObject);
+                                MV.showAlertMessage(msg, MV.warnIcon, MV.getErrorCode(jsonObject));
                                 Y.log(msg, "error");
                             }
                         },
@@ -148,12 +149,20 @@ YUI.add('query-executor', function(Y) {
                 method: "GET",
                 data: 'allKeys=true',
                 on: {
-                    success: function(ioId, responseObj) {
-                        var keys = MV.getResponseResult(responseObj).keys;
-                        areKeysLoaded = true;
-                        if (keys) {
-                            _addKeys(keys);
-                            cachedQueryParams.checkedFields = keys;
+                    success: function(ioId, responseObject) {
+                        var jsonObject = MV.toJSON(responseObject);
+                        var responseResult = MV.getResponseResult(jsonObject);
+                        if(responseResult) {
+                            var keys = responseResult.keys;
+                            areKeysLoaded = true;
+                            if (keys) {
+                                _addKeys(keys);
+                                cachedQueryParams.checkedFields = keys;
+                            }
+                        } else {
+                            var msg = "Could not get the keys : " + MV.getErrorMessage(jsonObject);
+                            MV.showAlertMessage(msg, MV.warnIcon, MV.getErrorCode(jsonObject));
+                            Y.log(msg, "error");
                         }
                     },
                     failure: function(ioId, responseObject) {

@@ -202,16 +202,17 @@ YUI({
                 var docId = Y.JSON.stringify(parsedDoc._id);
                 var request = Y.io(MV.URLMap.deleteFile(docId), {
                     on: {
-                        success: function(ioId, responseObj) {
-                            var response = MV.getResponseResult(responseObj);
-                            if (response !== undefined) {
-                                MV.showAlertMessage(response, MV.infoIcon);
+                        success: function(ioId, responseObject) {
+                            var jsonObject = MV.toJSON(responseObject);
+                            var responseResult = MV.getResponseResult(jsonObject);
+                            if (responseResult) {
+                                MV.showAlertMessage(responseResult, MV.infoIcon);
                                 // Re-execute the cached find query to update the view with the new resultSet
                                 queryExecutor.adjustQueryParamsOnDelete(1);
                                 queryExecutor.executeCachedQuery();
                             } else {
-                                var errorMsg = "Could not delete the file: " + MV.getErrorMessage(responseObj);
-                                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                var errorMsg = "Could not delete the file: " + MV.getErrorMessage(jsonObject);
+                                MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                                 Y.log(errorMsg, "error");
                             }
                         },

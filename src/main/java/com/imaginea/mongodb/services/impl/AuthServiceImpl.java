@@ -70,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             mongo = new Mongo(connectionDetails.getHostIp(), connectionDetails.getHostPort());
         } catch (UnknownHostException e) {
-            throw new ApplicationException(ErrorCodes.HOST_UNKNOWN, "Unknown Host");
+            throw new ApplicationException(ErrorCodes.HOST_UNKNOWN, "Could not connect to mongo instance with the given host and port");
         }
         String dbNames = connectionDetails.getDbNames();
         String[] dbNamesList = dbNames.split(",");

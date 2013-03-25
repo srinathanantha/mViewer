@@ -244,16 +244,17 @@ YUI({
                 method: "POST",
                 data: "_id=" + docId + "&keys=" + doc,
                 on: {
-                    success: function(ioId, responseObj) {
-                        var response = MV.getResponseResult(responseObj);
-                        if (response !== undefined) {
+                    success: function(ioId, responseObject) {
+                        var jsonObject = MV.toJSON(responseObject);
+                        var responseResult = MV.getResponseResult(jsonObject);
+                        if (responseResult) {
                             var targetNode = eventObject.currentTarget;
                             var index = getButtonIndex(targetNode);
                             toggleSaveEdit(targetNode, index, actionMap.save);
                             var savedKeys = queryExecutor.getKeys();
                             var newKeys = [];
-                            for (var index = 0; index < response.keys.length; index++) {
-                                var key = response.keys[index];
+                            for (var index = 0; index < responseResult.keys.length; index++) {
+                                var key = responseResult.keys[index];
                                 if (savedKeys.indexOf(key) == -1) {
                                     newKeys.push(key);
                                 }
@@ -265,8 +266,8 @@ YUI({
                             // Re-execute the cached find query to update the view with the new resultSet
                             queryExecutor.executeCachedQuery(true);
                         } else {
-                            var errorMsg = "Could not update Document: " + MV.getErrorMessage(responseObj);
-                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            var errorMsg = "Could not update Document: " + MV.getErrorMessage(jsonObject);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                             Y.log(errorMsg, "error");
                         }
                     },
@@ -312,16 +313,17 @@ YUI({
                         method: "POST",
                         data: "_id=" + docId,
                         on: {
-                            success: function(ioId, responseObj) {
-                                var response = MV.getResponseResult(responseObj);
-                                if (response !== undefined) {
+                            success: function(ioId, responseObject) {
+                                var jsonObject = MV.toJSON(responseObject);
+                                var responseResult = MV.getResponseResult(jsonObject);
+                                if (responseResult) {
                                     MV.showAlertMessage("Document deleted successfully.", MV.infoIcon);
                                     // Re-execute the cached find query to update the view with the new resultSet
                                     queryExecutor.adjustQueryParamsOnDelete(1);
                                     queryExecutor.executeCachedQuery();
                                 } else {
-                                    var errorMsg = "Could not delete the document: " + MV.getErrorMessage(responseObj);
-                                    MV.showAlertMessage(errorMsg, MV.warnIcon);
+                                    var errorMsg = "Could not delete the document: " + MV.getErrorMessage(jsonObject);
+                                    MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                                     Y.log(errorMsg, "error");
                                 }
                             },

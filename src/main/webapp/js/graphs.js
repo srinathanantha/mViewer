@@ -173,13 +173,14 @@ YUI({
         Y.on('click', stopAnimation, '#animation');
 
         //Subscribe our handlers to IO's global custom events:
-        Y.on('io:success', function(ioId, responseObj) {
-            var response = MV.getResponseResult(responseObj);
-            if (response !== undefined) {
+        Y.on('io:success', function(ioId, responseObject) {
+            var jsonObject = MV.toJSON(responseObject);
+            var responseResult = MV.getResponseResult(jsonObject);
+            if (responseResult) {
                 drawChart();
             } else {
-                var errorMsg = "Error: " + MV.getErrorMessage(responseObj);
-                MV.showAlertMessage(errorMsg, MV.warnIcon);
+                var errorMsg = "Error: " + MV.getErrorMessage(jsonObject);
+                MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                 Y.log(errorMsg, "error");
             }
         });

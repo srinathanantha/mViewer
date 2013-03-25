@@ -67,13 +67,14 @@ YUI({
             Y.io(MV.URLMap.disconnect(), {
                 method: "GET",
                 on: {
-                    success: function(ioId, responseObj) {
-                        var response = MV.getResponseResult(responseObj);
-                        if (response !== undefined) {
+                    success: function(ioId, responseObject) {
+                        var jsonObject = MV.toJSON(responseObject);
+                        var responseResult = MV.getResponseResult(jsonObject);
+                        if (responseResult) {
                             window.location = "index.html";
                         } else {
-                            var errorMsg = "Cannot disconnect: " + MV.getErrorMessage(responseObj);
-                            MV.showAlertMessage(errorMsg, MV.warnIcon);
+                            var errorMsg = "Cannot disconnect: " + MV.getErrorMessage(jsonObject);
+                            MV.showAlertMessage(errorMsg, MV.warnIcon, MV.getErrorCode(jsonObject));
                             Y.log(errorMsg, "error");
                         }
                     },
