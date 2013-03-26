@@ -141,9 +141,11 @@ a:hover {
 
 .nav-bar {
     background: #161616;
-    width: 100%;
+    width: inherit;
     height: 60px;
-    padding: 0 10px;
+    padding: 0 11px;
+    position: fixed;
+    z-index: 2000;
 }
 
 .nav-link-home {
@@ -175,7 +177,7 @@ a.logo {
 
 ul.nav-link-top {
     list-style-type: none;
-    margin-left: 40px;
+    margin-left: 10px;
 }
 
 ul.nav-link-top li {
@@ -187,7 +189,7 @@ ul.nav-link-top li a {
     color: #F7F7F7;
     padding: 22px 15px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 12px;
     height: 30px;
     line-height: 60px;
     cursor: pointer;
@@ -210,7 +212,7 @@ ul.lists li:hover, ul.lists li.sel:hover, .nav-link-home:hover {
 
 .shadow, * input:focus, button:focus, textarea:focus, a:focus, select:focus, tr.selected {
     box-shadow: 0 0 2px 2px highlight !important;
-    -webkit-box-shadow: 0 0 2px 2px rgb(255, 255, 255);
+    -webkit-box-shadow: 0 0 2px 2px highlight !important;
     -moz-box-shadow: 0 0 2px 2px highlight !important;
     outline: none;
 }
@@ -347,14 +349,19 @@ ul.nav-link-right li label {
     width: 920px;
     border: 1px solid #B2D4D3;
     background: #fbfbfb;
+    top:90px;
+    position: relative;
 }
 
 .title-head {
     background: #D0E4F7;
     height: 30px;
-    padding: 0 10px;
-    position: relative;
+    padding: 0 11px;
     text-align: center;
+    position: fixed;
+    z-index: 2000;
+    top:60px;
+    width: inherit;
 }
 
 .title-head label {
@@ -687,9 +694,8 @@ table tr td {
 #paginator {
     float: right;
     margin-top: 5px;
-    z-index: 1000;
-    position: absolute;
-    right: 120px;
+    position: inherit;
+    margin-right: 32px;
 }
 
 #first, #prev {
@@ -706,7 +712,6 @@ table tr td {
 
 #last {
     margin-left: 10px;
-    margin-right: 95px;
 }
 
 #execQueryButton {
@@ -926,14 +931,10 @@ textarea .disabled {
 }
 
 .searchBox {
-    border: 1px solid #a9a9a9;
-    border-radius: 0px 3px 3px 0px;
-    left: 0px;
-    bottom: 0px;
-    padding: 5px;
-    position: fixed;
+    padding-top: 20px;
+    color: lightgray;
     font-weight: bold;
-    background-color: #c0c0c0;
+    float:left;
 }
 
 *html .searchBox {
@@ -944,7 +945,7 @@ textarea .disabled {
 
 .assistText {
     border: 1px solid #888888;
-    width: 137px;
+    width: 250px;
 }
 
 div.navigable ul.lists li {

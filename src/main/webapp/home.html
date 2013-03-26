@@ -182,27 +182,34 @@
             <a href="" class="hostname">Host: <span id="hostname"></span></a>
             <a href="" class="hostname">User: <span id="user"></span></a>
         </div>
-        <ul class="nav-link-top gen-float">
-            <li><a id="serverStats"  class="navigable" data-search_name="Server statistics">Server Statistics</a>
-            </li>
-            <li><a id="graphs"  class="navigable" data-search_name="Graphs">Mongo Graphs</a>
-            </li>
-        </ul>
-        <ul class="nav-link-top nav-link-right">
-            <li><a id="help" class="navigable" data-search_name="help" style="font-size: 11px;">Help</a>
-            </li>
-            <label style="color: white;">|</label>
-            <li><a id="disconnect" class="navigable" data-search_name="Disconnect" style="font-size: 11px;">Disconnect</a>
-            </li>
-        </ul>
+
+        <div class="searchBox">
+            <input type="search" id="assistText" class="assistText" placeholder="Search, navigate and execute" title="Navigate to any db, collection, link, button, text field just by typing any 3 letters of its visible name. Use enter to execute the highlighted item and up/down/ctrl+left/ctrl+right to navigate through the items. Refer documentation for more help."/>
+        </div>
+
+        <div>
+            <ul class="nav-link-top gen-float">
+                <li><a id="serverStats"  class="navigable" data-search_name="Server statistics">Server Statistics</a>
+                </li>
+                <li><a id="graphs"  class="navigable" data-search_name="Graphs">Mongo Graphs</a>
+                </li>
+            </ul>
+            <ul class="nav-link-top nav-link-right">
+                <li><a id="help" class="navigable" data-search_name="help" style="font-size: 11px;">Help</a>
+                </li>
+                <label style="color: white;">|</label>
+                <li><a id="disconnect" class="navigable" data-search_name="Disconnect" style="font-size: 11px;">Disconnect</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="title-head">
+        <span id="infoMsg" class="infoMsg">
+            <span id="infoIcon"></span>
+            <span id="infoText" class="infoText"></span>
+        </span>
     </div>
     <div class="body-cont gen-float">
-        <div class="title-head">
-                <span id="infoMsg" class="infoMsg">
-                    <span id="infoIcon"></span>
-                    <span id="infoText" class="infoText"></span>
-                </span>
-        </div>
         <div class="generalInfo" style="display:none"> &nbsp;</div>
         <div class="left-cont gen-float">
             <div id="dbBuffer" class="buffer dbBuffer">
@@ -286,12 +293,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="searchBox" style="display:none">
-            Command: &nbsp;
-            <input type="text" id="assistText" class="assistText"/>
-        </div>
-
     </div>
 
 </div>

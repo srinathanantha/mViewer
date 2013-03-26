@@ -16,9 +16,6 @@ YUI.add('navigator', function(Y) {
     function Navigator() {
         this.selectorString = '.navigable';
 
-        //boolean representing whether the navigator is visible or not
-        this.isNavigatorVisible = false;
-
         // associative array to hold the navigable links
         this.navigableRegions = [];
 
@@ -52,20 +49,6 @@ YUI.add('navigator', function(Y) {
             Y.all(self.selectorString).each(function(item) {
                 self.navigableRegions.push(item);
             });
-        },
-        showCommandBar: function() {
-            this.indexNavigableRegions();
-            this.clearText();
-            this.enableSearchShortCuts();
-            this.searchBox.show();
-            this.searchInput.focus();
-            this.isNavigatorVisible = true;
-        },
-        hideCommandBar: function() {
-            this.searchBox.hide();
-            this.disableSearchShortCuts();
-            this.clearCurrentSearches();
-            this.isNavigatorVisible = false;
         },
         highlightSearchElements: function() {
             this.clearCurrentSearches();
@@ -260,6 +243,7 @@ YUI.add('navigator', function(Y) {
                         setTimeout(setFocus, 500);
                     }
                 } else if ('SELECT' === selectedNodeName) {
+                    highlightedElement.focus();
                     highlightedElement.simulate('mousedown');
                 } else {
                     highlightedElement.simulate('click');
@@ -301,7 +285,7 @@ YUI.add('navigator', function(Y) {
                 keys: SPACE_KEY
             }, {
                 fn: function() {
-                    self.showCommandBar();
+                    self.searchInput.focus();
                 }
             });
             this.keyListeners.spaceListener.enable();
@@ -310,53 +294,69 @@ YUI.add('navigator', function(Y) {
                 keys: ESCAPE_KEY
             }, {
                 fn: function() {
-                    self.hideCommandBar();
+                    if(self.isSearchInputBoxFocused()) {
+                        self.clearText();
+                    }
                 }
             }, 'keyup');
+            this.keyListeners.escapeListener.enable();
 
             this.keyListeners.enterKeyListener = new YAHOO.util.KeyListener(document, {
                 keys: ENTER_KEY
             }, {
                 fn: function() {
-                    if (self.isNavigatorVisible && self.isSearchInputBoxFocused()) {
+                    if (self.isSearchInputBoxFocused()) {
                         self.selectElement();
                     }
                 }
             }, 'keyup');
+            this.keyListeners.enterKeyListener.enable();
 
             this.keyListeners.downKeyListener = new YAHOO.util.KeyListener(document, {
                 keys: ARROW_KEYS.DOWN
             }, {
                 fn: function() {
-                    self.goToNextSearchResult();
+                    if(self.isSearchInputBoxFocused()) {
+                        self.goToNextSearchResult();
+                    }
                 }
             }, 'keyup');
+            this.keyListeners.downKeyListener.enable();
 
             this.keyListeners.upKeyListener = new YAHOO.util.KeyListener(document, {
                 keys: ARROW_KEYS.UP
             }, {
                 fn: function() {
-                    self.goToPreviousSearchResult();
+                    if(self.isSearchInputBoxFocused()) {
+                        self.goToPreviousSearchResult();
+                    }
                 }
             }, 'keyup');
+            this.keyListeners.upKeyListener.enable();
 
             this.keyListeners.ctrlLeftKeyListener = new YAHOO.util.KeyListener(document, {
                 ctrl: true,
                 keys: ARROW_KEYS.LEFT
             }, {
                 fn: function() {
-                    self.goToPreviousNavigableSibling();
+                    if(self.isSearchInputBoxFocused()) {
+                        self.goToPreviousNavigableSibling();
+                    }
                 }
             });
+            this.keyListeners.ctrlLeftKeyListener.enable();
 
             this.keyListeners.ctrlRightKeyListener = new YAHOO.util.KeyListener(document, {
                 ctrl: true,
                 keys: ARROW_KEYS.RIGHT
             }, {
                 fn: function() {
-                    self.goToNextNavigableSibling();
+                    if(self.isSearchInputBoxFocused() ) {
+                        self.goToNextNavigableSibling();
+                    }
                 }
             });
+            this.keyListeners.ctrlRightKeyListener.enable();
 
             this.searchInput.on("keyup", function(eventObject) {
                 if (eventObject.keyCode !== ARROW_KEYS.UP && eventObject.keyCode !== ARROW_KEYS.DOWN && eventObject.keyCode !== ARROW_KEYS.LEFT && eventObject.keyCode !== ARROW_KEYS.RIGHT && eventObject.keyCode !== '\r'.charCodeAt(0)) {
@@ -368,28 +368,11 @@ YUI.add('navigator', function(Y) {
                     self.highlightSearchElements();
                 }
             });
-        },
-        /**
-         * enables all the search short cuts which are used once the search box is opened
-         */
-        enableSearchShortCuts: function() {
-            this.keyListeners.escapeListener.enable();
-            this.keyListeners.enterKeyListener.enable();
-            this.keyListeners.downKeyListener.enable();
-            this.keyListeners.upKeyListener.enable();
-            this.keyListeners.ctrlLeftKeyListener.enable();
-            this.keyListeners.ctrlRightKeyListener.enable();
-        },
-        /**
-         * disables all the search short cuts which are no more once the search box is closed
-         */
-        disableSearchShortCuts: function() {
-            this.keyListeners.escapeListener.disable();
-            this.keyListeners.enterKeyListener.disable();
-            this.keyListeners.downKeyListener.disable();
-            this.keyListeners.upKeyListener.disable();
-            this.keyListeners.ctrlLeftKeyListener.disable();
-            this.keyListeners.ctrlRightKeyListener.disable();
+
+            this.searchInput.on("focus", function(eventObject) {
+                self.indexNavigableRegions();
+                self.clearText();
+            });
         },
         /**
          * Whenever the collections list/db list is updated or a query is executed we re-index the navigable regions.
@@ -397,9 +380,7 @@ YUI.add('navigator', function(Y) {
         subscribeToDataChangeEvents: function() {
             var self = this;
             sm.subscribe(function() {
-                if (self.isNavigatorVisible) {
-                    self.indexNavigableRegions();
-                }
+                self.indexNavigableRegions();
             }, [sm.events.collectionListUpdated, sm.events.dbListUpdated, sm.events.queryExecuted]);
         }
     };

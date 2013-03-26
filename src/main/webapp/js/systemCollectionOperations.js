@@ -477,7 +477,7 @@ YUI({
          */
         function addUser(responseObject) {
             var jsonObject = MV.toJSON(responseObject);
-            var responseResult = MV.getResponseResult(responseObject);
+            var responseResult = MV.getResponseResult(jsonObject);
             if (responseResult) {
                 var collection = MV.getCollectionElementId(MV.appInfo.currentColl);
                 Y.one("#" + collection).simulate("click");
