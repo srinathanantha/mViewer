@@ -70,8 +70,8 @@ YUI.add('query-executor', function(Y) {
         }
 
         showQueryBox();
-        _executeQuery();
         var areKeysLoaded = false;
+        _executeQuery();
 
         function showQueryBox() {
             MV.clearHeader();

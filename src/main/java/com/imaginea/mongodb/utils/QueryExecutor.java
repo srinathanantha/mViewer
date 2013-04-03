@@ -62,7 +62,7 @@ public class QueryExecutor {
             return executeInsert(dbCollection, queryStr);
         }
         if (command.equals("mapReduce")) {
-            return executeMapReduce(dbCollection, queryStr, limit);
+            return executeMapReduce(dbCollection, queryStr);
         }
         if (command.equals("remove")) {
             return executeRemove(dbCollection, queryStr);
@@ -226,7 +226,7 @@ public class QueryExecutor {
         return ApplicationUtils.constructResponse(false, groupQueryResult);
     }
 
-    private static JSONObject executeMapReduce(DBCollection dbCollection, String queryString, int limit) throws JSONException, InvalidMongoCommandException {
+    private static JSONObject executeMapReduce(DBCollection dbCollection, String queryString) throws JSONException, InvalidMongoCommandException {
         DBObject queryObj = (DBObject) JSON.parse("[" + queryString + "]");
 
         String map = (String) queryObj.get("0");
@@ -268,6 +268,7 @@ public class QueryExecutor {
 
         DBObject query = (DBObject) params.get("query");
         DBObject sort = (DBObject) params.get("sort");
+        int limit = 0;
         if (params.get("limit") != null) {
             limit = (Integer) params.get("limit");
         }

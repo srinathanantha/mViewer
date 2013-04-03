@@ -694,7 +694,8 @@ table tr td {
 #paginator {
     float: right;
     margin-top: 5px;
-    position: inherit;
+    z-index: 20;
+    position: relative;
     margin-right: 32px;
 }
 
