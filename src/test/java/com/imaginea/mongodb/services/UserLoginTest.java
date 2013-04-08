@@ -27,7 +27,6 @@ package com.imaginea.mongodb.services;
 
 import com.imaginea.mongodb.controllers.LoginController;
 import com.imaginea.mongodb.controllers.TestingTemplate;
-import com.imaginea.mongodb.exceptions.MongoHostUnknownException;
 import com.imaginea.mongodb.utils.JSON;
 import com.mongodb.BasicDBObject;
 import org.apache.log4j.Logger;
@@ -72,7 +71,7 @@ public class UserLoginTest extends TestingTemplate {
      */
 
     @Test
-    public void testUserLoginRequest() throws MongoHostUnknownException {
+    public void testUserLoginRequest() {
         ErrorTemplate.execute(logger, new ResponseCallback() {
             public Object execute() throws Exception {
                 // Insert user in admin db

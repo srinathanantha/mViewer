@@ -33,6 +33,21 @@ input {
 
 /*Login Screen*/
 
+.spinner {
+    position:   fixed;
+    z-index:    1000;
+    background: rgba( 255, 255, 255, .8 )
+    url('/images/ajax-loader.gif')
+    50% 50%
+    no-repeat;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+}
+
 .loginScreen {
     width: 400px;
     height: 350px;

@@ -29,10 +29,8 @@ import com.imaginea.mongodb.controllers.TestingTemplate;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.services.impl.DatabaseServiceImpl;
-import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
@@ -44,9 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test service functions for performing operations like create/drop on
@@ -254,8 +250,7 @@ public class DatabaseServiceImplTest extends TestingTemplate {
                             }
                         }
                     } catch (MongoException m) {
-                        ApplicationException e = new ApplicationException(ErrorCodes.GET_DB_STATS_EXCEPTION, "Error Testing Database stats operation", m.getCause());
-                        throw e;
+                        throw new ApplicationException(ErrorCodes.GET_DB_STATS_EXCEPTION, m.getMessage());
                     }
                     return null;
                 }

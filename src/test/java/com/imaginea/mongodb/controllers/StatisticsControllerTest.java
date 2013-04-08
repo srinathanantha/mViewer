@@ -214,8 +214,7 @@ public class StatisticsControllerTest extends TestingTemplate {
                         }
 
                     } catch (MongoException m) {
-                        ApplicationException e = new ApplicationException(ErrorCodes.GET_COLL_STATS_EXCEPTION, "GET_COLL_STATS_EXCEPTION", m.getCause());
-                        throw e;
+                        throw new ApplicationException(ErrorCodes.GET_COLL_STATS_EXCEPTION, m.getMessage());
                     }
                     return null;
                 }

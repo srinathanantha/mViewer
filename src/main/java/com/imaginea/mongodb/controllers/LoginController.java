@@ -19,8 +19,10 @@ import com.imaginea.mongodb.domain.ConnectionDetails;
 import com.imaginea.mongodb.domain.MongoConnectionDetails;
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
+import com.imaginea.mongodb.exceptions.MongoConnectionException;
 import com.imaginea.mongodb.services.impl.DatabaseServiceImpl;
-import com.mongodb.Mongo;
+import com.mongodb.MongoException;
+import com.mongodb.MongoInternalException;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,9 +32,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -82,8 +82,24 @@ public class LoginController extends BaseController {
                 HttpSession session = request.getSession();
                 Set<String> existingConnectionIdsInSession = (Set<String>) session.getAttribute("existingConnectionIdsInSession");
 
-                ConnectionDetails connectionDetails = new ConnectionDetails(host, Integer.parseInt(mongoPort), user, password, databases);
-                String connectionId = authService.authenticate(connectionDetails, existingConnectionIdsInSession);
+                int port = 0;
+                try {
+                    port = Integer.parseInt(mongoPort);
+                } catch (NumberFormatException e) {
+                    throw new MongoConnectionException(ErrorCodes.INVALID_PORT, "You have entered an invalid port number !");
+                }
+                ConnectionDetails connectionDetails = new ConnectionDetails(host, port, user, password, databases);
+                String connectionId = null;
+                try {
+                    connectionId = authService.authenticate(connectionDetails, existingConnectionIdsInSession);
+                } catch (IllegalArgumentException m) {
+                    throw new MongoConnectionException(ErrorCodes.INVALID_ARGUMENT, "You have entered an invalid data !");
+                } catch (MongoInternalException m) {
+                    // Throws when cannot connect to localhost.com
+                    throw new MongoConnectionException(ErrorCodes.HOST_UNKNOWN, m.getMessage());
+                } catch (MongoException m) {
+                    throw new MongoConnectionException(ErrorCodes.MONGO_CONNECTION_EXCEPTION, "Connection Failed. Check if MongoDB is running at the given host and port.");
+                }
                 if (existingConnectionIdsInSession == null) {
                     existingConnectionIdsInSession = new HashSet<String>();
                     session.setAttribute("existingConnectionIdsInSession", existingConnectionIdsInSession);

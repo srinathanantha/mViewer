@@ -22,6 +22,7 @@ package com.imaginea.mongodb.services;
  * @author Sanjay Chaluvadi
  */
 
+import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.DatabaseException;
 import com.mongodb.DBObject;
 
@@ -39,7 +40,7 @@ public interface SystemCollectionService {
      * @throws DatabaseException throw super type of UndefinedDatabaseException
      */
 
-    public String addUser(String dbName, String username, String password, boolean readOnly) throws DatabaseException;
+    public String addUser(String dbName, String username, String password, boolean readOnly) throws ApplicationException;
 
     /**
      * Drops the user from the given mongo db based on the username
@@ -50,7 +51,7 @@ public interface SystemCollectionService {
      * @throws DatabaseException throwsuper type of UndefinedDatabaseException
      */
 
-    public String removeUser(String dbName, String username) throws DatabaseException;
+    public String removeUser(String dbName, String username) throws ApplicationException;
 
     /**
      * Drops all the users from the given mongo db
@@ -60,7 +61,7 @@ public interface SystemCollectionService {
      * @throws DatabaseException throw super type of UndefinedDatabaseException
      */
 
-    public String removeAllUsers(String dbName) throws DatabaseException;
+    public String removeAllUsers(String dbName) throws ApplicationException;
 
     /**
      * Adds an index for a given colleciton in a mongo db
@@ -72,7 +73,7 @@ public interface SystemCollectionService {
      * @throws DatabaseException throw super type of UndefinedDatabaseException
      */
 
-    public String addIndex(String dbName, String collectionName, DBObject keys) throws DatabaseException;
+    public String addIndex(String dbName, String collectionName, DBObject keys) throws ApplicationException;
 
     /**
      * Removes all the indexes from all the collections in a given mongo db
@@ -81,7 +82,7 @@ public interface SystemCollectionService {
      * @return Returns the success message that shown to the user
      * @throws DatabaseException throw super type of UndefinedDatabaseException
      */
-    public String removeIndexes(String dbName) throws DatabaseException;
+    public String removeIndexes(String dbName) throws ApplicationException;
 
     /**
      * Removes an index from the collection based on the index name
@@ -92,5 +93,5 @@ public interface SystemCollectionService {
      * @return Returns the success message that shown to the user
      * @throws DatabaseException throw super type of UndefinedDatabaseException
      */
-    public String removeIndex(String dbName, String collectionName, String indexName) throws DatabaseException;
+    public String removeIndex(String dbName, String collectionName, String indexName) throws ApplicationException;
 }

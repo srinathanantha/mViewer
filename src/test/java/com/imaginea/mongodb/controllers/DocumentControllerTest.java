@@ -158,7 +158,7 @@ public class DocumentControllerTest extends TestingTemplate {
                                 }
 
                             } catch (MongoException m) {
-                                ApplicationException e = new ApplicationException(ErrorCodes.GET_DOCUMENT_LIST_EXCEPTION, "GET_DOCUMENT_LIST_EXCEPTION", m.getCause());
+                                ApplicationException e = new ApplicationException(ErrorCodes.QUERY_EXECUTION_EXCEPTION, "GET_DOCUMENT_LIST_EXCEPTION", m.getCause());
                                 throw e;
                             }
                             return null;

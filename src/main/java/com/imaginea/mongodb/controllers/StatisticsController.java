@@ -15,16 +15,17 @@
  */
 package com.imaginea.mongodb.controllers;
 
+import com.imaginea.mongodb.exceptions.DatabaseException;
+import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.services.AuthService;
 import com.imaginea.mongodb.services.CollectionService;
 import com.imaginea.mongodb.services.DatabaseService;
 import com.imaginea.mongodb.services.impl.AuthServiceImpl;
 import com.imaginea.mongodb.services.impl.CollectionServiceImpl;
 import com.imaginea.mongodb.services.impl.DatabaseServiceImpl;
-import com.mongodb.CommandResult;
 import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +71,11 @@ public class StatisticsController extends BaseController {
             public Object execute() throws Exception {
                 Mongo mongoInstance = authService.getMongoInstance(connectionId);
                 // Get Server Stats
-                return mongoInstance.getDB("admin").command("serverStatus");
+                try {
+                    return mongoInstance.getDB("admin").command("serverStatus");
+                } catch (MongoException e) {
+                    throw new DatabaseException(ErrorCodes.GET_DB_STATS_EXCEPTION, e.getMessage());
+                }
             }
         });
         return response;

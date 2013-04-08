@@ -80,7 +80,7 @@ public class GridFSServiceImpl implements GridFSService {
      * @param bucketName Name of GridFS Bucket
      * @return Status message.
      */
-    public String createStore(String dbName, String bucketName) throws DatabaseException, CollectionException {
+    public String createStore(String dbName, String bucketName) throws DatabaseException, CollectionException, GridFSException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database Name Is Null");
         }
@@ -96,7 +96,11 @@ public class GridFSServiceImpl implements GridFSService {
         if (getAllBuckets(dbName).contains(bucketName)) {
             throw new CollectionException(ErrorCodes.COLLECTION_ALREADY_EXISTS, "Collection [" + bucketName + "] already exists in Database [" + dbName + "]");
         } else {
-            new GridFS(mongoInstance.getDB(dbName), bucketName);
+            try {
+                new GridFS(mongoInstance.getDB(dbName), bucketName);
+            } catch (MongoException e) {
+                throw new GridFSException(ErrorCodes.GRIDFS_CREATION_EXCEPTION, e.getMessage());
+            }
             return "GridFS bucket [" + bucketName + "] added to database [" + dbName + "].";
         }
     }
@@ -138,13 +142,16 @@ public class GridFSServiceImpl implements GridFSService {
         DB db = mongoInstance.getDB(dbName);
         GridFS gridFS = new GridFS(db, bucketName);
         DBCollection filesCollection = getGridFSCollection(gridFS, bucketType);
-
-        if (command.equals("find")) {
-            return executeFind(filesCollection, query, sortBy, limit, skip);
-        } else if (command.equals("drop")) {
-            return executeDrop(db, bucketName);
-        } else {
-            throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "This command is not supported in GridFS");
+        try {
+            if (command.equals("find")) {
+                return executeFind(filesCollection, query, sortBy, limit, skip);
+            } else if (command.equals("drop")) {
+                return executeDrop(db, bucketName);
+            } else {
+                throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "This command is not supported in GridFS");
+            }
+        } catch (MongoException e) {
+            throw new GridFSException(ErrorCodes.QUERY_EXECUTION_EXCEPTION, e.getMessage());
         }
     }
 
@@ -245,7 +252,7 @@ public class GridFSServiceImpl implements GridFSService {
      * @return Success message with additional file details such as name, size,
      *         download url & deletion url as JSON Array string.
      */
-    public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException {
+    public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
 
@@ -281,8 +288,10 @@ public class GridFSServiceImpl implements GridFSService {
             obj.put("delete_type", "GET");
             result.put(obj);
 
-        } catch (Exception e) {
+        } catch (MongoException e) {
             throw new CollectionException(ErrorCodes.UPLOAD_FILE_EXCEPTION, e.getMessage());
+        } catch (JSONException e) {
+            throw new ApplicationException(ErrorCodes.JSON_EXCEPTION, "Error creating json response obj", e.getCause());
         }
         return result;
     }

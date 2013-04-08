@@ -24,15 +24,15 @@
  */
 package com.imaginea.mongodb.services;
 
-import com.imaginea.mongodb.controllers.BaseController;
-import com.imaginea.mongodb.controllers.LoginController;
 import com.imaginea.mongodb.controllers.LogoutController;
-import com.imaginea.mongodb.utils.JSON;
-import com.mongodb.BasicDBObject;
+import com.imaginea.mongodb.controllers.TestingTemplate;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import javax.servlet.http.HttpSession;
+import java.util.Set;
 
 /**
  * Tests the GET request made by user to disconnect from the application. Here we
@@ -42,7 +42,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
  * @author Rachit Mittal
  * @since 15 July 2011
  */
-public class UserLogoutTest extends BaseController {
+public class UserLogoutTest extends TestingTemplate {
     private MockHttpServletRequest request = new MockHttpServletRequest();
 
     /**
@@ -56,19 +56,11 @@ public class UserLogoutTest extends BaseController {
     private static Logger logger = Logger.getLogger(UserLoginTest.class);
     private String connectionId;
 
-    /**
-     * Instantiates the class LoginController which is to be tested and also gets a
-     * mongo instance from mongo instance provider.
-     */
     @Before
     public void instantiateTestClass() {
+        // Class to be tested
         logoutController = new LogoutController();
-        request = new MockHttpServletRequest();
-        LoginController loginController = new LoginController();
-        // Add user to mappings in userLogin for authentication
-        String response = loginController.authenticateUser("admin", "admin", "localhost", "27017", null, request);
-        BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        connectionId = (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+        connectionId = loginAndGetConnectionId(request);
     }
 
     /**
@@ -76,8 +68,9 @@ public class UserLogoutTest extends BaseController {
      */
     @Test
     public void testUserLogoutRequest() {
-        String status = logoutController.doGet(connectionId, new MockHttpServletRequest());
-        assert (status.contains("User Logged Out"));
+        HttpSession session = request.getSession();
+        Set<String> existingConnectionIdsInSession = (Set<String>) session.getAttribute("existingConnectionIdsInSession");
+        logoutController.doGet(connectionId, request);
+        assert !existingConnectionIdsInSession.contains(connectionId);
     }
-
 }

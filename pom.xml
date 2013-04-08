@@ -25,6 +25,7 @@
                 <version>2.14</version>
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 </configuration>
             </plugin>
 

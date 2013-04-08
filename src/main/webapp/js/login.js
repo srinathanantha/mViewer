@@ -19,7 +19,7 @@ YUI({
 }).use("io", "json", "node", "utility", function(Y) {
         var MV = YUI.com.imaginea.mongoV;
         var tryLogin = function(e) {
-
+            Y.one("#spinner").addClass("spinner");
             Y.one('#loginMsg').setStyle('visibility', 'visible');
 
             var username = Y.one("#username").get("value").trim(),
@@ -96,6 +96,9 @@ YUI({
                     failure: function(ioId, responseObject) {
                         alert("Could not send request! Please check if application server is running.");
                         Y.log("Could not send request.", "error");
+                    },
+                    end: function () {
+                        Y.one("#spinner").removeClass("spinner");
                     }
                 }
             });

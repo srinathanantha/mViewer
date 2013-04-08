@@ -117,7 +117,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             connectionDetails.addToAuthenticatedDbNames(dbName);
         } catch (MongoException e) {
 
-            throw new DatabaseException("DB_CREATION_EXCEPTION", e.getMessage());
+            throw new DatabaseException(ErrorCodes.DB_CREATION_EXCEPTION, e.getMessage());
         }
 
         return "Created DB with name '" + dbName + "'";
@@ -150,7 +150,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             mongoInstance.dropDatabase(dbName);
         } catch (MongoException e) {
 
-            throw new DatabaseException("DB_DELETION_EXCEPTION", e.getMessage());
+            throw new DatabaseException(ErrorCodes.DB_DELETION_EXCEPTION, e.getMessage());
         }
 
         return "Successfully dropped DB '" + dbName + "'. The page will reload now.";
@@ -234,7 +234,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             DB db = mongoInstance.getDB(dbName);
             return DatabaseQueryExecutor.executeQuery(db, command, queryStr, keys, sortBy, limit, skip);
         } catch (MongoException e) {
-            throw new DatabaseException(ErrorCodes.MONGO_EXCEPTION, e.getMessage());
+            throw new DatabaseException(ErrorCodes.QUERY_EXECUTION_EXCEPTION, e.getMessage());
         }
     }
 }

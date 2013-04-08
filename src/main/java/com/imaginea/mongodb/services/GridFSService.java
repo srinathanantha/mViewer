@@ -39,7 +39,7 @@ public interface GridFSService {
      * @param bucketName Name of GridFS Bucket
      * @return Status message.
      */
-    public String createStore(String dbName, String bucketName) throws DatabaseException, CollectionException;
+    public String createStore(String dbName, String bucketName) throws DatabaseException, CollectionException, GridFSException;
 
     /**
      * Service handler for getting the list of files stored in GridFS of specified database.
@@ -76,7 +76,7 @@ public interface GridFSService {
      * @return Success message with additional file details such as name, size,
      *         download url & deletion url as JSON Array string.
      */
-    public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws DatabaseException, CollectionException, DocumentException, ValidationException;
+    public JSONArray insertFile(String dbName, String bucketName, String connectionId, InputStream inputStream, FormDataBodyPart formData) throws ApplicationException;
 
     /**
      * Service handler for dropping a file from GridFS.

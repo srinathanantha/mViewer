@@ -34,6 +34,7 @@ import com.imaginea.mongodb.services.SystemCollectionService;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 import java.util.Set;
 
@@ -72,7 +73,7 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
 
 
     @Override
-    public String addUser(String dbName, String username, String password, boolean readOnly) throws DatabaseException {
+    public String addUser(String dbName, String username, String password, boolean readOnly) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
         }
@@ -91,8 +92,11 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
         if (password.equals("")) {
             throw new DatabaseException(ErrorCodes.PASSWORD_IS_EMPTY, "Password is empty");
         }
-
-        mongoInstance.getDB(dbName).addUser(username, password.toCharArray(), readOnly);
+        try {
+            mongoInstance.getDB(dbName).addUser(username, password.toCharArray(), readOnly);
+        } catch (MongoException e) {
+            throw new ApplicationException(ErrorCodes.USER_CREATION_EXCEPTION, e.getMessage());
+        }
         return "User: " + username + " has been added to the DB: " + dbName;
     }
 
@@ -105,7 +109,7 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
      * @throws DatabaseException throwsuper type of UndefinedDatabaseException
      */
     @Override
-    public String removeUser(String dbName, String username) throws DatabaseException {
+    public String removeUser(String dbName, String username) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
         }
@@ -118,7 +122,11 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
         if (username.equals("")) {
             throw new DatabaseException(ErrorCodes.USERNAME_IS_EMPTY, "Username is empty");
         }
-        mongoInstance.getDB(dbName).removeUser(username);
+        try {
+            mongoInstance.getDB(dbName).removeUser(username);
+        } catch (MongoException e) {
+            throw new ApplicationException(ErrorCodes.USER_DELETION_EXCEPTION, e.getMessage());
+        }
         return "User: " + username + " deleted from the DB: " + dbName;
     }
 
@@ -131,7 +139,7 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
      */
 
     @Override
-    public String removeAllUsers(String dbName) throws DatabaseException {
+    public String removeAllUsers(String dbName) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
         }
@@ -141,7 +149,11 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
         DBCursor users = mongoInstance.getDB(dbName).getCollection("system.users").find();
         if (users.size() != 0) {
             for (DBObject user : users) {
-                mongoInstance.getDB(dbName).getCollection("system.users").remove(user);
+                try {
+                    mongoInstance.getDB(dbName).getCollection("system.users").remove(user);
+                } catch (MongoException e) {
+                    throw new ApplicationException(ErrorCodes.USER_DELETION_EXCEPTION, e.getMessage());
+                }
             }
             return "All users are dropped from the DB: " + dbName;
         } else {
@@ -160,7 +172,7 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
      */
 
     @Override
-    public String addIndex(String dbName, String collectionName, DBObject keys) throws DatabaseException {
+    public String addIndex(String dbName, String collectionName, DBObject keys) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
         }
@@ -180,7 +192,11 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
         if (keys.equals("")) {
             throw new DatabaseException(ErrorCodes.KEYS_EMPTY, "Index keys are Empty");
         }
-        mongoInstance.getDB(dbName).getCollection(collectionName).ensureIndex(keys);
+        try {
+            mongoInstance.getDB(dbName).getCollection(collectionName).ensureIndex(keys);
+        } catch (MongoException e) {
+            throw new ApplicationException(ErrorCodes.INDEX_ADDITION_EXCEPTION, e.getMessage());
+        }
         return "Index successfully added to the collection: " + dbName + ":" + collectionName;
     }
 
@@ -193,7 +209,7 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
      */
 
     @Override
-    public String removeIndexes(String dbName) throws DatabaseException {
+    public String removeIndexes(String dbName) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
         }
@@ -203,7 +219,11 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
 
         Set<String> collectionNames = mongoInstance.getDB(dbName).getCollectionNames();
         for (String collection : collectionNames) {
-            mongoInstance.getDB(dbName).getCollection(collection).dropIndexes();
+            try {
+                mongoInstance.getDB(dbName).getCollection(collection).dropIndexes();
+            } catch (MongoException e) {
+                throw new ApplicationException(ErrorCodes.INDEX_REMOVE_EXCEPTION, e.getMessage());
+            }
         }
         return "All indexes are dropped from DB: " + dbName;
     }
@@ -219,7 +239,7 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
      */
 
     @Override
-    public String removeIndex(String dbName, String collectionName, String indexName) throws DatabaseException {
+    public String removeIndex(String dbName, String collectionName, String indexName) throws ApplicationException {
         if (dbName == null) {
             throw new DatabaseException(ErrorCodes.DB_NAME_EMPTY, "Database name is null");
         }
@@ -238,7 +258,11 @@ public class SystemCollectionServiceImpl implements SystemCollectionService {
         if (indexName.equals("")) {
             throw new DatabaseException(ErrorCodes.INDEX_EMPTY, "Index name is Empty");
         }
-        mongoInstance.getDB(dbName).getCollection(collectionName).dropIndexes(indexName);
+        try {
+            mongoInstance.getDB(dbName).getCollection(collectionName).dropIndexes(indexName);
+        } catch (MongoException e) {
+            throw new ApplicationException(ErrorCodes.INDEX_REMOVE_EXCEPTION, e.getMessage());
+        }
 
         return "Index: " + indexName + " dropped from the collection: " + dbName + ":" + collectionName;
     }

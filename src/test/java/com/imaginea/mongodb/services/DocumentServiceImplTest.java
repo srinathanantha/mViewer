@@ -108,7 +108,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 DBObject keys = new BasicDBObject();
                                 keys.put("p", 1);
 
-                                JSONObject result = testDocumentService.getQueriedDocsList(dbName, collectionName, "find", null, "p", "", 0, 0, false);
+                                JSONObject result = testDocumentService.executeQuery(dbName, collectionName, "find", null, "p", "", 0, 0, false);
 
                                 ArrayList<DBObject> documentList = (ArrayList<DBObject>) result.get("documents");
                                 boolean flag = false;
@@ -130,7 +130,7 @@ public class DocumentServiceImplTest extends TestingTemplate {
                                 mongoInstance.dropDatabase(dbName);
                             } catch (MongoException m) // while dropping Db
                             {
-                                throw  new ApplicationException(ErrorCodes.GET_DOCUMENT_LIST_EXCEPTION, "Error Testing Document List", m.getCause());
+                                throw  new ApplicationException(ErrorCodes.QUERY_EXECUTION_EXCEPTION, "Error Testing Document List", m.getCause());
                             }
                             return null;
                         }

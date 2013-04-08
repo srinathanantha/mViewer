@@ -19,8 +19,6 @@ import com.imaginea.mongodb.exceptions.*;
 import com.imaginea.mongodb.services.AuthService;
 import com.imaginea.mongodb.services.impl.AuthServiceImpl;
 import com.imaginea.mongodb.utils.ApplicationUtils;
-import com.mongodb.MongoException;
-import com.mongodb.MongoInternalException;
 import com.mongodb.util.JSONParseException;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -29,7 +27,6 @@ import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.UnknownHostException;
 import java.util.Set;
 
 /**
@@ -134,22 +131,7 @@ public class BaseController {
             } catch (JSONParseException m) {
                 ApplicationException e = new ApplicationException(ErrorCodes.JSON_EXCEPTION, "Invalid JSON Object", m.getCause());
                 response = formErrorResponse(logger, e);
-            } catch (NumberFormatException m) {
-                ApplicationException e = new ApplicationException(ErrorCodes.ERROR_PARSING_PORT, "Invalid Port", m.getCause());
-                response = formErrorResponse(logger, e);
-            } catch (IllegalArgumentException m) {
-                // When port out of range
-                ApplicationException e = new ApplicationException(ErrorCodes.INVALID_ARGUMENT, m.getMessage(), m.getCause());
-                response = formErrorResponse(logger, e);
-            } catch (UnknownHostException m) {
-                MongoHostUnknownException e = new MongoHostUnknownException("Unknown host", m);
-                response = formErrorResponse(logger, e);
-            } catch (MongoInternalException m) {
-                // Throws when cannot connect to localhost.com
-                MongoHostUnknownException e = new MongoHostUnknownException("Unknown host", m);
-                response = formErrorResponse(logger, e);
-            } catch (MongoException m) {
-                MongoHostUnknownException e = new MongoHostUnknownException(m.getMessage(), m.getCause());
+            } catch (MongoConnectionException e) {
                 response = formErrorResponse(logger, e);
             } catch (DatabaseException e) {
                 response = formErrorResponse(logger, e);
@@ -158,6 +140,8 @@ public class BaseController {
             } catch (DocumentException e) {
                 response = formErrorResponse(logger, e);
             } catch (ValidationException e) {
+                response = formErrorResponse(logger, e);
+            } catch (InvalidMongoCommandException e) {
                 response = formErrorResponse(logger, e);
             } catch (ApplicationException e) {
                 response = formErrorResponse(logger, e);

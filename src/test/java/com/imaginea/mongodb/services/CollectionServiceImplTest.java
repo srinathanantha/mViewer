@@ -237,9 +237,9 @@ public class CollectionServiceImplTest extends TestingTemplate {
                                     break;
                                 }
                             }
-                        } catch (MongoException m) // while dropping Db
-                        {
-                            ApplicationException e = new ApplicationException(ErrorCodes.GET_COLL_STATS_EXCEPTION, "Error Testing Collection stats", m.getCause());
+                        } catch (MongoException m) {
+                            // while dropping Db
+                            ApplicationException e = new ApplicationException(ErrorCodes.GET_COLL_STATS_EXCEPTION, m.getMessage());
                             throw e;
                         }
                         return null;

@@ -32,29 +32,31 @@ package com.imaginea.mongodb.exceptions;
  * @author Rachit Mittal
  */
 
-public class MongoHostUnknownException extends ApplicationException {
+public class MongoConnectionException extends ApplicationException {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates a new MongoNotFoundException with errorcode and message.
+     * Creates a new MongoConnectionException along with errorCode and message
      *
-     * @param message : A description about the Error.
+     * @param errorCode
+     * @param message
      */
-    public MongoHostUnknownException(String message) {
-        super(ErrorCodes.HOST_UNKNOWN, message);
+    public MongoConnectionException(String errorCode, String message) {
+        super(errorCode, message);
     }
 
     /**
-     * Creates a new MongoHostUnknownException along with cause of caught
-     * Exception to be appended.
+     * Creates a new MongoConnectionException along with errorCode, message and cause
      *
-     * @param message : A description about the Error.
-     * @param cause   : Cause of the previous Exception. This is appended in the new
-     *                MongoHostUnknownException formed here.
+     * @param errorCode : ErrorCode of the Exception thrown
+     * @param message   : A description about the Exception. *
+     * @param cause     : Cause of the caught Exception to be appended in the new
+     *                  Document Exception formed here.
      */
-    public MongoHostUnknownException(String message, Throwable cause) {
-        super(ErrorCodes.HOST_UNKNOWN, message, cause);
+
+    public MongoConnectionException(String errorCode, String message, Throwable cause) {
+        super(errorCode, message, cause);
     }
 
 

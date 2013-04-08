@@ -40,6 +40,7 @@ public class TestingTemplate extends BaseController {
     private static String PASSWORD = "password";
 
     private static final String LOG_CONFIG_FILE = "src/main/resources/log4j.properties";
+    private static final String FILE_NOT_FOUND_EXCEPTION = "FILE_NOT_FOUND_EXCEPTION";
 
     private static Logger logger = Logger.getLogger(TestingTemplate.class);
 
@@ -58,7 +59,7 @@ public class TestingTemplate extends BaseController {
 			jsonResponse.put("response", tempResult);
 			jsonResponse.toString();
 		} catch (FileNotFoundException m) {
-			ApplicationException e = new ApplicationException(ErrorCodes.FILE_NOT_FOUND_EXCEPTION, m.getMessage(), m.getCause());
+			ApplicationException e = new ApplicationException(FILE_NOT_FOUND_EXCEPTION, m.getMessage(), m.getCause());
 			formErrorResponse(logger, e);
 		} catch (DatabaseException e) {
 			formErrorResponse(logger, e);
@@ -95,7 +96,7 @@ public class TestingTemplate extends BaseController {
     protected String loginAndGetConnectionId(HttpServletRequest request) {
         String response = new LoginController().authenticateUser(getMongoUsername(), getMongoPassword(), getMongoHost(), String.valueOf(getMongoPort()), null, request);
         BasicDBObject responseObject = (BasicDBObject) JSON.parse(response);
-        return (String) ((BasicDBObject) responseObject.get("response")).get("connectionId");
+        return (String) ((BasicDBObject)((BasicDBObject) responseObject.get("response")).get("result")).get("connectionId");
     }
 
     protected static void logout(String connectionId, HttpServletRequest request) {
