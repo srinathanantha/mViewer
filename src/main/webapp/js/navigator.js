@@ -98,7 +98,7 @@ YUI.add('navigator', function(Y) {
          * Note:Before highlighting active sibling, it updates active sibling if there is any property found in siblingIndexes which means a search pattern is found on
          * a navigable sibling
          */
-        highlightActiveElement: function() {
+        highlightActiveElement: function () {
             var activeElement = this.getActiveElement();
             if (activeElement) {
                 this.updateNavigableSiblings();
@@ -109,6 +109,15 @@ YUI.add('navigator', function(Y) {
                     this.activeSiblingIndex = activeSiblingIndex;
                 }
                 this.highlightActiveSibling();
+                if (activeElement.ancestor("#dbBuffer")) {
+                    $('#dbBuffer').accordion("option", "active", 0);
+                } else if (activeElement.ancestor("#collectionBuffer")) {
+                    $('#dbOperations').accordion("option", "active", 0);
+                } else if (activeElement.ancestor("#gridFSBuffer")) {
+                    $('#dbOperations').accordion("option", "active", 1);
+                } else if (activeElement.ancestor("#systemCollectionsBuffer")) {
+                    $('#dbOperations').accordion("option", "active", 2);
+                }
             }
         },
         /**
@@ -371,7 +380,6 @@ YUI.add('navigator', function(Y) {
 
             this.searchInput.on("focus", function(eventObject) {
                 self.indexNavigableRegions();
-                self.clearText();
             });
         },
         /**

@@ -214,6 +214,7 @@ YUI({
                     if (index === 0) {
                         dbDiv.set("innerHTML", "No Databases");
                     }
+                    initializeAccordion();
                     dbDiv.set("innerHTML", dbNames);
                     var menu = Y.one("#dbNames");
                     menu.unplug(Y.Plugin.NodeMenuNav);
@@ -282,18 +283,20 @@ YUI({
             event.stopPropagation();
         }
 
-        $('#dbBuffer').accordion({
-            header: "div.list-head",
-            heightStyle: "content",
-            collapsible: true
-        });
+        function initializeAccordion(){
+            $('#dbBuffer').accordion({
+                header: "div.list-head",
+                heightStyle: "content",
+                collapsible: true
+            });
 
-        $('#dbOperations').accordion({
-            header: "div.list-head",
-            heightStyle: "content",
-            collapsible: true,
-            active: 0
-        });
+            $('#dbOperations').accordion({
+                header: "div.list-head",
+                heightStyle: "content",
+                collapsible: true,
+                active: 0
+            });
+        }
 
         var queryExecutor = {};
 
