@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>mViewer-Help Page</title>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <META name="description"
+          content="This is the help page for mViewer- a MongoDB UI"/>
+    <LINK rel="SHORTCUT ICON" href="../images/icon.png"/>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+</head>
+<body width="100%">
+<center>
+    <img src="../images/index_logo.png" alt="logo" align="center" id="logo">
+    <br>
+</center>
+<div class="wrapper">
+<div class="body-cont gen-float">
+<div class="gen-float">
+<div class="left-cont gen-float">
+    <ul class="lists">
+        <li><a href="#gettingStarted">Getting Started</a></li>
+    </ul>
+</div>
+<div class="right-cont gen-float">
+<div class="main-head list-head">
+    <label id="General">General</label>
+</div>
+<div class="sublist-head list-head">
+    <label id="gettingStarted">How do I get started with mViewer?</label>
+</div>
+<div class="helpDescription">
+    <p>
+        First install mongoDB and ensure that mongo daemon is running. The installation process for mongoDB can be found
+        <a href="http://www.mongodb.org/display/DOCS/Quickstart">here</a>.
+    </p>
+</div>
+<div class="sub-sub-head list-head">
+    <label id="gettingStarted2">I've installed mongoDB! What next?</label>
+</div>
+<div class="helpDescription">
+    <p>
+        Make sure mViewer is running. If not already started, run start_mViewer.bat or start_mViewer.sh file packaged in
+        the zip.
+        </br></br>
+        Proceed to the Login page of mViewer (<a href="http://127.0.0.1:8080/index.html">http://127.0.0.1:8080/index.html</a>) and enter the Host and Port Number of
+        the mongoDB.
+    </p>
+    <img class="helpDescriptionImg" alt="login screen" src="../images/help/login.png">
+
+    <p>
+        If you haven’t been provided with credentials, the UserName and Password field can be left blank. By the way, to
+        add a user to the admin database of mongoDB, read the help below.
+    </p>
+</div>
+<div class="sub-sub-head list-head">
+    <label id="addUser">How do I add a user to the admin database of mongoDB?</label>
+</div>
+<div class="helpDescription">
+    <p>To add a user, start the mongo process and follow the sequence in the screenshot below.</p>
+    <img class="helpDescriptionImg" alt="add user " src="../images/help/add_user.png">
+
+    <p> Now you can login with these credentials as described in the previous help section.</p>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+

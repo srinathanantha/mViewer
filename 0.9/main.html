@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="mViewer : A simple web-based Administration and Management Tool for MongoDB." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>mViewer</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Imaginea/mViewer">View on GitHub</a>
+
+          <h1 id="project_title">mViewer</h1>
+          <h2 id="project_tagline">A simple web-based Administration and Management Tool for MongoDB.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Imaginea/mViewer/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Imaginea/mViewer/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>mViewer(Micro/Mongo Viewer) is a light (read web based like Futon for couchdb) GUI for mongo db which does not need any install steps.</p>
+
+<h3>Current Features supported are:</h3>
+
+<ol>
+<li>Managing Databases - Create/Drop databases</li>
+<li>Managing Collections - Create/Update/Drop collections</li>
+<li>Managing GridFS files - Add/View/Download/Drop files</li>
+<li>Querying using Query executor</li>
+<li>Viewing stats of databases, collections and gridfs</li>
+<li>Opening multiple connections from same browser to different MongoDB servers </li>
+</ol><h3>Download and Use</h3>
+
+<p>Download the package from <a href="https://github.com/Imaginea/mViewer/downloads">https://github.com/Imaginea/mViewer/downloads</a></p>
+
+<p>Unzip/Untar it and run the script/batch (with +x permission).</p>
+
+<blockquote>
+<p>$./start_mViewer.sh &lt;port&gt; </p>
+</blockquote>
+
+<p>or</p>
+
+<blockquote>
+<p>&gt;start_mViewer.bat &lt;port&gt;</p>
+</blockquote>
+
+<p> is optional, if not given it'll take the default port from properties file.</p>
+
+<h3>How to Build (If you prefer maven)</h3>
+
+<blockquote>
+<p>$mvn clean package -DskipTests</p>
+</blockquote>
+
+<p>Q. Why do we skip tests ?. </p>
+
+<p>A. Because we need to configure src/test/resources/mongo.config to point to running mongod service. To let the test run.
+   Once set, tests should run out of the box.</p>
+
+<h4>Start standalone</h4>
+
+<p>Run using maven. It will create a war and run it using the jetty server on a default port (Check the logs that print on your screen to spot it), you can access the service at http://localhost:8080/mViewer/</p>
+
+<blockquote>
+<p>$mvn -Pserver -DskipTests</p>
+</blockquote>
+
+<h4>Start and deploy to Other Servlet-Containers.</h4>
+
+<p>For building a distributable unit run the target distributable war. This war can be deployed on to tomcat 7x, other server integration can be provided on demand.</p>
+
+<p>Once the war is deployed go to the url http://:/mViewer</p>
+
+<blockquote>
+<p>$mvn clean package -DskipTests</p>
+</blockquote>
+
+<h3>How to build for release</h3>
+
+<p>Building a release, bundles the war with winstone servlet container and scripts from scripts folder. The release zip and tgz mviewer-.</p>
+
+<blockquote>
+<p>$mvn clean package -Prelease -DskipTests</p>
+</blockquote>
+
+<h3>How to Build (Legacy Method using ant)</h3>
+
+<h4>Start standalone</h4>
+
+<p>Run build.xml using ant, target is start. It will create a war and run it using the winstone server, you can access the application at http://localhost:. You can change the port no. in mViewer.properties file. Default port is 8080</p>
+
+<blockquote>
+<p>$ant start</p>
+</blockquote>
+
+<h4>Start and deploy to Other Servlet-Containers.</h4>
+
+<p>For building a distributable unit run the target dist, since the default target is also set as dist, just running ant should suffice. dist would create a deployable war in the staging directory, which by default is at the same level as the src folder.
+This war can be deployed on to tomcat 7x, other server integration can be provided on demand.</p>
+
+<p>Once the war is deployed go to the url http://:/mViewer</p>
+
+<blockquote>
+<p>$ant dist</p>
+</blockquote>
+
+<h3>How to build for release</h3>
+
+<p>Building a release, bundles the war with winstone servlet container and scripts from scripts folder. The release zip and tgz mviewer-.</p>
+
+<blockquote>
+<p>$ant release</p>
+</blockquote>
+
+<h5>Eagerly waiting for feature requests and bug reports</h5>
+
+<h5>Team Imaginea</h5>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">mViewer maintained by <a href="https://github.com/Imaginea">Imaginea</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

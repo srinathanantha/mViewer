@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>mViewer-Help Page</title>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <META name="description"
+          content="This is the help page for mViewer- a MongoDB UI"/>
+    <LINK rel="SHORTCUT ICON" href="../images/icon.png"/>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+</head>
+<body width="100%">
+<center>
+    <img src="../images/index_logo.png" alt="logo" align="center" id="logo">
+    <br>
+</center>
+<div class="wrapper">
+<div class="body-cont gen-float">
+<div class="gen-float">
+<div class="left-cont gen-float">
+    <div class="list-head">
+        <label>Troubleshooting</label>
+    </div>
+    <ul class="lists">
+        <li><a href="#noDBs">No DBs displayed</a></li>
+        <li><a href="#corruptedSession">Corrupted Session</a></li>
+        <li><a href="#reportIssue">Reporting Issues</a></li>
+    </ul>
+</div>
+<div class="right-cont gen-float">
+<div class="main-head list-head">
+    <label>Troubleshooting</label>
+</div>
+<div class="sublist-head list-head">
+    <label id="noDBs">No dbs are displayed for localhost, what should I do?</label>
+</div>
+<div class="helpDescription">
+    <p>Try to use localhost.localdomain as the host name, in fact the best idea would be to look at your hosts file and
+        use the first value.</p>
+</div>
+<div class="sublist-head list-head">
+    <label id="corruptedSession">My Session is corrupted, what does this mean?</label>
+</div>
+<div class="helpDescription">
+    <p>You should be redirected back to login page automatically. Corrupted session just means that the token used for
+        session tracking has been lost. No data at the db end would be compromised.</p>
+</div>
+
+<div class="sublist-head list-head">
+    <label id="reportIssue">Something is broken, how do I report it</label>
+</div>
+<div class="helpDescription">
+    <p>You can open up an issue at <a href="https://github.com/Imaginea/mViewer">https://github.com/Imaginea/mViewer</a>.
+        Would be great if you attach the server logs to the issue.</p>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
