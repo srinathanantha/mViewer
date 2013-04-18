@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="mViewer : A simple web-based Administration and Management Tool for MongoDB." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>mViewer</title>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Imaginea/mViewer">View on GitHub</a>
+
+          <h1 id="project_title">mViewer</h1>
+          <h2 id="project_tagline">A simple web-based Administration and Management Tool for MongoDB.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Imaginea/mViewer/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Imaginea/mViewer/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>mViewer(Micro/Mongo Viewer) is a light (read web based like Futon for couchdb) GUI for mongo db which does not need any install steps.</p>
+
+<h2>mViewer-v0.9.2</h2>
+<h3>Whats new in mViewer-v0.9.2 ?</h3>
+
+<ol>
+<li>Enhanced Look-n-Feel</li>
+<li>Enhanced Query Executor with support for running all queries on collections including Map Reduce & the new aggregation framework.</li>
+<li>Support for managing Database users</li>
+<li>Supoort for managing Collection indexes</li>
+<li>Enhanced authentication & security with support for --auth mode</li>
+<li>Enhanced command executor</li>
+</ol>
+
+
+
+<h2>mViewer-v0.9.1 - Stable Release (as on 25-08-2012)</h2>
+<h3>mViewer-v0.9.1 supports :-</h3>
+<ol>
+<li>Managing Databases - Create/Drop databases</li>
+<li>Managing Collections - Create/Update/Drop collections</li>
+<li>Managing GridFS files - Add/View/Download/Drop files</li>
+<li>Querying for documents using Query executor</li>
+<li>Quick Navigation &amp; Execution of all actions items using CTRL + Space.</li>
+<li>Pagination and Navigation to any subset of documents.</li>
+<li>Viewing stats of databases, collections and gridFS</li>
+<li>Opening multiple connections from same browser to different MongoDB servers</li>
+</ol>
+
+<h3>Download mViewer-v0.9.1</h3>
+<p>Windows :- 
+<a href="https://github.com/downloads/Imaginea/mViewer/mViewer-v0.9.1.zip">https://github.com/downloads/Imaginea/mViewer/mViewer-v0.9.1.zip</a>
+</p>
+<p>Mac/Linux :- 
+<a href="https://github.com/downloads/Imaginea/mViewer/mViewer-v0.9.1.tar.gz">https://github.com/downloads/Imaginea/mViewer/mViewer-v0.9.1.tar.gz</a>
+</p>
+
+<p>Download previous versions from 
+<a href="https://github.com/Imaginea/mViewer/downloads">https://github.com/Imaginea/mViewer/downloads</a>
+</p>
+
+<h3>Usage</h3>
+<p>Unzip/Untar the downloaded package and simply run start_mViewer.bat/start_mViewer.sh (with +x permission).</p>
+<blockquote>
+<p>&gt;start_mViewer.bat &lt;port&gt; in Windows</p>
+<p>$./start_mViewer.sh &lt;port&gt; in Mac/Linux</p>
+</blockquote>
+
+<p>'port' is optional, if not provided default port (8080) set in properties file will be used.</p>
+<p>Start using mViewer at http://localhost:/index.html</p>
+
+<h2>Developer Notes</h2>
+<h3>Contribute to Imaginea / mViewer !</h3>
+<pre><code>1) Fork Imaginea / mViewer
+2) Clone your forked mViewer repository locally
+3) We use Intellij IDEA for development. So to setup with intellij 
+   a) Create mViewer as a maven project using "Import project from external module".
+   b) Apply Imaginea code styles/formatting settings to avoid un-wanted diffs with spaces in pull requests.
+     - Download https://github.com/downloads/Imaginea/mViewer/settings.jar and use import settings option to apply it.
+     - Make sure to format the code using ctr + alt + l before committing code.
+     - When committing code, if see a popup regarding different line separators used in project, 
+       then click 'Leave unchanged'.        
+   c) Configure a Tomcat Server locally in intellij to run/debug mViewer.
+4) You can send a pull request to mViewer master branch with your features/enhancements/fixes.
+</code></pre>
+<h3>Making a Release build</h3>
+<p>Using maven:-</p>
+<blockquote>
+<p>$mvn clean -Prelease</p>
+</blockquote>
+<p>Using ant:-  </p>
+<blockquote>
+<p>$ant release</p>
+</blockquote>
+<p>Building a release will generate mViewer--release.zip &amp; mViewer--release.tar.gz files in the target folder
+ which has the mViewer.war bundled with winstone servlet container and start-up scripts from scripts folder. </p>
+ 
+ 
+ <h3>Running Standalone</h3>
+<p>Using maven:-</p>
+<blockquote>
+<p>$mvn -Pserver</p>
+</blockquote>
+<p>Using ant:-</p>
+<blockquote>
+<p>$ant start</p>
+</blockquote>
+<p>It will create mViewer.war and run it using the winstone server. 
+Once started, the application can be accessed at http://localhost:port. 
+Default port is 8080 which can be updated in mViewer.properties file.</p>
+
+<h3>Running Unit Tests</h3>
+<p>Use the following command to run the unit tests. surefire-reports will be generated in target folder.</p>
+<blockquote>
+<p>$mvn install -DskipTests=false</p>
+</blockquote>
+
+<h3>Deploying to Other Servlet-Containers</h3>
+<p>You can generate a distributable war file using the following commands. The war can be deployed on to tomcat 7x. 
+Other server integration will be provided on demand. </p>
+<p>Using maven:-</p>
+<blockquote>
+<p>$mvn clean package</p>
+</blockquote>
+<p>Using ant:-</p>
+<blockquote>
+<p>$mvn dist</p>
+</blockquote>
+<p>Once the war is deployed go to the url http://:/mViewer</p>
+
+<h5>Eagerly waiting for feature requests and bug reports</h5>
+
+<h5>Team Imaginea</h5>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">mViewer maintained by <a href="https://github.com/Imaginea">Imaginea</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

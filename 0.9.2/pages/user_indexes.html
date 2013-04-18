@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>mViewer-Users and Indexes</title>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <META name="description"
+          content="This is the help page for mViewer- a MongoDB UI"/>
+    <LINK rel="SHORTCUT ICON" href="../images/icon.png"/>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+</head>
+<body width="100%"><center>
+    <img src="../images/index_logo.png" alt="logo" align="center" id="logo">
+    <br>
+</center>
+<div class="wrapper">
+<div class="body-cont gen-float">
+<div class="gen-float">
+<div class="left-cont gen-float">
+    <div class="list-head">
+        <label>GridFS Operations</label>
+    </div>
+    <ul class="lists">
+        <li><a href="#addGFS">Add a GridFS Bucket</a></li>
+        <li><a href="#deleteGFS">Delete a GridFS Bucket</a></li>
+        <li><a href="#GFSStatistics">GridFS Bucket Statistics</a></li>
+    </ul>
+</div>    
+<div class="right-cont gen-float">    
+<div class="main-head list-head">
+    <p>
+      <label>USERS AND INDEXES</label>
+    </p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Users &gt; Add user</h2>
+</div>
+<div class="helpDescription">
+  <ol>
+    <li>Hover on the <strong>USERS &amp; INDEXES</strong> tab.</li>
+    <li>Click <strong>System.users &gt; Add User</strong> as shown in  the figure below.</li>
+  </ol>
+<p><img src="../images/help/add_user1.png" alt="add_user1" name="add_user1" width="368" height="217" border="0" class="helpDescriptionImg"></p>
+<p>&nbsp;</p>
+<p>The <em>Please enter user credentials </em>dialog box appears.</p>
+<p>&nbsp;</p>
+<ol start="2">
+  <li>Enter the credentials as shown in the figure below.</li>
+  </ol>
+<p><img src="../images/help/Add_user_det.png" alt="add_user_det" width="306" height="165" class="helpDescriptionImg"></p>
+<ol start="3">
+  <li>Select <strong>Read only</strong> if you do not wish to give write access permissions.</li>
+</ol>
+<p>&nbsp;</p>
+<p><img src="../images/Info.png" alt="Information" width="37" height="28" align="absmiddle">The user is now created and can  login to <strong>mViewer</strong> with the newly created credentials.</p>
+<p>&nbsp;</p>
+<ol start="4">
+  <li>Click <strong>Submit</strong>.  The system displays the <em>Query Executor</em> window displaying user attributes. See Figure below.</li>
+</ol>
+<p>&nbsp;</p>
+<p><img src="../images/help/user_det.png" alt="user details" width="640" height="635" class="helpDescriptionImg"></p>
+<p>&nbsp;</p>
+<ol start="5">
+  <li>In the <em>Define Query</em> box, you can add a query you wish to. &lt;need more inputs for this&gt;</li>
+  <li>In the <em>Attributes</em> section, you can configure user properties as shown above.</li>
+  <li>You can configure field information using the following fields:</li>
+</ol>
+<ul>
+  <li>Skip(No. of records)</li>
+  <li>Max pace size</li>
+  <li>Sort by fields</li>
+  </ul>
+<ol start="8">
+  <li>Click<strong> Execute Query</strong></li>
+</ol>
+<p>&nbsp;</p>
+<p>Depending on the  values given, the records display in the <strong>JSON</strong> view as shown in the figure above.</p>
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Users &gt; Edit User</h2>
+</div>
+<div class="helpDescription">
+    <ol>
+      <li>In the JSON view, click <strong>edit </strong>at the respective user.</li>
+      </ol>
+    <p>&nbsp;</p>
+<p>The <em>Please enter user credentials </em>box appears. See figure below.</p>
+<p><img src="../images/help/edit_user.png" alt="edit user" width="299" height="157" class="helpDescriptionImg"></p>
+    <p>&nbsp;</p>
+    <ol start="2">
+      <li>Perform the following:</li>
+      </ol>
+    <ul>
+      <li>Password: You can reset your password.</li>
+      <li>Read only: Check this box, if you wish to deny write access permissions.</li>
+      </ul>
+    <ol start="3">
+      <li>Click <strong>Submit</strong></li>
+    </ol>
+<p>&nbsp;</p>
+    <p>The <em>JSON view</em> is refreshed along with the new changes.</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Users &gt; Delete  User</h2>
+</div>
+<div class="helpDescription">
+  <ol>
+    <li>In the JSON view, click<strong> delete</strong> for the respective user.</li>
+    </ol>
+  <p>&nbsp;</p>
+  <p>The <em>Are you sure? </em>dialog prompt appears. See figure below.</p>
+<p><img src="../images/help/Drop_user.png" alt="drop user" width="303" height="93" class="helpDescriptionImg"></p>
+<ol start="2">
+  <li>Click <strong>Yes</strong></li>
+</ol>
+<p>&nbsp;</p>
+  <p> The user is dropped and  <em>JSON view</em> is refreshed along with new changes. </p>
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Users &gt; Drop  Users</h2>
+</div>
+<div class="helpDescription">
+  <ol>
+    <li>Hover over <strong>system.users</strong></li>
+    <li>Click <strong>Drop Users</strong> as shown in  the figure below.</li>
+    </ol>
+  <p>&nbsp;</p>
+  <p><img src="../images/help/delete_all_users.png" alt="delete all users" name="delete_all_users" width="402" height="224" border="0" class="helpDescriptionImg"></p>
+  <ol start="3">
+    <li>The system displays a delete user prompt. See figure below.</li>
+  </ol>
+<p><img src="../images/help/delete_all_users_prompt.png" alt="delete all" width="327" height="95" class="helpDescriptionImg"></p>
+  <ol start="4">
+    <li>Click <strong>Yes </strong></li>
+</ol>
+<p>&nbsp;</p>
+<p>All the users are now dropped. The<em> JSON view i</em>s refreshed with changes.</p>
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Indexes &gt; Add Index</h2>
+</div>
+<div class="helpDescription">
+    <ol>
+      <li>Hover over to <strong>system.indexes</strong></li>
+      <li>Click<strong> Add Index</strong> as shown in the figure below.</li>
+      </ol>
+    <p>&nbsp;</p>
+    <p><img src="../images/help/add_index.png" alt="Add Index" name="add_index" width="369" height="228" border="0" class="helpDescriptionImg"></p>
+    <p>The systems displays a prompt as shown in the figure below. </p>
+<p><img src="../images/help/add_index_prompt.png" alt="add index" width="331" height="160" class="helpDescriptionImg"></p>
+<ol start="3">
+  <li>Enter a <strong>Collection name</strong></li>
+  <li>Enter a value for the key in JSON format</li>
+  <li>Click <strong>Submit</strong></li>
+</ol>
+    <p>&nbsp;</p>
+    <p>The Add index confirmation message displays.</p>
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Indexes &gt; View an Index</h2>
+</div>
+<div class="helpDescription">
+<ol>
+  <li>In the<strong> Query Executor </strong>box, you can do the following:</li>
+  </ol>
+<p>&nbsp;</p>
+<table width="96%" border="1">
+  <tr>
+    <th width="42%" scope="col">Functionality</th>
+    <th width="58%" scope="col">Description</th>
+  </tr>
+  <tr>
+    <td>Define Query</td>
+    <td>You can run a find query by specifying the contents in the collector. </td>
+  </tr>
+  <tr>
+    <td>Attributes</td>
+    <td><p>You can <em>select</em>/<em>unselect </em>values for <strong>v</strong>, <strong>ns</strong>, <strong>key._id</strong>, <strong>name, key</strong></p></td>
+  </tr>
+  <tr>
+    <td>Skip(No. fo records)</td>
+    <td>You can specify the number of records you wish to skip so that limited records are on display.</td>
+  </tr>
+  <tr>
+    <td>Max page size</td>
+    <td>You can specify the number of records you wish to be displayed least being 10.</td>
+  </tr>
+  <tr>
+    <td>Sort by fields</td>
+    <td>You can specify the field Id details here.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<ol>
+  <li value="2">Click <strong>Execute Query</strong></li>
+</ol>
+<p>&nbsp;</p>
+<p>The <em>JSON view </em>is now refreshed with new values. See Figure below.</p>
+<p><img src="../images/help/Index_query.png" alt="index query" width="657" height="532" class="helpDescriptionImg"></p>
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Indexes &gt; Delete  Index</h2>
+</div>
+<div class="helpDescription">
+<ol>
+  <li>In the <em>Contents of Collection: system.Indexe</em>s section, click <strong>Delete</strong> as shown in the figure above.</li>
+</ol>
+<p>&nbsp;</p>
+<p>The system displays a delete prompt as shown in the figure below:</p>
+<p>&nbsp;</p>
+<p><img src="../images/help/Drop_index_prompt.png" alt="drop index" width="330" height="105" class="helpDescriptionImg"></p>
+<p>&nbsp;</p>
+<ol start="2">
+  <li>Click<strong> Yes</strong></li>
+</ol>
+<p>&nbsp;</p>
+<p>The <em>delete index confirmation</em> message displays on top of the screen. Also the <em>JSON view</em> is refreshed.</p>
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>Indexes &gt; Drop Indexes</h2>
+</div>
+<div class="helpDescription">
+<ol>
+  <li>    Hover over <strong>System.indexes </strong>    </li>
+  <li>Click <strong>Drop Indexes</strong>. See Figure below.</li>
+</ol>
+<p>&nbsp;</p>
+    
+    <p><img src="../images/help/drop_index.png" alt="drop index" name="drop_index" width="430" height="255" border="0" class="helpDescriptionImg"></p>
+    <p>&nbsp;</p>
+    <p>The system displays a <em>Drop Indexes</em> prompt. See figure below.</p>
+    <p>&nbsp;</p>
+    <p><img src="../images/help/index_dropALL.png" alt="Drop all indexes" width="329" height="117" class="helpDescriptionImg"></p>
+    <p>&nbsp;</p>
+    <ol start="3">
+      <li>Click <strong>Yes</strong></li>
+    </ol>
+<p>&nbsp;</p>
+    <p>The system displays a confirmation message on top of the screen.</p>
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+<p style="width:100%"><a href="spotlight_search.html"  style="float:left; width:50%;">previous</a><a href="troubleshooting.html" style="float:right;">next</a></p>
+<p>&nbsp;</p>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

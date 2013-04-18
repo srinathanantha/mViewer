@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>mViewer-File Operations</title>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <META name="description"
+          content="This is the help page for mViewer- a MongoDB UI"/>
+    <LINK rel="SHORTCUT ICON" href="../images/icon.png"/>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+</head>
+<body width="100%">
+<center>
+    <img src="../images/index_logo.png" alt="logo" align="center" id="logo">
+    <br>
+</center>
+<div class="wrapper">
+<div class="body-cont gen-float">
+<div class="gen-float">
+<div class="left-cont gen-float">
+    <div class="list-head">
+        <label>File Operations</label>
+    </div>
+    <ul class="lists">
+        <li><a href="#addFile">Add a File</a></li>
+        <li><a href="#viewFiles">View Files</a></li>
+        <li><a href="#openFile">Open a File</a></li>
+        <li><a href="#downloadFile">Download a File</a></li>
+        <li><a href="#deleteFile">Delete a File</a></li>
+    </ul>
+</div>    
+<div class="right-cont gen-float">    
+<div class="main-head list-head">
+    <label>File Operations</label>
+</div>
+<div class="sublist-head list-head">
+  <h2> GridFS bucket &gt; Add File(s)</h2>
+</div>
+<div class="helpDescription">
+    <ol>
+      <li>Hover  over the <strong>GridFS Bucket</strong> name.</li>
+      <li>Click <strong>Add File(s). </strong> See Figure  below.</li>
+    </ol>
+    <img src="../images/help/add_file.png" alt="add file " width="374" height="219" class="helpDescriptionImg">
+
+    <p>An <em>upload dialog</em> box  displays.  </p>
+    <p>&nbsp;</p>
+    <ol>
+      <li>In the Upload dialog box, click <strong>Add Files</strong> to select the files  to be uploaded.</li>
+      <li>Click <strong>Start Upload.</strong> See Figure  below.</li>
+    </ol>
+    <img src="../images/help/add_file2.png" alt="add file " width="517" height="291" class="helpDescriptionImg">
+
+    <p><img src="../images/Info.png" alt="in" width="36" height="28" align="left">You can cancel a specific file before  starting upload by clicking <strong>Cancel. </strong></p>
+    <p>&nbsp;</p>
+    <ol start="2">
+      <li>Click <strong>Close </strong>once you are done.<strong></strong> See figure below.</li>
+      </ol>
+    <p>&nbsp;</p>
+    <p>The system displays confirmation message on the File Upload dialog box.</p>
+    <p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>GridFS bucket &gt; Delete File(s)</h2>
+</div>
+<div class="helpDescription">
+    <ol>
+      <li>In the File Upload box, click <strong>Delete</strong>. See figure below.</li>
+      </ol>
+    <p><img src="../images/help/add_file3.png" alt="add file 3" width="521" height="292" class="helpDescriptionImg"></p>
+<p>The file(s) are deleted from the database.</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>GridFS bucket &gt; View File(s)</h2>
+</div>
+<div class="helpDescription">
+    <ol>
+      <li>Click the <strong>Bucket  name</strong>. See Figure below.</li>
+    </ol>
+    <p><img src="../images/help/view_files.png" alt="download file " width="693" height="525" class="helpDescriptionImg"></p>
+    <ol start="2">
+      <li>You can perform the following actions:</li>
+    </ol>
+    <p>&nbsp;</p>
+    <table width="96%" border="1">
+      <tr>
+        <th width="33%" height="43" scope="col">Functionality</th>
+        <th width="67%" scope="col">Description</th>
+      </tr>
+      <tr>
+        <td>Define Query</td>
+        <td>Add  selectors/conditions in the query box to filter your results. </td>
+      </tr>
+      <tr>
+        <td>Skip(No. of records)</td>
+        <td><p>This field allows you to skip the specified number of documents from  start.</p></td>
+      </tr>
+      <tr>
+        <td>Max page size</td>
+        <td>You can update max page size as 25 or 50 to view more documents per page.</td>
+      </tr>
+      <tr>
+        <td>sort by fields</td>
+        <td>Provide a value in the <strong>Sort by fields </strong>box as shown.</td>
+      </tr>
+      <tr>
+        <td>open a file</td>
+        <td>Click <strong>file name</strong> in the <em>Tree Table</em> view <em>or</em> alternatively click <strong>Open</strong> in    JSON view.</td>
+      </tr>
+      <tr>
+        <td height="67">download a file</td>
+        <td><ol>
+          <li>Click                                                                                                               the <img src="../images/download.png" width="29" height="24" alt="dl">icon in the <em>Tree Table</em> view <em>or</em> alternatively click <strong>Download</strong> in    JSON view.</li>
+        </ol></td>
+      </tr>
+      <tr>
+        <td height="68">delete a file</td>
+        <td>Click          the <img src="../images/delete.png" width="28" height="25" alt="del"> in the <em>Tree Table</em> view <em>or</em> alternatively click <strong>Delete</strong> in    JSON view.</td>
+      </tr>
+    </table>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head">
+  <h2>GridFS bucket &gt; Drop Bucket</h2>
+</div>
+<div class="helpDescription">
+    <ol>
+      <li>In the GRIDFS side bar, click the <strong>Bucket  name</strong></li>
+      <li>Select <strong>Drop Bucket</strong></li>
+      </ol>
+    <p>&nbsp;</p>
+    <p>See Figure below.</p>
+<p><img src="../images/help/drop_bucket.png" alt="drop bucket" width="370" height="360" class="helpDescriptionImg"></p>
+<p>&nbsp;</p>
+<p>The system displays a delete prompt message box. See figure below.</p>
+<p>&nbsp;</p>
+<p><img src="../images/help/bucket_drop_prompt.png" width="301" height="110" class="helpDescriptionImg"></p>
+<p>Click <strong>Yes</strong></p>
+<p>&nbsp;</p>
+<p>The system displays a confirmation message.</p>
+<p>&nbsp;</p>
+    
+    <p>&nbsp;</p>
+<p style="width:100%"><a href="gfs_ops.html"  style="float:left; width:50%;">previous</a><a href="query_exe.html" style="float:right;">next</a></p>
+<p>&nbsp;</p>
+    
+    
+<p>&nbsp;</p>
+</div>
+<div class="sublist-head list-head"></div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
