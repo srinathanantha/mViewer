@@ -1,14 +1,16 @@
 mViewer(Micro/Mongo Viewer) is a light web-based GUI for managing MongoDB without needing any installation.
+mViewer allows managing databases, collections, gridfs, users & indexes as an alternative to the mongoDB native shell
+in a simpler and user-friendly way.
 
 ## mViewer-v0.9.2 - Beta 
   
 ### Whats new in mViewer-v0.9.2 ?
-   1. Enhanced Look-n-Feel
-   2. Enhanced Query Executor with support for running all queries on collections including Map Reduce & the new aggregation framework.
+   1. Enhanced Query Executor with support for executing queries on databases & collections including Map Reduce & aggregation queries.
+   2. Enhanced command spotlight with better keyboard navigation even to menu items
    3. Support for managing Database users
    4. Supoort for managing Collection indexes
    5. Enhanced authentication & security with support for --auth mode
-   6. Enhanced command executor
+   6. Better Look-n-Feel
    
 ### Working with mViewer-0.9.2-beta:
    You can checkout the code or download the zip and make a release build using maven/ant as described below.
@@ -81,7 +83,7 @@ Detailed documentation on mViewer features & usage can be found at http://imagin
 
  Using maven:-
 
-> $mvn clean -Prelease
+> $mvn -Prelease
 
   Using ant:-  
 
