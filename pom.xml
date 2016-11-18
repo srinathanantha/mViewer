@@ -53,7 +53,7 @@
 					<webResources>
 						<resource>
 						  <directory>mviewer-ui/build</directory>
-						  <targetPath>react</targetPath>
+						  <targetPath>/</targetPath>
 						</resource>
 					</webResources>
 				</configuration>

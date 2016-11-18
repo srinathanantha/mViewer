@@ -5,7 +5,7 @@ mViewer(Micro/Mongo Viewer) is a light web-based GUI for managing MongoDB withou
 mViewer allows managing databases, collections, gridfs, users & indexes as an alternative to the mongoDB native shell
 in a simpler and user-friendly way.
 
-### Whats new in mViewer-v1.0 Beta?
+### Whats new in mViewer-1.0.0 beta?
    1. Redesigned complete user interface with enhananced ease.
    2. New login interface which supports mongodb started with/without auth mode.
    3. Full support of roles and privileges.
@@ -13,7 +13,7 @@ in a simpler and user-friendly way.
    5. Supports latest MongoDB v3.x
    6. Integrated all API's with swagger
   
-### Whats new in mViewer-v0.9.2 ?
+### Whats new in mViewer-0.9.2 ?
    1. Enhanced Query Executor with support for executing queries on databases & collections including Map Reduce & aggregation queries.
    2. Enhanced command spotlight with better keyboard navigation even to menu items
    3. Support for managing Database users
@@ -21,7 +21,7 @@ in a simpler and user-friendly way.
    5. Enhanced authentication & security with support for --auth mode
    6. Better Look-n-Feel
    
-### Working with mViewer-0.9.2 Beta:
+### Working with mViewer-0.9.2 beta:
    You can checkout the code or download the zip and make a release build using maven/ant as described below.
 Extract the generated mViewer-0.9.2-release.zip & mViewer-0.9.2-release.tar.gz and run start_mViewer.bat/start_mViewer.sh.
  
@@ -42,11 +42,11 @@ Extract the generated mViewer-0.9.2-release.zip & mViewer-0.9.2-release.tar.gz a
    7. Viewing stats of databases, collections and gridFS
    8. Opening multiple connections from same browser to different MongoDB servers
 
-### Download mViewer-v1.0 Beta
+### Download mViewer-1.0.0 beta
 
-Windows :- https://github.com/Imaginea/mViewer/releases/download/v1.0-Beta/mViewer-1.0-release.zip
+Windows :- https://github.com/Imaginea/mViewer/releases/download/1.0.0-beta/mViewer-1.0-release.zip
 
-Mac/Linux :- https://github.com/Imaginea/mViewer/releases/download/v1.0-Beta/mViewer-1.0-release.tar.gz
+Mac/Linux :- https://github.com/Imaginea/mViewer/releases/download/1.0.0-beta/mViewer-1.0-release.tar.gz
 
 Download previous versions from https://github.com/Imaginea/mViewer/downloads
     

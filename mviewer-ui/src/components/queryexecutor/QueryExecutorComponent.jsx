@@ -315,14 +315,15 @@ class QueryExecutorComponent extends React.Component {
             this.setState({errorMessage:'User is not authorized to perform this query'});
           } 
 
-          if(data.response.error.message.indexOf("cannot remove from a capped collection") >= 0){
-            this.setState({errorMessage:'cannot remove from a capped collection'});
-          }
+        if(data.response.error.message.indexOf("cannot remove from a capped collection") >= 0){
+          this.setState({errorMessage:'cannot remove from a capped collection'});
+        }
+
+        if(data.response.error.message.indexOf("duplicate key error collection") >= 0){
+          this.setState({errorMessage:'There are some duplicate documents in the target collection, only unique documents will be copied.'});
+        }
       }
 
-      // setTimeout(function(){
-      //   this.setState({errorMessage: ''});
-      // }.bind(this), 2000);
       this.setState({startLabel: 0});
       this.setState({endLabel: 0});
       this.setState({totalCount: 0});
