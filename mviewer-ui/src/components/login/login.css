@@ -1,0 +1,319 @@
+/*----------------------------------------*/
+/*BASIC SETUP*/
+/*----------------------------------------*/
+@font-face {
+font-family: Brandon;
+src: url("../../assets/fonts/Brandon_reg.otf") format("opentype");
+}
+
+@font-face {
+font-family: Brandon-Light;
+src: url("../../assets/fonts/Brandon_light.otf") format("opentype");
+}
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html,
+body {
+    background-color: #e6e7e8;
+    color: #555;
+    font-family: 'Brandon-Light', 'Arial', sans-serif;
+    font-size: 13px;
+    text-rendering: optimizeLegibility;
+    height: 100%;
+    overflow-x: auto;
+}
+
+body {
+  overflow: auto;
+}
+
+.mainBody {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/*Login Form*/
+div.parentDiv {
+  display: inline-block;
+  width: 341px;
+  height: auto;
+}
+.one{
+  text-align: center;
+  display: table-cell;
+  width: inherit;
+  background: #2494d0;
+  color: #fff;
+  font-weight: bold;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  padding: 34px;
+}
+
+.two{
+  display: inline-block;
+    width: 341px;
+    height: auto;
+    background: #fff;
+    float: left;
+    border-radius: 3px;
+}
+.logoSection {
+  display: inline-block;
+    padding: 80px 0;
+    margin-top: 70px;
+    margin-left: 55px;
+}
+
+.mSpan {
+    font-size: 30px;
+    font-family: Arial;
+    color: white
+}
+.vSpan{
+    font-size: 30px;
+    font-weight: 600;
+    font-family: Times;
+    color: #6c6c9e;
+}
+.loginForm {
+    width: 341px;
+    margin: 0 auto;
+}
+
+.loginForm:before {
+  content: '';
+  display: inline-block;
+  height: 100%; 
+  vertical-align: middle;
+  margin-right: -0.25em; /* Adjusts for spacing */
+}
+
+.loginForm > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+.two input[type=text],
+.two input[type=password] {
+    /*padding: 10px;*/
+    padding: 21px 10px 10px 10px;
+    border-radius: 0px;
+    border: 1.5px solid #bababa;
+    background-color: inherit;
+    color: #808285;
+    font-size: 15px;
+    /*height: 47px;*/
+    width: 100%;
+    margin-top: -1px;
+    border-radius: 1px;
+}
+.TextInput error input[type=text]{
+    border-color: #8c4141;
+    width: 166px;
+}
+
+.validationError{
+    border-color: #8c4141;
+    width: 166px;
+}
+
+.inputBox {
+ margin-bottom: 7px;
+}
+
+.innerForm {
+    padding: 5%;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background-color: #ffffff
+}
+.inputLabel {
+    margin-left: 25% !important;
+}
+.formContainer {
+    padding: 38px;
+}
+
+*:focus {
+    outline: none;
+}
+/*sections*/
+.mainContainer{
+  padding: 5% 0;
+}
+
+/*Headings*/
+
+h2 {
+    font-weight: 300;
+    text-transform: uppercase;
+    font-size: 180%;
+    word-spacing: 2px;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+    margin-left: -5%;
+}
+h2:after {
+    display: block;
+    height: 2px;
+    color: #3679f8;
+    content: "\2014 DB List \2014";
+    font-size: 10px;
+    width: auto;
+    margin: 0 auto;
+    margin-top: 30px;
+    font-weight: 700;
+}
+
+/*Buttons*/
+.two input[type=submit] {
+    padding: 10px 30px;
+    width: 100%;
+    height: 47px;
+    font-size: 13px;
+    margin-left: 0px;
+    border-radius: 1px;
+    margin-top:4px;
+    border: 0;
+    background-color: #2494d0;
+    color: white;
+}
+
+.two input[type=submit]:enabled {
+  
+  
+}
+
+.two input[type=submit]:enabled:hover,
+.two input[type=submit]:enabled:active {
+    background-color: #576d96;
+    cursor: pointer;
+}
+.footerLink {
+    margin-top: 15px;
+    font-size: 13px;
+    height: 30px;
+}
+.footerLink a {
+    float: right;
+}
+.errorMessage {
+  margin: 5px 0;
+  text-align: center;
+  border: 1px solid red;
+  width: 100%;
+  font-size: 70%;
+  height: auto;
+  word-wrap: break-word;
+  padding: 10px;
+}
+.errorMessage.hidden {
+    display: none;
+}
+.errorMessage.show {
+  margin: 5px 0;
+  text-align: center;
+  word-wrap: break-word;	
+  border: 1px solid red;
+  width: 100%;
+  font-size: 15px;
+  height: auto;
+  padding: 10px;
+  color: red;
+}
+
+/*-------Clear Floats-------*/
+.clearfix { zoom : 1}
+.clearfix:after {
+    content: '.';
+    clear: both;
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+.inputBoxLogin input[type=checkbox].checkboxClass {
+    display: inline;
+    width: 14px;
+    height: 14px;
+    background-color: white !important;
+    color: inherit;
+    float: left;
+    margin: 0 !important;
+}
+
+.checkBox {
+  padding-top: 13px;
+}
+
+.checkLabel{
+    font-size: 13px;
+    color: #a5a5a5;
+    font-weight: 500;
+    display: inline-block;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+
+/*Spinner*/
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 5px solid #2494d0;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    display: inline;
+    margin-top: 18px;
+    margin-left: 65px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+.submitContainer {
+  position: relative;
+}
+
+.rememberClass{
+  border-color: #337ab7 !important;
+  margin: 1px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.rememberLabel {
+  font-size: 13px;
+  color: #337ab7;
+  font-weight: 500;
+  display: inline-block;
+  padding-left: 2px;
+  cursor: pointer;
+  vertical-align: text-top;
+}
+
+
+.port.input  input,
+.password.input input,
+.database.input input {
+  border-top: none !important ;
+}

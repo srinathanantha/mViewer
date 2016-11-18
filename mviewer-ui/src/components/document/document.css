@@ -1,0 +1,42 @@
+.results
+{
+  /*width: 99%;*/
+  height: auto;
+  margin-top: 10px;
+  margin-right: 10px;
+  display: block;
+  overflow: hidden;
+  resize: none;
+  font-family: 'Brandon-Light';
+  font-weight: 300;
+  background: #edf1f4;
+  /*min-height: 20%;*/
+}
+
+.results textarea {
+  background: #edf1f4;
+  font-family: 'Brandon-Light';
+  width: 100%;
+  resize: none;
+  overflow: auto;
+  border: 0;
+  padding: 10px;
+}
+
+
+.deleteButton {
+  display: inline-block;
+  font-size: 14px;
+  float: right;
+  padding: 10px;
+}
+
+.editButton {
+  position: absolute;;
+  margin-left: 69%;
+  display: inline-block;
+}
+
+.deleteButton i, .editButton i {
+  cursor: pointer;
+}

@@ -1,0 +1,47 @@
+
+.popupBody {
+ padding: 40px 0;
+}
+
+.popupBody label {
+  font-size: 16px;
+  padding-bottom: 15px;
+  text-align: center;
+  width: 100%;
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+.header{
+  background-color: #2294d2;
+  font-size: 14px;
+  height: 50px;
+  color: white;
+  padding-bottom: 10px;
+}
+
+
+.text{
+  top: 30%;
+  position: relative;
+  left: 5%;
+  font-size: 17px;
+}
+
+.close {
+  color: #2494d0;
+  float: right;
+  font-family: 'Brandon-Light';
+  margin-top: .01%;
+  padding: 10px;
+  padding-right: 15px;
+}
+.close:hover,
+.close:active {
+    color: #3c5563;
+    cursor: pointer;
+}
+
+.buttons {
+	float:right;
+}

@@ -1,0 +1,108 @@
+.mainContainer {
+  display: inline-block;
+  /*width: calc( 100vw - 95px);
+  height: 100%;*/
+  height: calc(100vh - 60px);
+  width: calc(100% - 66px);
+  background: #fff;
+  overflow: auto;
+}
+
+.mainContainer>button {
+  float: none !important;
+  background: #ecf4f7 !important;
+  width: 100%;
+  border-radius: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #bababa;
+  height: 59px;
+}
+
+.collapseSpan {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 1px;
+    font-size: 15px;
+    font-family: 'Brandon';
+}
+
+.tabTitle {
+  display: inline-block;
+  padding: 25px 10px 10px 75px;
+  font-family: 'Brandon-Light';
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+.tabPanel {
+  width: 95%;
+  height: 70%;
+}
+
+.tabs {
+  padding-left: 20px;
+  width: 100%;
+  background: #CCD9DE;
+  z-index: 99999;
+  list-style-type: none;
+  float: left;
+  border-bottom: solid 1px #bababa;
+  background: #ecf4f7;
+  margin: 0;
+}
+
+.tabs li {
+  /*display: inline-block;*/
+  cursor: pointer;
+  /*width: 10%;*/
+  min-width: 100px;
+  text-align: center;
+  font-family: 'Brandon';
+  cursor: pointer;
+  padding-bottom: 13px;
+  padding-top: 15px;
+  font-size: 17px;
+  text-align: center;
+}
+
+.tabs li span {
+  display: inline-block;
+  width: 100%;
+}
+
+.activeTab {
+   border-bottom: solid 6px #2494d0;
+   font-weight: 600;
+   color: #2494d0;
+   cursor: pointer;
+}
+
+.errorMessage {
+  padding: 10px;
+  color: red;
+
+}
+
+
+.errorHolder {
+  text-align: center;
+    font-size: 17px;
+    padding: 20px;
+    display: inline-block;
+    width: 100%;
+    color: red;
+}
+
+
+.loading {
+  text-align: center;
+}
+
+.loading label {
+  display: block;
+  font-size: 17px;
+  font-family: 'Brandon-Light';
+}

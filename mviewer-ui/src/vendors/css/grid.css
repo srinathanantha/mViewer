@@ -1,0 +1,153 @@
+.ReactModal__Overlay {
+  z-index: 999999999999999;
+  background: rgba(0,0,0, 0.74902) !important;
+}
+
+.mainBody {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #e6e7e8;
+}
+
+
+.floating-label-hovered{
+  top: 6px;
+  bottom: 10px;
+  left: 10px;
+  font-size: 9px;
+  opacity: 1;
+  position: absolute;
+  pointer-events: none;
+  transition: 0.2s ease all;
+  color: #2494d0 !important; 
+  font-weight: 600;
+
+}
+
+
+
+.floating-label{
+    position: absolute;
+    pointer-events: none;
+    left: 10px;
+    top: 18px;
+    transition: 0.2s ease all;
+    font-size: 15px;
+}
+
+
+
+
+/*  SECTIONS  ============================================================================= */
+
+.section {
+	clear: both;
+	padding: 0px;
+	margin: 0px;
+}
+
+.row {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+
+
+/*Custom break point for tabs in CollectionComponent*/
+/*@media (min-width: 560px){
+.mainTab li{
+    float: left !important;
+}
+}*/
+
+/*Custom break point for tabs in GraphsComponent*/
+/*@media (min-width: 560px){
+.graphsTab li{
+    float: left !important;
+}
+}*/
+
+
+@media (max-width: 625px){
+.graphsTab li{
+    min-width: 80px !important;
+}
+}
+
+@media (min-width: 517px){
+#myNavbar{
+    width: 100% !important;
+}
+}
+
+
+
+/*Custom break point for actions nav in Query Executor*/
+@media (max-width: 960px) {
+  .navbar-header {
+      float: none;
+  }
+  .navbar-left,.navbar-right {
+      float: none !important;
+  }
+  .navbar-toggle {
+      display: block;
+  }
+  .navbar-collapse {
+      border-top: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .navbar-fixed-top {
+      top: 0;
+      border-width: 0 0 1px;
+  }
+  .navbar-collapse.collapse {
+      display: none!important;
+  }
+  .navbar-nav {
+      float: none!important;
+      margin-top: 7.5px;
+  }
+  .navbar-nav>li {
+      float: none;
+  }
+  .navbar-nav>li>a {
+      padding-top: 10px;
+      padding-bottom: 10px;
+  }
+  .collapse.in{
+      display:block !important;
+  }
+}
+
+
+
+
+
+/*custom media queries for paginatior navigation*/
+
+@media (max-width: 850px){
+
+  #paginator {
+    float: none !important;
+    text-align: center;
+  }
+
+  .documentNav li {
+    width: 50% !important;
+    display: inline-block !important;
+  }
+
+  .documentNav li span {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 560px){
+  .documentNav li {
+    display: inline !important;
+  }
+}

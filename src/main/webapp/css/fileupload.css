@@ -142,7 +142,7 @@ label, input, button, select, textarea {
 }
 
 .icon-arrow-down {
-    background-position: -312px -96px;
+    background-position: -313px -96px;
 }
 
 .label {
@@ -266,7 +266,7 @@ table {
     width: 0%;
     height: 18px;
     color: #ffffff;
-    font-size: 12px;
+    font-size: 13px;
     text-align: center;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     background-color: #0e90d2;

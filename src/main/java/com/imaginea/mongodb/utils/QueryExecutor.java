@@ -1,249 +1,339 @@
 package com.imaginea.mongodb.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.imaginea.mongodb.exceptions.ApplicationException;
 import com.imaginea.mongodb.exceptions.DatabaseException;
 import com.imaginea.mongodb.exceptions.ErrorCodes;
 import com.imaginea.mongodb.exceptions.InvalidMongoCommandException;
-import com.mongodb.*;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.*;
+import com.mongodb.MapReduceCommand;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 /**
  * User: venkateshr
  */
 public class QueryExecutor {
 
-    public static JSONObject executeQuery(DB db, DBCollection dbCollection, String command, String queryStr, String fields, String sortByStr, int limit, int skip, boolean allKeys) throws JSONException, ApplicationException {
+    public static JSONObject executeQuery(MongoDatabase db, MongoCollection<Document> mongoCollection,
+                                          String collectionName, String command, String queryStr, String fields, String sortByStr,
+                                          int limit, int skip, boolean allKeys) throws JSONException, ApplicationException {
         StringTokenizer strtok = new StringTokenizer(fields, ",");
-        DBObject keysObj = new BasicDBObject("_id", 1);
+        Document keysObj = new Document("_id", 1);
         while (strtok.hasMoreElements()) {
             keysObj.put(strtok.nextToken(), 1);
         }
-        DBObject sortObj = (DBObject) JSON.parse(sortByStr);
+        Document sortObj = Document.parse(sortByStr);
         if (command.equals("aggregate")) {
-            return executeAggregate(dbCollection, queryStr);
+            return executeAggregate(mongoCollection, queryStr);
         }
         if (command.equals("count")) {
-            return executeCount(dbCollection, queryStr);
+            return executeCount(mongoCollection, queryStr);
         }
         if (command.equals("distinct")) {
-            return executeDistinct(dbCollection, queryStr);
+            return executeDistinct(mongoCollection, queryStr);
         }
         if (command.equals("drop")) {
-            return executeDrop(dbCollection);
+            return executeDrop(mongoCollection);
         }
         if (command.equals("dropIndex")) {
-            return executeDropIndex(dbCollection, queryStr);
+            return executeDropIndex(mongoCollection, queryStr);
         }
         if (command.equals("dropIndexes")) {
-            return executeDropIndexes(dbCollection);
+            return executeDropIndexes(mongoCollection);
         }
         if (command.equals("ensureIndex")) {
-            return executeEnsureIndex(dbCollection, queryStr);
+            return executeEnsureIndex(mongoCollection, queryStr);
         }
         if (command.equals("find")) {
-            return executeFind(dbCollection, queryStr, keysObj, sortObj, limit, skip, allKeys);
+            return executeFind(mongoCollection, queryStr, keysObj, sortObj, limit, skip, allKeys);
         }
         if (command.equals("findOne")) {
-            return executeFindOne(dbCollection, queryStr);
+            return executeFindOne(mongoCollection, queryStr);
         }
         if (command.equals("findAndModify")) {
-            return executeFindAndModify(dbCollection, queryStr, keysObj);
+            return executeFindAndModify(mongoCollection, queryStr, keysObj);
         }
         if (command.equals("group")) {
-            return executeGroup(dbCollection, queryStr);
+            return executeGroup(mongoCollection, queryStr);
         }
         if (command.equals("getIndexes")) {
-            return executeGetIndexes(dbCollection);
+            return executeGetIndexes(mongoCollection);
         }
         if (command.equals("insert")) {
-            return executeInsert(dbCollection, queryStr);
+            return executeInsert(mongoCollection, queryStr);
         }
         if (command.equals("mapReduce")) {
-            return executeMapReduce(dbCollection, queryStr);
+            return executeMapReduce(mongoCollection, queryStr);
         }
         if (command.equals("remove")) {
-            return executeRemove(dbCollection, queryStr);
+            return executeRemove(mongoCollection, queryStr);
         }
         if (command.equals("stats")) {
-            return executeStats(dbCollection);
+            return executeStats(db, collectionName);
         }
         if (command.equals("storageSize")) {
-            return executeStorageSize(dbCollection);
+            return executeStorageSize(db, collectionName);
         }
         if (command.equals("totalIndexSize")) {
-            return executeTotalIndexSize(dbCollection);
+            return executeTotalIndexSize(db, collectionName);
         }
         if (command.equals("update")) {
-            return executeUpdate(dbCollection, queryStr);
+            return executeUpdate(mongoCollection, queryStr);
         }
-        throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "Command is not yet supported");
+        throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED,
+                "Command is not yet supported");
     }
 
-    private static JSONObject executeAggregate(DBCollection dbCollection, String queryStr) throws DatabaseException, JSONException {
-        DBObject queryObj = (DBObject) JSON.parseAsArr(queryStr);
+    private static JSONObject executeAggregate(MongoCollection<Document> mongoCollection,
+                                               String queryStr) throws DatabaseException, JSONException {
+        Document queryObj = Document.parse(queryStr);
         if (queryObj instanceof List) {
-            List<DBObject> listOfAggregates = (List) queryObj;
+            List<Document> listOfAggregates = (List) queryObj;
             int size = listOfAggregates.size();
-            AggregationOutput aggregationOutput = dbCollection.aggregate(listOfAggregates.get(0), listOfAggregates.subList(1, size).toArray(new DBObject[size - 1]));
-            Iterator<DBObject> resultIterator = aggregationOutput.results().iterator();
-            List<DBObject> results = new ArrayList<DBObject>();
-            while (resultIterator.hasNext()) {
-                results.add(resultIterator.next());
+
+            MongoCursor<Document> resultIterator = mongoCollection.aggregate(listOfAggregates).iterator();
+
+            // AggregationOutput aggregationOutput =
+            // mongoCollection.aggregate(listOfAggregates.get(0),
+            // listOfAggregates.subList(1, size).toArray(new Document[size -
+            // 1]));
+            // Iterator<Document> resultIterator =
+            // aggregationOutput.results().iterator();
+            List<Document> results = null;
+            if (resultIterator.hasNext()) {
+                results = new ArrayList<Document>();
+                while (resultIterator.hasNext()) {
+                    results.add(resultIterator.next());
+                }
             }
             return ApplicationUtils.constructResponse(false, results.size(), results);
         }
-        throw new DatabaseException(ErrorCodes.INVALID_AGGREGATE_COMMAND, "Aggregate command is ill formed");
+        throw new DatabaseException(ErrorCodes.INVALID_AGGREGATE_COMMAND,
+                "Aggregate command is ill formed");
     }
 
-    private static JSONObject executeCount(DBCollection dbCollection, String queryStr) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryStr);
-        long count = dbCollection.count(queryObj);
-        return ApplicationUtils.constructResponse(false, new BasicDBObject("count", count));
+    private static JSONObject executeCount(MongoCollection<Document> mongoCollection, String queryStr)
+            throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+        long count = mongoCollection.count(queryObj);
+        return ApplicationUtils.constructResponse(false, new Document("count", count));
     }
 
-    private static JSONObject executeDistinct(DBCollection dbCollection, String queryStr) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parseAsArr(queryStr);
-        List distinctValuesList = null;
+    private static JSONObject executeDistinct(MongoCollection<Document> mongoCollection,
+                                              String queryStr) throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+        List<String> distinctValuesList = null;
+        MongoCursor<String> iterator = null;
         if (queryObj.get("1") == null) {
-            distinctValuesList = dbCollection.distinct((String) queryObj.get("0"));
+            iterator = mongoCollection.distinct((String) queryObj.get("0"), String.class).iterator();
         } else {
-            distinctValuesList = dbCollection.distinct((String) queryObj.get("0"), (DBObject) queryObj.get("1"));
+            iterator = mongoCollection
+                    .distinct((String) queryObj.get("0"), (Document) queryObj.get("1"), String.class)
+                    .iterator();
         }
+
+        if (iterator.hasNext()) {
+            distinctValuesList = new ArrayList<>();
+            while (iterator.hasNext()) {
+                distinctValuesList.add(iterator.next());
+            }
+        }
+
         return ApplicationUtils.constructResponse(false, distinctValuesList.size(), distinctValuesList);
     }
 
-    private static JSONObject executeDrop(DBCollection dbCollection) throws JSONException {
-        dbCollection.drop();
+    private static JSONObject executeDrop(MongoCollection<Document> mongoCollection)
+            throws JSONException {
+        mongoCollection.drop();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("success", true);
         return jsonObject;
     }
 
-    private static JSONObject executeDropIndex(DBCollection dbCollection, String queryStr) throws JSONException, DatabaseException {
-        DBObject indexInfo = (DBObject) JSON.parse(queryStr);
+    private static JSONObject executeDropIndex(MongoCollection<Document> mongoCollection,
+                                               String queryStr) throws JSONException, DatabaseException {
+        Document indexInfo = Document.parse(queryStr);
         if (indexInfo == null) {
             throw new DatabaseException(ErrorCodes.INDEX_EMPTY, "Index is null");
         }
-        dbCollection.dropIndex(indexInfo);
-        return executeGetIndexes(dbCollection);
+
+        mongoCollection.dropIndex(indexInfo);
+        return executeGetIndexes(mongoCollection);
     }
 
-    private static JSONObject executeDropIndexes(DBCollection dbCollection) throws JSONException {
-        dbCollection.dropIndexes();
-        return executeGetIndexes(dbCollection);
+    private static JSONObject executeDropIndexes(MongoCollection<Document> mongoCollection)
+            throws JSONException {
+        mongoCollection.dropIndexes();
+        return executeGetIndexes(mongoCollection);
     }
 
-    private static JSONObject executeEnsureIndex(DBCollection dbCollection, String queryStr) throws JSONException, DatabaseException {
-        DBObject queryObj = (DBObject) JSON.parseAsArr(queryStr);
-        DBObject keys = (DBObject) queryObj.get("0");
+    private static JSONObject executeEnsureIndex(MongoCollection<Document> mongoCollection,
+                                                 String queryStr) throws JSONException, DatabaseException {
+        Document queryObj = Document.parse(queryStr);
+        Document keys = (Document) queryObj.get("0");
         if (keys == null) {
             throw new DatabaseException(ErrorCodes.KEYS_EMPTY, "Index Keys are null");
         }
         if (keys.equals("")) {
             throw new DatabaseException(ErrorCodes.KEYS_EMPTY, "Index keys are Empty");
         }
-        DBObject options = (DBObject) queryObj.get("1");
+        IndexOptions options = (IndexOptions) queryObj.get("1");
         if (options != null) {
-            dbCollection.ensureIndex(keys, options);
+            mongoCollection.createIndex(keys, options);
         } else {
-            dbCollection.ensureIndex(keys);
+            mongoCollection.createIndex(keys);
         }
-        return executeGetIndexes(dbCollection);
+        return executeGetIndexes(mongoCollection);
     }
 
-    private static JSONObject executeFindOne(DBCollection dbCollection, String queryStr) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parseAsArr(queryStr);
-        DBObject matchedRecord = dbCollection.findOne((DBObject) queryObj.get("0"), (DBObject) queryObj.get("1"));
+    private static JSONObject executeFindOne(MongoCollection<Document> mongoCollection,
+                                             String queryStr) throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+
+        Document matchedRecord = (Document) mongoCollection.find((Document) queryObj.get("0"))
+                .projection((Document) queryObj.get("1")).first();
         return ApplicationUtils.constructResponse(true, matchedRecord);
+
     }
 
-    private static JSONObject executeFind(DBCollection dbCollection, String queryStr, DBObject keysObj, DBObject sortObj, int limit, int skip, boolean allKeys) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryStr);
-        DBCursor cursor = null;
+    private static JSONObject executeFind(MongoCollection<Document> mongoCollection, String queryStr,
+                                          Document keysObj, Document sortObj, int limit, int skip, boolean allKeys)
+            throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+        FindIterable<Document> cursor = null;
         if (allKeys) {
-            cursor = dbCollection.find(queryObj);
+            cursor = mongoCollection.find(queryObj);
         } else {
-            cursor = dbCollection.find(queryObj, keysObj);
+
+            cursor = mongoCollection.find(queryObj).projection(keysObj);
         }
         cursor = cursor.sort(sortObj).skip(skip).limit(limit);
-        ArrayList<DBObject> dataList = new ArrayList<DBObject>();
-        if (cursor.hasNext()) {
-            while (cursor.hasNext()) {
-                dataList.add(cursor.next());
+        MongoCursor<Document> iterator = cursor.iterator();
+        ArrayList<Document> dataList = new ArrayList<Document>();
+        if (iterator.hasNext()) {
+            while (iterator.hasNext()) {
+                Document document = iterator.next();
+
+                if (document.get("_id") instanceof ObjectId) {
+                    ObjectId objectId = (ObjectId) document.get("_id");
+                    document.put("_id", objectId.toHexString());
+                }
+                dataList.add(document);
             }
         }
-        return ApplicationUtils.constructResponse(true, dbCollection.count(queryObj), dataList);
+
+
+        return ApplicationUtils.constructResponse(true, mongoCollection.count(queryObj), dataList);
     }
 
-    private static JSONObject executeFindAndModify(DBCollection dbCollection, String queryStr, DBObject keysObj) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryStr);
-        DBObject criteria = (DBObject) queryObj.get("query");
-        DBObject sort = (DBObject) queryObj.get("sort");
-        DBObject update = (DBObject) queryObj.get("update");
-        keysObj = queryObj.get("fields") != null ? (DBObject) queryObj.get("") : keysObj;
+    private static JSONObject executeFindAndModify(MongoCollection<Document> mongoCollection,
+                                                   String queryStr, Document keysObj) throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+        Document criteria = (Document) queryObj.get("query");
+        Document sort = (Document) queryObj.get("sort");
+        Document update = (Document) queryObj.get("update");
+        keysObj = queryObj.get("fields") != null ? (Document) queryObj.get("") : keysObj;
         boolean returnNew = queryObj.get("new") != null ? (Boolean) queryObj.get("new") : false;
         boolean upsert = queryObj.get("upsert") != null ? (Boolean) queryObj.get("upsert") : false;
         boolean remove = queryObj.get("remove") != null ? (Boolean) queryObj.get("remove") : false;
 
-        DBObject queryResult = dbCollection.findAndModify(criteria, keysObj, sort, remove, update, returnNew, upsert);
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions();
+        options.returnDocument(ReturnDocument.AFTER);
+        options.upsert(upsert);
+        options.sort(sort);
+
+        Document queryResult = (Document) mongoCollection.findOneAndUpdate(criteria, update);
+
+        // Document queryResult = mongoCollection.findAndModify(criteria,
+        // keysObj, sort, remove, update, returnNew,upsert);
         return ApplicationUtils.constructResponse(false, queryResult);
     }
 
-    private static JSONObject executeGetIndexes(DBCollection dbCollection) throws JSONException {
-        List<DBObject> indexInfo = dbCollection.getIndexInfo();
+    private static JSONObject executeGetIndexes(MongoCollection<Document> mongoCollection)
+            throws JSONException {
+        MongoCursor<Document> cursor = mongoCollection.listIndexes().iterator();
+        List<Document> indexInfo = null;
+        if (cursor.hasNext()) {
+            indexInfo = new ArrayList<>();
+            while (cursor.hasNext()) {
+                indexInfo.add(cursor.next());
+            }
+        }
+        // List<Document> indexInfo = mongoCollection.getIndexInfo();
         return ApplicationUtils.constructResponse(false, indexInfo.size(), indexInfo);
     }
 
-    private static JSONObject executeInsert(DBCollection dbCollection, String queryStr) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryStr);
-        WriteResult writeResult;
+    private static JSONObject executeInsert(MongoCollection<Document> mongoCollection,
+                                            String queryStr) throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+
         if (queryObj instanceof List) {
-            writeResult = dbCollection.insert((List<DBObject>) queryObj);
+            mongoCollection.insertMany((List<Document>) queryObj);
         } else {
-            writeResult = dbCollection.insert(queryObj);
+            mongoCollection.insertOne(queryObj);
         }
-        if (writeResult.getLastError().get("err") == null) {
-            return ApplicationUtils.constructResponse(false, queryObj);
-        }
-        return ApplicationUtils.constructResponse(false, writeResult.getLastError());
+
+        return ApplicationUtils.constructResponse(false, queryObj);
     }
 
-    private static JSONObject executeGroup(DBCollection dbCollection, String queryString) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryString);
+    private static JSONObject executeGroup(MongoCollection<Document> mongoCollection,
+                                           String queryString) throws JSONException {
+        Document queryObj = Document.parse(queryString);
 
-        DBObject key = (DBObject) queryObj.get("key");
-        DBObject cond = (DBObject) queryObj.get("cond");
+        Document key = (Document) queryObj.get("key");
+        Document cond = (Document) queryObj.get("cond");
         String reduce = (String) queryObj.get("reduce");
-        DBObject initial = (DBObject) queryObj.get("initial");
-        //There is no way to specify this.
-        //DBObject keyf = (DBObject) queryObj.get("keyf");
+        Document initial = (Document) queryObj.get("initial");
+        // There is no way to specify this.
+        // Document keyf = (Document) queryObj.get("keyf");
         String finalize = (String) queryObj.get("finalize");
 
-        DBObject groupQueryResult = dbCollection.group(key, cond, initial, reduce, finalize);
+        Document groupQueryResult = (Document) mongoCollection
+                .aggregate(Arrays.asList(new Document("$match", cond), new Document("$group", key)));
+
+        // Document groupQueryResult = mongoCollection.group(key, cond, initial,
+        // reduce, finalize);
         return ApplicationUtils.constructResponse(false, groupQueryResult);
     }
 
-    private static JSONObject executeMapReduce(DBCollection dbCollection, String queryString) throws JSONException, InvalidMongoCommandException {
-        DBObject queryObj = (DBObject) JSON.parseAsArr(queryString);
+    private static JSONObject executeMapReduce(MongoCollection<Document> mongoCollection,
+                                               String queryString) throws JSONException, InvalidMongoCommandException {
+        Document queryObj = Document.parse(queryString);
 
         String map = (String) queryObj.get("0");
         String reduce = (String) queryObj.get("1");
-        DBObject params = (DBObject) queryObj.get("2");
+        Document params = (Document) queryObj.get("2");
         String outputDb = null;
         MapReduceCommand.OutputType outputType = MapReduceCommand.OutputType.REPLACE;
         String outputCollection = null;
 
-        if (params.get("out") instanceof DBObject) {
-            DBObject out = (DBObject) params.get("out");
+        if (params.get("out") instanceof Document) {
+            Document out = (Document) params.get("out");
             if (out.get("sharded") != null) {
-                throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "sharded is not yet supported. Please remove it and run again");
+                throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED,
+                        "sharded is not yet supported. Please remove it and run again");
             }
             if (out.get("replace") != null) {
                 if (out.get("nonAtomic") != null) {
-                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "nonAtomic is not supported in replace mode. Please remove it and run again");
+                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED,
+                            "nonAtomic is not supported in replace mode. Please remove it and run again");
                 }
                 outputCollection = (String) out.get("replace");
                 outputDb = (String) out.get("db");
@@ -259,82 +349,138 @@ public class QueryExecutor {
             } else if (out.get("inline") != null) {
                 outputType = MapReduceCommand.OutputType.INLINE;
                 if (out.get("nonAtomic") != null) {
-                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "nonAtomic is not supported in inline mode. Please remove it and run again");
+                    throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED,
+                            "nonAtomic is not supported in inline mode. Please remove it and run again");
                 }
             }
         } else if (params.get("out") instanceof String) {
             outputCollection = (String) params.get("out");
         }
 
-        DBObject query = (DBObject) params.get("query");
-        DBObject sort = (DBObject) params.get("sort");
+        Document query = (Document) params.get("query");
+        Document sort = (Document) params.get("sort");
         int limit = 0;
         if (params.get("limit") != null) {
             limit = (Integer) params.get("limit");
         }
         String finalize = (String) params.get("finalize");
-        Map scope = (Map) params.get("scope");
+        Document scope = (Document) params.get("scope");
         if (params.get("jsMode") != null) {
-            throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED, "jsMode is not yet supported. Please remove it and run again");
+            throw new InvalidMongoCommandException(ErrorCodes.COMMAND_NOT_SUPPORTED,
+                    "jsMode is not yet supported. Please remove it and run again");
         }
         boolean verbose = true;
         if (params.get("verbose") != null) {
             verbose = (Boolean) params.get("verbose ");
         }
 
-        MapReduceCommand mapReduceCommand = new MapReduceCommand(dbCollection, map, reduce, outputCollection, outputType, query);
-        mapReduceCommand.setSort(sort);
-        mapReduceCommand.setLimit(limit);
-        mapReduceCommand.setFinalize(finalize);
-        mapReduceCommand.setScope(scope);
-        mapReduceCommand.setVerbose(verbose);
-        mapReduceCommand.setOutputDB(outputDb);
+        Document mapReduceOutput = (Document) mongoCollection.mapReduce(map, reduce).filter(query)
+                .sort(sort).finalizeFunction(finalize).scope(scope).verbose(verbose).limit(limit);
 
-        MapReduceOutput mapReduceOutput = dbCollection.mapReduce(mapReduceCommand);
-        return ApplicationUtils.constructResponse(false, mapReduceOutput.getCommandResult());
+        // MapReduceCommand mapReduceCommand = new
+        // MapReduceCommand(mongoCollection, map, reduce, outputCollection,
+        // outputType, query);
+        //
+        // mapReduceCommand.setSort(sort);
+        // mapReduceCommand.setLimit(limit);
+        // mapReduceCommand.setFinalize(finalize);
+        // mapReduceCommand.setScope(scope);
+        // mapReduceCommand.setVerbose(verbose);
+        // mapReduceCommand.setOutputDB(outputDb);
+        //
+        // MapReduceOutput mapReduceOutput =
+        // mongoCollection.mapReduce(mapReduceCommand);
+
+        // need to change
+
+        // return ApplicationUtils.constructResponse(false,
+        // mapReduceOutput.getCommandResult());
+        return ApplicationUtils.constructResponse(false, mapReduceOutput);
     }
 
-    private static JSONObject executeRemove(DBCollection dbCollection, String queryStr) throws JSONException {
-        DBObject queryObj = (DBObject) JSON.parse(queryStr);
-        WriteResult result = dbCollection.remove(queryObj);
-        return ApplicationUtils.constructResponse(false, result.getLastError());
+    private static JSONObject executeRemove(MongoCollection<Document> mongoCollection,
+                                            String queryStr) throws JSONException {
+        Document queryObj = Document.parse(queryStr);
+        DeleteResult deleteResult = validateForDeleteOne(queryStr) ? mongoCollection.deleteOne(queryObj) : mongoCollection.deleteMany(queryObj);
+        long count = deleteResult.getDeletedCount();
+
+        // need to change
+
+        // return ApplicationUtils.constructResponse(false,
+        // result.getLastError());
+
+        return ApplicationUtils.constructResponse(false, queryObj);
+
     }
 
-    private static JSONObject executeUpdate(DBCollection dbCollection, String queryStr) throws JSONException, InvalidMongoCommandException {
+    private static JSONObject executeUpdate(MongoCollection<Document> mongoCollection,
+                                            String queryStr) throws JSONException, InvalidMongoCommandException {
         String reconstructedUpdateQuery = "{updateQueryParams:[" + queryStr + "]}";
-        DBObject queryObj = (DBObject) JSON.parse(reconstructedUpdateQuery);
+        Document queryObj = Document.parse(reconstructedUpdateQuery);
 
         List queryParams = (List) queryObj.get("updateQueryParams");
         if (queryParams.size() < 2) {
-            throw new InvalidMongoCommandException(ErrorCodes.COMMAND_ARGUMENTS_NOT_SUFFICIENT, "Requires atleast 2 params");
+            throw new InvalidMongoCommandException(ErrorCodes.COMMAND_ARGUMENTS_NOT_SUFFICIENT,
+                    "Requires atleast 2 params");
         }
-        DBObject criteria = (DBObject) queryParams.get(0);
-        DBObject updateByValuesMap = (DBObject) queryParams.get(1);
-        boolean upsert = false, multi = false;
+        Document criteria = (Document) queryParams.get(0);
+        Document updateByValuesMap = (Document) queryParams.get(1);
+        UpdateOptions options = new UpdateOptions();
+        boolean upsert = false;
+        boolean multi = false;
         if (queryParams.size() > 2) {
-            upsert = (Boolean) queryParams.get(2);
-            if (queryParams.size() > 3) {
-                multi = (Boolean) queryParams.get(3);
+            for (Object queryParam : queryParams) {
+                Document document = (Document) queryParam;
+                if (document.containsKey("upsert")) {
+                    upsert = document.getBoolean("upsert");
+                }
+                if (document.containsKey("multi")) {
+                    multi = document.getBoolean("multi");
+                }
             }
+            options.upsert(upsert);
         }
-        WriteResult updateResult = dbCollection.update(criteria, updateByValuesMap, upsert, multi);
-        CommandResult commandResult = updateResult.getLastError();
-        return ApplicationUtils.constructResponse(false, commandResult);
+        UpdateResult updateResult = multi ? mongoCollection.updateMany(criteria, updateByValuesMap, options) : mongoCollection.updateOne(criteria, updateByValuesMap, options);
+        long count = updateResult.getModifiedCount();
+
+        // need to change
+
+        // CommandResult commandResult = updateResult.getLastError();
+        // return ApplicationUtils.constructResponse(false, commandResult);
+        return ApplicationUtils.constructResponse(false, queryObj);
     }
 
-    private static JSONObject executeStats(DBCollection dbCollection) throws JSONException {
-        CommandResult stats = dbCollection.getStats();
+    private static JSONObject executeStats(MongoDatabase db, String collectionName)
+            throws JSONException {
+
+        Document stats = db.runCommand(new Document("collStats", collectionName));
         return ApplicationUtils.constructResponse(false, stats);
     }
 
-    private static JSONObject executeStorageSize(DBCollection dbCollection) throws JSONException {
-        Integer storageSize = (Integer) dbCollection.getStats().toMap().get("storageSize");
-        return ApplicationUtils.constructResponse(false, new BasicDBObject("storageSize", storageSize));
+    private static JSONObject executeStorageSize(MongoDatabase db, String collectionName)
+            throws JSONException {
+        Integer storageSize =
+                (Integer) db.runCommand(new Document("collStats", collectionName)).get("storageSize");
+        return ApplicationUtils.constructResponse(false, new Document("storageSize", storageSize));
     }
 
-    private static JSONObject executeTotalIndexSize(DBCollection dbCollection) throws JSONException {
-        Integer totalIndexSize = (Integer) dbCollection.getStats().toMap().get("totalIndexSize");
-        return ApplicationUtils.constructResponse(false, new BasicDBObject("totalIndexSize", totalIndexSize));
+    private static JSONObject executeTotalIndexSize(MongoDatabase db, String collectionName)
+            throws JSONException {
+        Integer totalIndexSize =
+                (Integer) db.runCommand(new Document("collStats", collectionName)).get("totalIndexSize");
+        return ApplicationUtils.constructResponse(false,
+                new Document("totalIndexSize", totalIndexSize));
+    }
+
+    private static boolean validateForDeleteOne(String queryString) {
+        // if query string contains 1 or true after the remove condition, delete only one document.
+        String filterPart = queryString.substring(queryString.lastIndexOf('}'));
+        if (filterPart.contains(",")) {
+            String[] filterArray = filterPart.split(",");
+            if (filterArray.length == 2 && (filterArray[1].trim().equals("1") || filterArray[1].trim().equalsIgnoreCase("true")))
+                return true;
+        }
+        return false;
     }
 
 }

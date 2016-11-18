@@ -1,36 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         id="WebApp_ID" version="2.5">
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
 	<display-name>mViewer</display-name>
 
 	<!-- Servlets -->
 	<servlet>
 		<servlet-name>Jersey Servlet</servlet-name>
-		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>
-			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>com.imaginea.mongodb.controllers</param-value>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>
+        io.swagger.jaxrs.listing,
+        com.imaginea.mongodb.controllers
+      </param-value>
 		</init-param>
-	</servlet>
-    <servlet>
-		<servlet-name>Mongo Graphs</servlet-name>
-		<servlet-class>com.imaginea.mongodb.controllers.GraphController</servlet-class>
-	</servlet>
+		<init-param>
+			<param-name>jersey.config.server.provider.classnames</param-name>
+			<param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jersey.config.server.wadl.disableWadl</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
 
+	</servlet>
+	
 	<!-- Servlet Mapping -->
 	<servlet-mapping>
 		<servlet-name>Jersey Servlet</servlet-name>
 		<url-pattern>/services/*</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Mongo Graphs</servlet-name>
-		<url-pattern>/graphs/initiate</url-pattern>
-		<url-pattern>/graphs/query</url-pattern>
-	</servlet-mapping>
+	
+	<!-- Swagger Configuration -->
 
-    <session-config>
-      <session-timeout>30</session-timeout>
-    </session-config>
+	<servlet>
+		<servlet-name>Jersey2Config</servlet-name>
+		<servlet-class>io.swagger.jersey.config.JerseyJaxrsConfig</servlet-class>
+		<init-param>
+			<param-name>api.version</param-name>
+			<param-value>1.0.0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>swagger.api.basepath</param-name>
+			<param-value>http://localhost:8080/mViewer/services/</param-value>
+			<!-- <param-value>./services/</param-value> -->
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
 </web-app>

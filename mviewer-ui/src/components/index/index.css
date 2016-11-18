@@ -1,0 +1,241 @@
+.mainContainer{
+  display: inline-block;
+}
+
+.addButton {
+font-size: 15px;
+cursor: pointer;
+padding-right: 10px;
+}
+
+.addButton i {
+  padding-right: 5px;
+}
+
+.addButton span {
+  display: inline;
+}
+
+.two label {
+  font-size: 16px;
+  color: #484848;
+  font-weight: 600;
+  padding-left: 10px;
+}
+
+.header{
+  background-color: #2294d2;
+  font-size: 14px;
+  height: 50px;
+  color: white;
+  margin-bottom: 5%;
+}
+
+.text{
+  top: 30%;
+  position: relative;
+  left: 5%;
+  font-size: 17px;
+}
+
+.queryAttributesDiv {
+  display: inline-block;
+    padding-left: 1%;
+    width: 90%;
+    margin-left: 5%;
+    height: 130px;
+    overflow-y: auto;
+}
+
+.attributeList{
+    list-style-type: none;
+    margin-top: 4%;
+}
+
+.attributesItems {
+  margin-bottom: 2%;
+  word-break: break-all;
+  font-size: 16px;
+}
+
+.checkboxSpan {
+  margin-right: 2%;
+  margin-right: 2%;
+}
+
+.checkboxSpan input,
+.ascCheckboxSpan input{
+  width: 16px;
+  height: 16px;
+}
+
+/*Buttons*/
+.submit,
+.cancel,
+.cancel1
+ {
+    border: none !important;
+    width: 20%;
+    background-color: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    height: 30px;
+    padding: 10px;
+}
+
+.cancel,
+.cancel1 {
+  color: #484848;
+  font-family: 'Brandon-Light';
+  float: right;
+}
+
+.cancel1{
+  margin-bottom: 15px;
+}
+
+.submit {
+  float: right;
+  font-family: 'Brandon-Light';
+}
+
+.submit:enabled {
+  color: #2494d0;
+}
+
+.submit:disabled {
+  color:#9fc7dc;
+}
+
+.submit:hover:enabled,
+.submit:active:enabled {
+    color: #3c5563;
+    cursor: pointer;
+}
+
+.cancel:hover,
+.cancel:active,
+.cancel1:hover,
+.cancel1:active {
+    color: #191717;
+    cursor: pointer;
+}
+
+
+.error {
+  box-shadow: 0 0 2px red !important;
+  border: 1px solid red !important;
+}
+
+.errorMessage {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  margin: 5px auto;
+  font-size: 13px;
+  word-wrap: break-word;
+}
+
+.errorMessage.hidden {
+    display: none;
+}
+
+.errorMessage.show {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  margin: 5px auto;
+  font-size: 13px;
+  word-wrap: break-word;
+}
+
+
+.successMessage {
+  color: green;
+  text-align: center;
+  border: 1px solid green;
+  width: 90%;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  margin: 5px auto;
+  font-size: 13px;
+  word-wrap: break-word;
+}
+
+
+
+.customErrorMessage {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  margin: 15px auto;
+  font-size: 15px;
+  word-wrap: break-word;
+
+}
+
+
+.buttonContainer{
+  text-align: center;
+  margin-bottom: 3%;
+  margin-top: 5%;
+}
+
+.ascCheckboxSpan {
+  float: right;
+  margin-right: 4%;
+  margin-top: -6%;
+}
+
+.orderLabel {
+  /*margin-left: 53% !important;*/
+  float: right;
+  padding-right: 10px;
+  padding-bottom: 5px;
+}
+
+.valueSpan{
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: -5.5%;
+    margin-left: 7%;
+}
+
+
+.clear {
+  clear: both;
+}
+
+/*-------Clear Floats-------*/
+.clearfix { zoom : 1}
+.clearfix:after {
+    content: '.';
+    clear: both;
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+.empty {
+    font-size: 16px;
+    color: #484848;
+    font-weight: 600;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 20px;
+}

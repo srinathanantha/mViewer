@@ -1,0 +1,110 @@
+.choiceContainer.showChoice {
+  float: right;
+  width: 100%;
+
+}
+
+.choiceContainer.hideChoice {
+  display: none;
+}
+
+
+.two label {
+  font-size: 16px;
+  margin-bottom: 3%;
+  display: inline-block;
+  widows: 100%;
+}
+
+
+/*Buttons*/
+.submit
+ {
+    display: inline-block;
+    background-color: #fff;
+    font-size: 15px;
+    color: #2294d2;
+    margin-right: 2%;
+    float: right;
+    height: 30px;
+    width: 20%;
+    border: none;
+    cursor: pointer;
+}
+
+.cancel {
+  display: inline-block;
+  background-color: #fff;
+  font-size: 15px;
+  color: #484848;
+  float: right;
+  height: 30px;
+  width: 20%;;
+  border: none;
+  cursor: pointer;
+}
+.submit:hover,
+.submit:active {
+    color: #3c5563;
+}
+
+.cancel:hover,
+.cancel:active {
+  color: #191717;
+}
+
+
+.errorMessage {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+.errorMessage.hidden {
+    display: none;
+}
+
+.errorMessage.show {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+
+.successMessage {
+  color: green;
+  text-align: center;
+  border: 1px solid green;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+
+.closeSpan {
+  float: right;
+  margin-top: -3vh;
+  margin-right: -5%;
+  cursor: pointer;
+}
