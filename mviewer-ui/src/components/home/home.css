@@ -1,0 +1,11 @@
+.mainContainer {
+    background-color: #ecf4f7;
+    display: inline-block;
+    float: right;
+    /*width: 80%;*/
+    /*width: calc(100vw - 277px);*/
+    /*height: 100%;*/
+    height: calc( 100vh - 60px);
+    /*overflow: hidden;*/
+    overflow: overlay;
+}

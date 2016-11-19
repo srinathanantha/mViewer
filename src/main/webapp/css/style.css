@@ -10,7 +10,7 @@ body {
     background: #fbfbfb none repeat scroll 0 0;
     font-family: Arial, Helvetica, sans-serif;
     color: #0e2137;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 input {
@@ -75,14 +75,14 @@ div.loginFormContents div {
     display: inline-block;
     float: left;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .imaginea {
     display: inline-block;
     float: right;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 #errorMsg {
@@ -123,7 +123,7 @@ div.loginFormContents div {
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
     color: #0e2137;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 25px;
 }
 
@@ -201,7 +201,7 @@ ul.nav-link-top li a {
     color: #F7F7F7;
     padding: 22px 15px;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 13px;
     height: 30px;
     line-height: 60px;
     cursor: pointer;
@@ -244,7 +244,7 @@ ul.lists li {
     list-style-type: disc;
     list-style-position: inside;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 28px;
     border-radius: 3px;
     margin: 2px 0 0 2px;
@@ -574,7 +574,7 @@ table tr td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 212px;
+    width: 213px;
 }
 
 .wrap_listitem {

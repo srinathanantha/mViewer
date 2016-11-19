@@ -1,0 +1,235 @@
+.modalContainer span,
+.updateModalContainer span {
+  cursor: pointer;
+}
+
+.modalContainer {
+  display: inline-block;
+}
+
+.updateModalContainer {
+  display: inline-block;
+}
+
+.inputBox div input[type=text] {
+    padding: 10px;
+    border-radius: 1px;
+    border: 1px solid #cccccc;
+    background-color: inherit;
+    font-size: 15px;
+    color: #808285 !important;
+    height: 35px;
+    width: 100%;
+    font-family: 'Brandon-Light';
+}
+
+.inputBox label {
+    font-size: 60%;
+    color: black;
+}
+
+.inputBox input[type=checkbox].checkBox {
+    display: inline;
+    width: 22px;
+    height: 22px;
+    background-color: white !important;
+    color: inherit;
+    margin-top: 2%;
+    margin-right: 2%;
+    cursor: pointer;
+}
+
+.TextInput error input[type=text] {
+    border-color: #8c4141;
+    width: 166px;
+}
+
+.validationError {
+    border-color: #8c4141;
+    width: 166px;
+}
+
+.inputBox {
+    margin-bottom: 7px;
+
+}
+
+.innerForm {
+    padding: 5%;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background-color: #ffffff
+}
+
+.inputLabel {
+    margin-left: 25% !important;
+}
+
+.checkLabel{
+    font-size: 15px;
+    color: #808285;
+    margin-top: -7.1%;
+    margin-left: 9%;
+    font-weight: 500;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+
+.formContainer {
+    margin-left: 5%;
+    margin-right: auto;
+    width: 90%;
+}
+
+.help {
+    margin-top: 8px;
+    width: 100%;
+}
+
+.errorMessage {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+.errorMessage.hidden {
+    display: none;
+}
+
+.errorMessage.show {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+
+.successMessage {
+  color: green;
+  text-align: center;
+  border: 1px solid green;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+
+/*Buttons*/
+.submit,
+.cancel
+ {
+    border: none !important;
+    width: 20%;
+    background-color: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    height: 30px;
+}
+
+.cancel {
+  color: #484848;
+  margin-left: 175px;
+}
+
+.submit:enabled{
+  color: #2494d0;
+}
+.submit:disabled {
+  color: #9fc7dc;
+}
+
+.submit {
+
+  float: right;
+  margin-bottom: 4%;
+  margin-right: -6px;
+  font-family: 'Brandon-Light';
+  margin-top: -1.8%;
+}
+
+
+.submit:hover:enabled,
+.submit:active:enabled {
+    color: #3c5563;
+    cursor: pointer;
+}
+
+.cancel:hover,
+.cancel:active {
+    color: #191717;
+    cursor: pointer;
+}
+
+.header{
+  background-color: #2294d2;
+  font-size: 14px;
+  height: 50px;
+  color: white;
+  margin-bottom: 5%;
+}
+
+.text{
+  top: 30%;
+  position: relative;
+  left: 5%;
+  font-size: 17px;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #ababab;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:     #ababab;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:     #ababab;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:     #ababab;
+}
+
+
+.updateButton {
+display: inline-block;
+width: 100%;
+font-size: 15px;
+cursor: pointer;
+padding-right: 10px;
+}
+
+.updateButton i {
+  padding-right: 5px;
+}
+
+.updateButton span {
+  display: inline;
+}
+
+.closeSpan {
+  float: right;
+  margin-top: -3%;
+  margin-right: -3%;
+  cursor: pointer;
+}

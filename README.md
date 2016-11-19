@@ -1,10 +1,19 @@
+
+[![Build](https://travis-ci.org/Imaginea/mViewer.svg?branch=master)](https://travis-ci.org/Imaginea/mViewer/builds)
+
 mViewer(Micro/Mongo Viewer) is a light web-based GUI for managing MongoDB without needing any installation.
 mViewer allows managing databases, collections, gridfs, users & indexes as an alternative to the mongoDB native shell
 in a simpler and user-friendly way.
 
-## mViewer-v0.9.2 - Beta 
+### Whats new in mViewer-1.0.0 beta?
+   1. Redesigned complete user interface with enhananced ease.
+   2. New login interface which supports mongodb started with/without auth mode.
+   3. Full support of roles and privileges.
+   4. User creation with roles with specific set actions.
+   5. Supports latest MongoDB v3.x
+   6. Integrated all API's with swagger
   
-### Whats new in mViewer-v0.9.2 ?
+### Whats new in mViewer-0.9.2 ?
    1. Enhanced Query Executor with support for executing queries on databases & collections including Map Reduce & aggregation queries.
    2. Enhanced command spotlight with better keyboard navigation even to menu items
    3. Support for managing Database users
@@ -12,7 +21,7 @@ in a simpler and user-friendly way.
    5. Enhanced authentication & security with support for --auth mode
    6. Better Look-n-Feel
    
-### Working with mViewer-0.9.2-beta:
+### Working with mViewer-0.9.2 beta:
    You can checkout the code or download the zip and make a release build using maven/ant as described below.
 Extract the generated mViewer-0.9.2-release.zip & mViewer-0.9.2-release.tar.gz and run start_mViewer.bat/start_mViewer.sh.
  
@@ -33,11 +42,11 @@ Extract the generated mViewer-0.9.2-release.zip & mViewer-0.9.2-release.tar.gz a
    7. Viewing stats of databases, collections and gridFS
    8. Opening multiple connections from same browser to different MongoDB servers
 
-### Download mViewer-v0.9.1
+### Download mViewer-1.0.0 beta
 
-Windows :- https://github.com/downloads/Imaginea/mViewer/mViewer-v0.9.1.zip
+Windows :- https://github.com/Imaginea/mViewer/releases/download/1.0.0-beta/mViewer-1.0-release.zip
 
-Mac/Linux :- https://github.com/downloads/Imaginea/mViewer/mViewer-v0.9.1.tar.gz
+Mac/Linux :- https://github.com/Imaginea/mViewer/releases/download/1.0.0-beta/mViewer-1.0-release.tar.gz
 
 Download previous versions from https://github.com/Imaginea/mViewer/downloads
     
@@ -55,7 +64,7 @@ Unzip/Untar the downloaded package and simply run start_mViewer.bat/start_mViewe
 
 'port' is optional, if not provided default port (8080) set in properties file will be used.
 
-Start using mViewer at http://localhost:<port>/index.html
+Start using mViewer at http://localhost:\<port\>/index.html
 
 
 ### Documentation
@@ -78,7 +87,6 @@ Detailed documentation on mViewer features & usage can be found at http://imagin
        c) Configure a Tomcat Server locally in intellij to run/debug mViewer.
     4) You can send a pull request to mViewer master branch with your features/enhancements/fixes.
           
-
 ### Making a Release build
 
  Using maven:-
@@ -104,6 +112,14 @@ It will create mViewer.war and run it using the winstone server.
 Once started, the application can be accessed at http://localhost:port. 
 Default port is 8080 which can be updated in mViewer.properties file.
 
+### Working on UI
+
+> Do $mvn -Pserver to run server standalone.
+
+> Go to mviewer-ui and do npm install and npm start to run ui on web-pack dev server.
+
+> Launch at http:localhost:3000
+ 
 ### Running Unit Tests
 
 Use the following command to run the unit tests. surefire-reports will be generated in target folder.

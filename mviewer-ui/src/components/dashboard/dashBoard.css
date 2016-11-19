@@ -1,0 +1,146 @@
+.row{
+  display: flex;
+  align-items: center;
+}
+align-items: center;
+
+/*Main Container*/
+.mainContainer {
+    width: 100%;
+    margin: 0 auto;
+    background: #fff;
+}
+
+/*Main Navigyation*/
+.mainNav {
+    list-style: none;
+    background: #2494d0;
+    height: 60px;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    font-size: 27px;
+    margin-bottom: 0;
+}
+
+.mainNav li {
+    display: inline-block;
+    font-size: 15px;
+}
+
+.mainNav li a:link,
+.mainNav li a:visited {
+    padding: 0 0 0 5px;
+    color : #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.2s, color 0.2s;
+    font-weight: 500;
+    width: 100%;
+}
+
+/*.mainNav li:last-child::before {
+  content: '|';
+  border: 0;
+  padding: 0;
+  font-size: 34px;
+}*/
+
+.seperator {
+  width: 1px;
+  height: 47%;
+  border: solid 1px #6f7576;
+}
+
+.mainNav li a:hover {
+    color: #6f7576;
+}
+
+
+.mainNav li span {
+  padding-left: 20px;
+  padding-right: 20px;
+  font-weight: 300;
+}
+
+.mainNav li span i {
+  font-size: 34px;
+}
+
+
+/*Logo*/
+.logo{
+    height: auto;
+    width: auto;
+    float: left;
+    text-decoration: none;
+    padding-left: 2%;
+}
+
+.logo img {
+  /*width: 55%;
+  height: auto;*/
+}
+
+.span1{
+  font-family: 'Brandon-Light' ;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.span2 {
+  font-family: 'Brandon-Light';
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.span3 {
+  font-family: 'Helvetica';
+  color: #D7DEE0;
+  font-weight: 600;
+}0 0 0 15px
+
+
+.icon {
+  padding-right: 10%;
+  display: inline-block;
+}
+
+
+/*-------Clear Floats-------*/
+.clearfix { zoom : 1}
+.clearfix:after {
+    content: '.';
+    clear: both;
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+/*Header*/
+header {
+    background: #2494d0;
+    font-family: 'Brandon';
+}
+
+.banner {
+    background: #61b2f7 !important;
+    padding: 1% 2%;
+}
+
+.disconnect {
+}
+
+.disconnect::before {
+}
+
+.details {
+  font-size: 14px;
+  color: white;
+  font-family: 'Brandon-Light';
+  text-align: center;
+}

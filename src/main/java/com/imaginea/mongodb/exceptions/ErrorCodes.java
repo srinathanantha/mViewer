@@ -1,32 +1,26 @@
 /*
- * Copyright (c) 2011 Imaginea Technologies Private Ltd.
- * Hyderabad, India
+ * Copyright (c) 2011 Imaginea Technologies Private Ltd. Hyderabad, India
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following condition
- * is met:
+ * Redistribution and use in source and binary forms, with or without modification, are permitted
+ * provided that the following condition is met:
  *
- *     + Neither the name of Imaginea, nor the
- *       names of its contributors may be used to endorse or promote
- *       products derived from this software.
+ * + Neither the name of Imaginea, nor the names of its contributors may be used to endorse or
+ * promote products derived from this software.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.imaginea.mongodb.exceptions;
 
 /**
- * Defines Error Codes for Exceptions thrown in MongoDb while performing
- * operations in Services Files.
+ * Defines Error Codes for Exceptions thrown in MongoDb while performing operations in Services
+ * Files.
  */
 
 public interface ErrorCodes {
@@ -55,26 +49,26 @@ public interface ErrorCodes {
     String DELETING_FROM_CAPPED_COLLECTION = "DELETING_FROM_CAPPED_COLLECTION";
     String INVALID_CONNECTION = "INVALID_CONNECTION";
 
-    //Command
+    // Command
     String INVALID_COMMAND = "INVALID_COMMAND";
     String INVALID_QUERY = "INVALID_QUERY";
     String COMMAND_NOT_SUPPORTED = "Command is not yet supported";
     String COMMAND_ARGUMENTS_NOT_SUFFICIENT = "Command arguments are not sufficient";
     String COMMAND_EMPTY = "COMMAND_IS_EMPTY";
 
-    //Users & Indexes
+    // Users & Indexes
     String USERNAME_IS_EMPTY = "USERNAME_IS_EMPTY";
     String PASSWORD_IS_EMPTY = "PASSWORD_IS_EMPTY";
     String KEYS_EMPTY = "KEYS_EMPTY";
     String INDEX_EMPTY = "INDEX_EMPTY";
 
-    //Aggregation
+    // Aggregation
     String INVALID_AGGREGATE_COMMAND = "INVALID_AGGREGATE_COMMAND";
 
-    //bucket
+    // bucket
     String BUCKET_NAME_EMPTY = "BUCKET_NAME_EMPTY";
 
-    //Exception codes
+    // Exception codes
     String MONGO_CONNECTION_EXCEPTION = "MONGO_CONNECTION_EXCEPTION";
     String GET_DB_LIST_EXCEPTION = "GET_DB_LIST_EXCEPTION";
     String DB_DELETION_EXCEPTION = "DB_DELETION_EXCEPTION";
@@ -96,9 +90,11 @@ public interface ErrorCodes {
     String GRIDFS_CREATION_EXCEPTION = "GRIDFS_CREATION_EXCEPTION";
     String QUERY_EXECUTION_EXCEPTION = "QUERY_EXECUTION_EXCEPTION";
     String INDEX_ADDITION_EXCEPTION = "ERROR_ADDING_INDEX";
+    String INDEX_UPDATION_EXCEPTION = "ERROR_UPDATING_INDEX";
     String INDEX_REMOVE_EXCEPTION = "ERROR_REMOVING_INDEX";
 
     String USER_CREATION_EXCEPTION = "USER_CREATION_EXCEPTION";
     String USER_DELETION_EXCEPTION = "USER_DELETION_EXCEPTION";
     String ANY_OTHER_EXCEPTION = "ANY_OTHER_EXCEPTION";
+    String LEGACY_MONGO_DB_EXCEPTION = "LEGACY_MONGO_DB_EXCEPTION";
 }

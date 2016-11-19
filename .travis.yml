@@ -1,0 +1,13 @@
+language: java
+script: mvn -Prelease
+jdk:
+- oraclejdk8
+deploy:
+  provider: releases
+  api_key: ${api_key}
+  file: 
+    - $HOME/build/${user}/mViewer/target/mViewer-1.0-release.tar.gz
+    - $HOME/build/${user}/mViewer/target/mViewer-1.0-release.zip
+  skip_cleanup: true
+  on:
+    tags: true
