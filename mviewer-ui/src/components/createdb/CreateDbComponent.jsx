@@ -156,7 +156,7 @@ class CreateDbComponent extends React.Component {
             <Form method='POST' onValid={this.enableButton()} onInvalid={this.disableButton()} >
               <div className={ createDbStyles.formContainer}>
                 <div className={createDbStyles.inputBox}>
-                  <TextInput type="text" name="name" id="name" placeholder="Database name" value={this.state.name} onChange = {this.handleChange.bind(this)} validations={'isRequired2:'+this.state.error+',isAlpha1:'+this.state.error+',maxLength:64'} onChange={this.handleChange.bind(this)} validationErrors={{isRequired2: 'Db name must not be empty', isAlpha1: 'Invalid Db name', maxLength: 'Db name cannot be more than 64 characters' }}  />
+                  <TextInput type="text" name="name" id="name" placeholder="Database name" value={this.state.name} onChange = {this.handleChange.bind(this)} validations={'isRequired2:'+this.state.error+',isAlpha1:'+this.state.error+',maxLength:63'} onChange={this.handleChange.bind(this)} validationErrors={{isRequired2: 'Db name must not be empty', isAlpha1: 'Invalid Db name', maxLength: 'Db name exceeds maximum limit' }}  />
                 </div>
                 <div className={createDbStyles.buttons}>
                   <div className={createDbStyles.right}>

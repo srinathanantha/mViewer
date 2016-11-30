@@ -127,6 +127,13 @@ class newDocumentComponent extends React.Component {
           this.setState({message: data.response.error.message});  
         }
 
+        if (data.response.error.code == 'DOCUMENT_CREATION_EXCEPTION'){
+          if(data.response.error.message.indexOf("duplicate key error collection") >= 0) {
+            this.setState({message : 'A document with same _id already exists'});
+          }
+        }
+
+
         if (data.response.error.code == 'ANY_OTHER_EXCEPTION') {
           this.setState({message : 'Invalid JSON Object'});
         }

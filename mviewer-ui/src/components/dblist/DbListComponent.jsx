@@ -42,9 +42,6 @@ class DbListComponent extends React.Component {
     this.setState({message: ''});
     this.setState({error:false});
     var hasPriv = privilegesAPI.hasPrivilege('createCollection','', '');
-    // var hasPriv = privilegesAPI.hasPrivilege('createCollection','', this.props.propps.propss.location.query.db);
-    // var hasRole = privilegesAPI.hasRole('readWriteAnyDatabase',this.props.propps.loggedInDatabase);
-    // var hasRole1 = privilegesAPI.hasRole('dbAdminAnyDatabase',this.props.propps.loggedInDatabase);
     if(hasPriv){
       this.setState({showAuth : false});    }
     else{
@@ -190,7 +187,7 @@ class DbListComponent extends React.Component {
         {
           var result = data.response.result;
           this.setState({dbNames: result.dbNames});
-          localStorage.setItem('dbNames', JSON.stringify(this.state.dbNames));
+          sessionStorage.setItem('dbNames', JSON.stringify(this.state.dbNames));
           if (result.rolesAndPrivileges) {
             privilegesAPI.setRoles(result.rolesAndPrivileges.documents[0].users[0]);
           }
@@ -210,6 +207,7 @@ class DbListComponent extends React.Component {
       if (typeof(data.response.result) != 'undefined')
         {
           this.setState({dbNames: data.response.result.dbNames});
+          sessionStorage.setItem('dbNames', JSON.stringify(data.response.result.dbNames));
         }
       else {
         window.location.hash='#?code=INVALID_CONNECTION';
@@ -312,7 +310,7 @@ class DbListComponent extends React.Component {
          <Form method='POST' onValid={this.enableButton()} onInvalid={this.disableButton()} >
            <div className={ dbListStyles.formContainer}>
              <div className={dbListStyles.inputBox}>
-               <TextInput type="text" name="name" id="name" placeholder="Database name" value={this.state.name} onChange = {this.handleChange.bind(this)} validations={'isRequired2:'+this.state.error+',isAlpha1:'+this.state.error+',maxLength:64'} onChange={this.handleChange.bind(this)} validationErrors={{isRequired2: 'Db name must not be empty', isAlpha1: 'Invalid Db name', maxLength: 'Db name cannot be more than 64 characters' }}  />
+               <TextInput type="text" name="name" id="name" placeholder="Database name" value={this.state.name} onChange = {this.handleChange.bind(this)} validations={'isRequired2:'+this.state.error+',isAlpha1:'+this.state.error+',maxLength:63'} onChange={this.handleChange.bind(this)} validationErrors={{isRequired2: 'Db name must not be empty', isAlpha1: 'Invalid Db name', maxLength: 'Db name exceeds maximum limit' }}  />
              </div>
              <div className={dbListStyles.buttons}>
               <div className={dbListStyles.right}>

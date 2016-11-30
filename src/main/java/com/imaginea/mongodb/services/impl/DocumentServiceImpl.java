@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mongodb.MongoWriteException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -60,6 +61,7 @@ public class DocumentServiceImpl implements DocumentService {
     private CollectionService collectionService;
 
     private static final AuthService AUTH_SERVICE = AuthServiceImpl.getInstance();
+    private static final String ID_FIELD_NAME = "_id";
 
     /**
      * Creates an instance of MongoInstanceProvider which is used to get a mongo instance to perform
@@ -127,7 +129,7 @@ public class DocumentServiceImpl implements DocumentService {
             MongoCollection<Document> collection = db.getCollection(collectionName);
             JSONObject jsonObject = QueryExecutor.executeQuery(db, collection, collectionName, command, queryStr, keys,
                     sortBy, limit, skip, allKeys);
-            processComplexQuery(dbName, queryStr, db, jsonObject);
+            processComplexQuery(dbName, queryStr, db, jsonObject, collection);
             return jsonObject;
         } catch (MongoException e) {
             throw new DocumentException(ErrorCodes.QUERY_EXECUTION_EXCEPTION, e.getMessage());
@@ -171,7 +173,13 @@ public class DocumentServiceImpl implements DocumentService {
             //   throw new DatabaseException(ErrorCodes.DB_DOES_NOT_EXISTS,
             //       "DB [" + dbName + "] DOES NOT EXIST");
             // }
-
+            // document can contain _id field which must be a proper hexadecimal string. This condition validates given _id.
+            // This throws illegalArgumentException if not found valid
+            if (document.containsKey(ID_FIELD_NAME)) {
+                ObjectId objectId = new ObjectId(document.get(ID_FIELD_NAME).toString());
+                // ensuring insertion of _id input as valid ObjectIds
+                document.put(ID_FIELD_NAME, objectId);
+            }
             MongoCursor<String> iterator =
                     mongoInstance.getDatabase(dbName).listCollectionNames().iterator();
             Set<String> collectionNames = null;
@@ -244,7 +252,7 @@ public class DocumentServiceImpl implements DocumentService {
                 throw new DocumentException(ErrorCodes.DOCUMENT_EMPTY, "Document is empty");
             }
 
-            String newId = (String) newData.get("_id");
+            String newId = (String) newData.get(ID_FIELD_NAME);
 
 
             if (newId == null) {
@@ -266,16 +274,16 @@ public class DocumentServiceImpl implements DocumentService {
                     mongoInstance.getDatabase(dbName).getCollection(collectionName);
 
 
-            Document document = collection.find(Filters.eq("_id", docId)).first();
+            Document document = collection.find(Filters.eq(ID_FIELD_NAME, docId)).first();
 
             if (document != null) {
 
-                ObjectId objectId = document.getObjectId("_id");
+                ObjectId objectId = document.getObjectId(ID_FIELD_NAME);
 
-                newData.put("_id", objectId);
+                newData.put(ID_FIELD_NAME, objectId);
 
                 Document updateData = new Document("$set", newData);
-                collection.updateOne(Filters.eq("_id", objectId), updateData);
+                collection.updateOne(Filters.eq(ID_FIELD_NAME, objectId), updateData);
 
             } else {
                 throw new DocumentException(ErrorCodes.DOCUMENT_DOES_NOT_EXIST,
@@ -375,38 +383,47 @@ public class DocumentServiceImpl implements DocumentService {
         return result;
     }
 
-    private void processComplexQuery(String dbName, String queryStr, MongoDatabase db, JSONObject jsonObject) throws DatabaseException, CollectionException, DocumentException {
+    private void processComplexQuery(String dbName, String queryStr, MongoDatabase db, JSONObject jsonObject, MongoCollection<Document> sourceCollection) throws DatabaseException, CollectionException, DocumentException {
         // if the query string contains complex query like : forEach( function(x){db.targetTest.insert(x)} ); get the function part of the string
         if (queryStr.contains("forEach")) {
             if (queryStr.contains("function")) {
+                boolean hasError = false;
                 String postQueryString = queryStr.substring(queryStr.indexOf("function("));
                 int functionStartIndex = postQueryString.indexOf('{') + 1; // +1 to discard { in the string
                 int functionLastIndex = postQueryString.lastIndexOf('}');
                 String functionString = postQueryString.substring(functionStartIndex, functionLastIndex);
                 // function string looks like : db.targetTest.insert(x)
                 if (functionString.contains("insert") && functionString.contains(".")) {
-                    String newCollectionName = functionString.split("\\.")[1];
+                    int firstDotIndex = functionString.indexOf(".") + 1;
+                    int lastDotIndex = functionString.lastIndexOf(".");
+                    String newCollectionName = functionString.substring(firstDotIndex, lastDotIndex);
+                    //functionString.split("\\.")[1];
                     // If collection doesn't exist, create new one .. else insert into existing collection
                     if (!collectionService.getCollList(dbName).contains(newCollectionName)) {
                         db.createCollection(newCollectionName);
-                        insertIntoTargetCollection(db, jsonObject, newCollectionName);
-                    } else
-                        insertIntoTargetCollection(db, jsonObject, newCollectionName);
-                    //jsonObject.put("complexQueryMessage", "Successfully copied the documents to "+newCollectionName+" collection");
+                        hasError = insertIntoTargetCollection(db, sourceCollection, newCollectionName, queryStr);
+                    } else {
+                        hasError = insertIntoTargetCollection(db, sourceCollection, newCollectionName, queryStr);
+                    }
+                    if (hasError)
+                        jsonObject.put("errorMessage", "Only unique documents were copied to the collection : " + newCollectionName);
                 }
             } else
                 throw new DocumentException(ErrorCodes.INVALID_QUERY, "Invalid Query specified. Please verify the syntax");
         }
     }
 
-    private void insertIntoTargetCollection(MongoDatabase db, JSONObject jsonObject, String newCollectionName) {
+    private boolean insertIntoTargetCollection(MongoDatabase db, MongoCollection<Document> sourceCollection, String newCollectionName, String queryString) {
+        boolean hasErrorWhileCopying = false;
         MongoCollection<Document> targetCollection = db.getCollection(newCollectionName);
-        if (jsonObject.has("documents")) {
-            JSONArray jsonArray = (JSONArray) jsonObject.get("documents");
-            jsonArray.forEach(obj -> {
-                JSONObject eachDocument = (JSONObject) obj;
-                targetCollection.insertOne(Document.parse(eachDocument.toString()));
-            });
+        // apply any filters and iterate over the documents of source collection to copy to the target collection
+        for (Document document : sourceCollection.find(Document.parse(queryString))) {
+            try {
+                targetCollection.insertOne(document);
+            } catch (MongoWriteException mongoWriteException) {
+                hasErrorWhileCopying = true;
+            }
         }
+        return hasErrorWhileCopying;
     }
 }

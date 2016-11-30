@@ -212,6 +212,14 @@ class newCollectionComponent extends React.Component {
           this.setState({successMessage:false});
           this.setState({message:'Collection '+obj['newCollName']+ ' already exists in database ' + this.props.currentDb});
         }
+
+        if(data.response.error.code === 'COLLECTION_UPDATE_EXCEPTION'){
+          if(data.response.error.message.indexOf("specify size:<n> when capped is true") >= 0) {
+            this.setState({successMessage:false});
+            this.setState({message:'The cap size must be greater than zero'});
+          }
+        }
+
       }
     }
 
@@ -274,7 +282,7 @@ class newCollectionComponent extends React.Component {
                   <div className={newCollectionStyles.checkLabel} onClick={this.handleCheck.bind(this)}><span>Capped</span></div>
                 </div>
                 <div className={newCollectionStyles.inputBox}>
-                  <TextInput type="text" name="capSize" id="capSize" placeholder="size (bytes)" value={this.state.size} onChange={this.handleChange.bind(this)} validations={'isRequired1:'+this.state.cap+',isNumeric1:'+this.state.cap + ',maxSize:' + this.state.cap} checkforOtherErrors ={this.state.submitted} validationErrors={{isNumeric1: 'Please enter the size in numeric', isRequired1: 'Please enter the size', maxSize: 'Entered value exceeds allowed Size limit.'}} shouldBeDisabled = {!this.state.cap}  />
+                  <TextInput type="text" name="capSize" id="capSize" placeholder="size (bytes)" value={this.state.size} onChange={this.handleChange.bind(this)} validations={'isRequired1:'+this.state.cap+',isNumeric1:'+this.state.cap + ',maxSize:' + this.state.cap + ',checkZero:' + this.state.cap} checkforOtherErrors ={this.state.submitted} validationErrors={{isNumeric1: 'Please enter the size in numeric', isRequired1: 'Please enter the size', maxSize: 'Entered value exceeds allowed Size limit.', checkZero: 'cap size cannot be zero.'}} shouldBeDisabled = {!this.state.cap}  />
                 </div>
                 <div className={newCollectionStyles.inputBox}>
                   <TextInput type="text" name="maxDocs" id="maxDocs" placeholder="max Documents (optional)" value={this.state.max} onChange={this.handleChange.bind(this)} shouldBeDisabled = {this.state.isAdmin ? true : !this.state.cap}  validationErrors={{isNumeric1: 'Please enter the size in numeric', maxDocs: 'Entered value exceeds allowed Max Docs limit.'}} checkforOtherErrors ={this.state.submitted} validations={'isNumeric1:' + this.state.cap + ',maxDocs:' + this.state.cap}/>

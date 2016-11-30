@@ -3,7 +3,8 @@ import dbListStyles from './dblist.css'
 import $ from 'jquery'
 import DeleteComponent from '../deletecomponent/DeleteComponent.jsx'
 import privilegesAPI from '../../gateway/privilegesAPI.js';
-import AuthPopUp from '../authpopup/AuthPopUpComponent.jsx'
+import AuthPopUp from '../authpopup/AuthPopUpComponent.jsx';
+import toolTip from '../shared/tooltip.js';
 
 class DbItemComponent extends React.Component {
 
@@ -60,7 +61,7 @@ class DbItemComponent extends React.Component {
           <span className={dbListStyles.dbIcon}>
             <i className="fa fa-database" aria-hidden="true"></i>
           </span>
-          <span className={dbListStyles.content}>{this.props.name}</span>
+          <span id="toolTipDb" className={dbListStyles.content} title = {this.props.name}>{this.props.name}</span>
           <i className={"fa fa-trash " +  dbListStyles.removeIcon} aria-hidden="true" onClick={this.openModal.bind(this)}></i>
         {this.state.modalIsOpen?( !this.state.showAuth ? <DeleteComponent modalIsOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} title = 'database' dbName = {this.props.name} connectionId={this.props.connectionId} ></DeleteComponent>  : <AuthPopUp modalIsOpen = {this.state.showAuth}  authClose = {this.authClose.bind(this)} action = 'drop database' ></AuthPopUp>) : ''}        
       </div>

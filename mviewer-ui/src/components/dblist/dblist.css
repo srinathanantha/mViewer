@@ -34,7 +34,7 @@
     transition: width ease 0.5s;
     transition: visibility 0s;
     width: 100%;
-    position: relative;
+    /*position: relative;*/
     border-right: 1px solid #bababa;
 }
 

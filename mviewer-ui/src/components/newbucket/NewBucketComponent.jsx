@@ -76,6 +76,7 @@ class newFileComponent extends React.Component {
     newArray.push(event.target.files[0]);
     this.setState({newFile : newArray});
     this.setState({errorFile: false});
+    event.target.value = null;
   }
 
   handleChange(e){

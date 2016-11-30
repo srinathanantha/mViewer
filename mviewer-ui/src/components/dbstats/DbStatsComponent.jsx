@@ -16,8 +16,14 @@ class DbStatsComponent extends React.Component {
 
   componentDidMount(){
     var that = this;
-    var partialUrl = 'db/' + that.props.selectedDB + '?connectionId=' + that.props.connectionId + '&ts=1470390555265&query=db.runCommand(%7BdbStats%3A1%7D)&limit=10&skip=0&fields=&sortBy={_id:-1}';
-    var dbStatsCall = service('GET', partialUrl, '');
+    var queryData = {};
+    queryData['query'] = "db.runCommand({dbStats:1})";
+    queryData['fields'] = "";
+    queryData['limit'] = 10;
+    queryData['skip'] = 0;
+    queryData['sortBy'] =  "{'_id':-1}";
+    var partialUrl = 'db/' + that.props.selectedDB + '?connectionId=' + that.props.connectionId;
+    var dbStatsCall = service('POST', partialUrl, JSON.stringify(queryData), 'query');
     dbStatsCall.then(this.success.bind(this), this.failure.bind(this));
   }
 

@@ -85,74 +85,7 @@ class QueryExecutorComponent extends React.Component {
       }
       this.setState({fields:newArr});
     }
-
-    if(calledFrom == 'innerCall1') {
-      this.setState({totalCount:data.response.result.count});
-      if (this.state.skipValue < this.state.totalCount) {
-        var size = this.state.skipValue + this.state.limitValue;
-        this.setState({startLabel:(this.state.totalCount != 0 ? this.state.skipValue + 1 : 0)})
-        this.setState({endLabel:(this.state.totalCount <= size ? this.state.totalCount : this.state.skipValue + this.state.limitValue)})
-      }
-    }
-
-   if(calledFrom == 'innerCall2'){
-     this.setState({totalCount:data.response.result.count});
-     this.setState({totalCount:data.response.result.count});
-     if (data.response.result.count < 10)
-     {
-       this.setState({limitValue:data.response.result.count});
-       this.setState({skipValue:0});
-     }
-     else {
-       this.setState({limitValue:this.state.limit});
-       this.setState({skipValue:0});
-     }
-     if (this.state.skipValue < this.state.totalCount) {
-       var size = this.state.skipValue + this.state.limitValue;
-       this.setState({startLabel:(this.state.totalCount != 0 ? this.state.skipValue + 1 : 0)})
-       this.setState({endLabel:(this.state.totalCount <= size ? this.state.totalCount : this.state.skipValue + this.state.limitValue)})
-     } else {
-     }
-     if(data.response.result.count==0){
-       this.setState({startLabel: 0});
-       this.setState({endLabel: 0});
-     }
-     if(data.response.error) {
-       that.setState({collectionObjects:[]});
-     }
-   }
-
-   if(calledFrom == 'innerCall3'){
-    var actualTotalCount = data.response.result.count;
-     if(parentData.response.result.count == 0 ){
-        actualTotalCount = 0;
-     }
-
-    // if(parentData.response.result.count <= 10 ){
-    //     actualTotalCount = parentData.response.result.count ;
-    //  }     
-
-     this.setState({totalCount:actualTotalCount});
-     if (this.state.skipValue < this.state.totalCount) {
-       var size = this.state.skipValue + this.state.limitValue;
-       this.setState({startLabel:(this.state.totalCount != 0 ? this.state.skipValue + 1 : 0)})
-       this.setState({endLabel:(this.state.totalCount <= size ? this.state.totalCount : this.state.skipValue + this.state.limitValue)})
-     }
-   }
-
-   if(calledFrom == 'innerCall4'){
-     this.setState({totalCount:data.response.result.count});
-     if (this.state.skipValue < this.state.totalCount) {
-       var size = this.state.skipValue + this.state.limitValue;
-       this.setState({startLabel:(this.state.totalCount != 0 ? this.state.skipValue + 1 : 0)})
-       this.setState({endLabel:(this.state.totalCount <= size ? this.state.totalCount : this.state.skipValue + this.state.limitValue)})
-     }
-     else{
-       this.setState({startLabel: 0});
-       this.setState({endLabel: 0});
-     }
-   }
- }
+  }
 
   failure(){
 
@@ -171,9 +104,16 @@ class QueryExecutorComponent extends React.Component {
     var currentDb = this.props.currentDb;
     var currentItem = this.props.currentItem;
     var connectionId = this.props.connectionId;
-    var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document?query='+this.state.query+'&connectionId='+connectionId+'&fields=""&limit=10&skip=0&sortBy={_id:-1}&allKeys=true' :
-              currentDb+'/gridfs/'+currentItem+'/getfiles?query='+this.state.query+'&fields=""&limit=10&skip=0&sortBy={_id:-1}&connectionId='+connectionId;
-    var queryExecutorCall1 = service('GET', partialUrl, '');
+    var queryData = {};
+    queryData['query'] = this.state.query;
+    queryData['fields'] = "";
+    queryData['limit'] = 10;
+    queryData['skip'] = 0;
+    queryData['sortBy'] = "{'_id':-1}";
+    queryData['allKeys'] = true;
+    var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document/query?connectionId='+connectionId :
+              currentDb+'/gridfs/'+currentItem+'/getfiles?connectionId='+connectionId;
+    var queryExecutorCall1 = service('POST', partialUrl, JSON.stringify(queryData), 'query');
     queryExecutorCall1.then(this.success1.bind(this), this.failure1.bind(this));
   }
 
@@ -182,14 +122,9 @@ class QueryExecutorComponent extends React.Component {
       this.setState({errorMessage:''});
       var array = data.response.result.documents;
       var partialUrl = this.props.currentDb+'/gridfs/'+this.props.currentItem+'/count?connectionId='+this.props.connectionId;
-      // var queryExecutorInnerCall1 = service('GET', partialUrl, '');
       if(this.state._isMounted == true){
       this.setState({collectionObjects:array});
       this.props.queryType == "collection" ? this.getAttributes(this.props.currentDb,this.props.currentItem, this.props.connectionId) : null;
-      // this.props.queryType == "fs" ?
-      // ( //queryExecutorInnerCall1
-        // service('GET', partialUrl, '').then(this.success.bind(this, 'innerCall1' , data), this.failure1.bind(this , 'innerCall1', data)))
-      // :
        this.setState({totalCount:data.response.result.count});
         if (this.state.skipValue < this.state.totalCount) {
           var size = this.state.skipValue + this.state.limitValue;
@@ -203,10 +138,6 @@ class QueryExecutorComponent extends React.Component {
     if (data.response.error.code == 'QUERY_EXECUTION_EXCEPTION' && data.response.error.message.indexOf('not authorized on') != -1 ){
       this.setState({errorMessage:'User is not authorized to perform this query'});
     }
-
-    // setTimeout(function(){
-    //     this.setState({errorMessage: ''});
-    //   }.bind(this), 2000);
   }
 }
 
@@ -217,17 +148,12 @@ class QueryExecutorComponent extends React.Component {
 
   success2(currentDb, currentItem, connectionId,  data){
     var partialUrl = currentDb+'/gridfs/'+currentItem+'/count?connectionId='+connectionId;
-    // var queryExecutorInnerCall2 = service('GET', partialUrl, '');
     if(data.response.result!=undefined && this.state._isMounted == true)
     { 
        this.setState({errorMessage:''});
        var array = data.response.result.documents;
         this.setState({collectionObjects:array});
         this.props.queryType == "collection" ? this.getAttributes(currentDb,currentItem, connectionId) : null;
-        // this.props.queryType == "fs" ?
-        // queryExecutorInnerCall2
-        // service('GET', partialUrl, '').then(this.success.bind(this , 'innerCall2', data), this.failure.bind(this, 'innerCall2', data))
-      // :
         this.setState({totalCount:data.response.result.count});
         if (data.response.result.count < 10)
         {
@@ -255,10 +181,6 @@ class QueryExecutorComponent extends React.Component {
            if (data.response.error.code == 'QUERY_EXECUTION_EXCEPTION' && data.response.error.message.indexOf('not authorized on') != -1 ){
               this.setState({errorMessage:'User is not authorized to perform this query'});
            }
-
-           // setTimeout(function(){
-           //    this.setState({errorMessage: ''});
-           //  }.bind(this), 2000);
         }
   }
 
@@ -266,9 +188,8 @@ class QueryExecutorComponent extends React.Component {
 
   }
 
-  success3(currentDb, currentItem, connectionId, data){
+  success3(currentDb, currentItem, connectionId, refresh, data){
     var partialUrl = currentDb+'/gridfs/'+currentItem+'/count?connectionId='+connectionId;
-    // var queryExecutorInnerCall3 = service('GET', partialUrl, '');
     if(data.response.result!=undefined)
     {
       if (data.response.result.documents[0] != undefined){
@@ -280,10 +201,9 @@ class QueryExecutorComponent extends React.Component {
       this.setState({errorMessage:''});
       var array = data.response.result.documents;
       this.setState({collectionObjects:array});
-      this.props.queryType == "collection" ? this.getAttributes(currentDb,currentItem, connectionId) : null;
-      // this.props.queryType == "fs" ?
-      // service('GET', partialUrl, '').then(this.success.bind(this , 'innerCall3' , data), this.failure.bind(this, 'innerCall3', data))
-      // : 
+
+      if(refresh)
+        this.props.queryType == "collection" ? this.getAttributes(currentDb,currentItem, connectionId) : null;
       this.setState({totalCount:data.response.result.count});
         if (this.state.skipValue < this.state.totalCount) {
           var size = this.state.skipValue + this.state.limitValue;
@@ -296,6 +216,12 @@ class QueryExecutorComponent extends React.Component {
           this.setState({endLabel: 0});
           this.setState({totalCount: 0});
 
+        }
+
+        if(typeof (data.response.result.errorMessage) != 'undefined'){
+          if(data.response.result.errorMessage.indexOf("Only unique documents were copied to the collection") >= 0){
+            this.setState({errorMessage:'There are some duplicate documents in the target collection, only unique documents will be copied.'});
+          }
         }
     }
 
@@ -318,10 +244,6 @@ class QueryExecutorComponent extends React.Component {
         if(data.response.error.message.indexOf("cannot remove from a capped collection") >= 0){
           this.setState({errorMessage:'cannot remove from a capped collection'});
         }
-
-        if(data.response.error.message.indexOf("duplicate key error collection") >= 0){
-          this.setState({errorMessage:'There are some duplicate documents in the target collection, only unique documents will be copied.'});
-        }
       }
 
       this.setState({startLabel: 0});
@@ -337,16 +259,10 @@ class QueryExecutorComponent extends React.Component {
 
   success4(currentDb, currentItem, connectionId, data){
     var partialUrl = currentDb+'/gridfs/'+currentItem+'/count?connectionId='+connectionId;
-    // var queryExecutorInnerCall4 = service('GET', partialUrl, '');
     if(data.response.result!=undefined)
     {
       var array = data.response.result.documents;
       this.setState({collectionObjects:array});
-      // this.props.queryType == "collection" ? this.getAttributes(currentDb,currentItem, connectionId) : null;
-      // this.props.queryType == "fs" ?
-      // queryExecutorInnerCall4
-      // service('GET', partialUrl, '').then(this.success.bind(this , 'innerCall4', data), this.failure.bind(this, 'innerCall4', data))
-      // : 
         this.setState({totalCount:data.response.result.count});
         if (this.state.skipValue < this.state.totalCount) {
           var size = this.state.skipValue + this.state.limitValue;
@@ -374,19 +290,27 @@ class QueryExecutorComponent extends React.Component {
   componentWillReceiveProps(nextProps){
     if((this.props.currentDb == nextProps.currentDb && this.props.currentItem !== nextProps.currentItem) || (this.props.currentDb !== nextProps.currentDb)){
       this.setState({selectedTab:0});
-      this.setState({query:this.props.queryType == "collection" ? 'db.'+this.props.currentItem+'.find({})' :
-                           'db.'+this.props.currentItem+'.files.find({})'});
+      var currentDb = nextProps.currentDb;
+      var currentItem = nextProps.currentItem;
+      var connectionId = this.props.connectionId;
+      this.state.query = nextProps.queryType == "collection" ? 'db.'+currentItem+'.find({})' : 'db.'+currentItem+'.files.find({})';
       this.setState({collectionObjects:[]});
       this.setState({skip:0});
       this.setState({limit:10});
       this.setState({sort:'_id:-1'});
-      var currentDb = nextProps.currentDb;
-      var currentItem = nextProps.currentItem;
-      var connectionId = this.props.connectionId;
-      var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document?query=db.'+currentItem+'.find(%7B%7D)&connectionId='+connectionId+'&fields=""&limit=10&skip=0&sortBy={_id:-1}&allKeys=true' :
-                currentDb+'/gridfs/'+currentItem+'/getfiles?query=db.'+currentItem+'.files.find(%7B%7D)&fields=""&limit=10&skip=0&sortBy={_id:-1}&connectionId='+connectionId;
-      this.setState({query:nextProps.queryType == "collection" ? 'db.'+currentItem+'.find({})' : 'db.'+currentItem+'.files.find({})'});
-      var queryExecutorCall2 = service('GET', partialUrl, '');
+
+      var queryData = {};
+      queryData['query'] = this.state.query ;
+      queryData['fields'] = "";
+      queryData['limit'] = 10;
+      queryData['skip'] = 0;
+      queryData['sortBy'] = "{'_id':-1}";
+      queryData['allKeys'] = true;
+      var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document/query?connectionId='+connectionId:
+                currentDb+'/gridfs/'+currentItem+'/getfiles?connectionId='+connectionId;
+
+
+      var queryExecutorCall2 = service('POST', partialUrl, JSON.stringify(queryData), 'query');
       queryExecutorCall2.then(this.success2.bind(this , currentDb, currentItem, connectionId), this.failure2.bind(this));
     }
 
@@ -397,22 +321,29 @@ class QueryExecutorComponent extends React.Component {
     var that = this;
     that.setState({limitValue:parseInt(that.state.limit)});
     that.setState({skipValue:parseInt(that.state.skip)});
-    var attributes = [];
+    var attributes = "";
     var allSelected = true;
     var currentDb = this.props.currentDb;
     var currentItem = this.props.currentItem;
     var connectionId = this.props.connectionId;
     this.state.fields.map(function(e) {
       if(e.selected){
-        attributes.push(e.value);
+        attributes += attributes.length > 0 ? "," + e.value : e.value;
       } else {
         allSelected = false;
       }
     });
-   var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document?query=' + this.state.query + '&connectionId='+connectionId+'&fields=' + attributes +'&limit='+this.state.limit+'&skip='+this.state.skip+'&sortBy={'+this.state.sort+'}&allKeys=' + allSelected :
-              currentDb+'/gridfs/'+currentItem+'/getfiles?query='+ this.state.query +'&fields=""&limit='+this.state.limit+'&skip='+this.state.skip+'&sortBy={'+this.state.sort+'}&connectionId='+connectionId;
-   var queryExecutorCall3 = service('GET', partialUrl, '');
-   queryExecutorCall3.then(this.success3.bind(this , currentDb, currentItem, connectionId), this.failure3.bind(this));
+    var queryData = {};
+    queryData['query'] = this.state.query;
+    queryData['fields'] = this.props.queryType == "collection" ? attributes : "";
+    queryData['limit'] = this.state.limit;
+    queryData['skip'] = this.state.skip;
+    queryData['sortBy'] =  "{" + "'" + this.state.sort.split(':')[0] + "'" + ':' + parseInt(this.state.sort.split(':')[1]) + "}";
+    queryData['allKeys'] = allSelected;
+   var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document/query?connectionId='+connectionId :
+              currentDb+'/gridfs/'+currentItem+'/getfiles?connectionId='+connectionId;
+   var queryExecutorCall3 = service('POST', partialUrl, JSON.stringify(queryData), 'query');
+   queryExecutorCall3.then(this.success3.bind(this , currentDb, currentItem, connectionId,false), this.failure3.bind(this));
   }
 
 
@@ -420,19 +351,19 @@ class QueryExecutorComponent extends React.Component {
     var that = this;
     that.setState({limitValue:parseInt(that.state.limit)});
     that.setState({skipValue:parseInt(that.state.skip)});
-    var attributes = [];
+    var attributes = "";
     var allSelected = true;
     var currentDb = this.props.currentDb;
     var currentItem = this.props.currentItem;
     var connectionId = this.props.connectionId;
     this.state.fields.map(function(e) {
       if(e.selected){
-        attributes.push(e.value);
+        attributes += attributes.length > 0 ? "," + e.value : e.value;
       } else {
         allSelected = false;
       }
     });
-
+    allSelected = true;
    var query = ''
 
    if (this.props.queryType == "collection"){
@@ -442,11 +373,18 @@ class QueryExecutorComponent extends React.Component {
     query = 'db.'+currentItem+'.files.find({})';
    }
     
-   this.setState({query : query });  
-   var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document?query=' + this.state.query + '&connectionId='+connectionId+'&fields=' + attributes +'&limit='+this.state.limit+'&skip='+this.state.skip+'&sortBy={'+this.state.sort+'}&allKeys=' + allSelected :
-              currentDb+'/gridfs/'+currentItem+'/getfiles?query='+ this.state.query +'&fields=""&limit='+this.state.limit+'&skip='+this.state.skip+'&sortBy={'+this.state.sort+'}&connectionId='+connectionId;
-   var queryExecutorCall3 = service('GET', partialUrl, '');
-   queryExecutorCall3.then(this.success3.bind(this , currentDb, currentItem, connectionId), this.failure3.bind(this));
+   this.setState({query : query });
+   var queryData = {};
+   queryData['query'] = this.state.query;
+   queryData['fields'] = this.props.queryType == "collection" ? attributes : "";
+   queryData['limit'] = this.state.limit;
+   queryData['skip'] = this.state.skip;
+   queryData['sortBy'] =  "{" + "'" + this.state.sort.split(':')[0] + "'" + ':' + parseInt(this.state.sort.split(':')[1]) + "}";
+   queryData['allKeys'] = allSelected;
+   var partialUrl = this.props.queryType == "collection" ? currentDb+'/'+currentItem+'/document/query?connectionId='+connectionId :
+              currentDb+'/gridfs/'+currentItem+'/getfiles?connectionId='+connectionId;
+   var queryExecutorCall3 = service('POST', partialUrl, JSON.stringify(queryData), 'query');
+   queryExecutorCall3.then(this.success3.bind(this , currentDb, currentItem, connectionId,true), this.failure3.bind(this));
   }
 
   refresh(buttonValue){
@@ -454,7 +392,7 @@ class QueryExecutorComponent extends React.Component {
       this.refreshDocuments();
     }
     else{
-      this.paginationHandler(buttonValue);
+      this.paginationHandler(buttonValue,"refresh");
     }
     if(this.props.queryType == 'collection'){
       this.getAttributes(this.props.currentDb, this.props.currentItem, this.props.connectionId);
@@ -538,16 +476,18 @@ class QueryExecutorComponent extends React.Component {
 
   }
 
-  paginationHandler(buttonValue, e){
-    var attributes = [];
+  paginationHandler(buttonValue, refresh, e){
+    var attributes = "";
     var allSelected = true;
-    this.state.fields.map(function(e) {
-      if(e.selected){
-        attributes.push(e.value);
-      } else {
-        allSelected = false;
-      }
-    });
+    if(!refresh){
+      this.state.fields.map(function(e) {
+        if(e.selected){
+          attributes += attributes.length > 0 ? "," + e.value : e.value;
+        } else {
+          allSelected = false;
+        }
+      });
+    }
     var position =''
     if(e != undefined){
       position = e.target.id;
@@ -578,12 +518,19 @@ class QueryExecutorComponent extends React.Component {
     var currentDb = this.props.currentDb;
     var currentItem = this.props.currentItem;
     var connectionId = this.props.connectionId;
-    this.setState({skipValue:skipValue});
-    var partialUrl = this.props.queryType == "collection" ? this.props.currentDb+'/'+this.props.currentItem+'/document?query='+this.state.query+'&connectionId='+this.props.connectionId+'&fields=' +attributes+ '&limit='+limitValue+'&skip='+skipValue+'&sortBy={'+this.state.sort+'}&allKeys=' + allSelected:
-              currentDb+'/gridfs/'+currentItem+'/getfiles?query='+this.state.query+'&fields=""&limit='+limitValue+'&skip='+skipValue+'&sortBy={'+this.state.sort+'}&connectionId='+this.props.connectionId;
+    var partialUrl = this.props.queryType == "collection" ? this.props.currentDb+'/'+this.props.currentItem+'/document/query?connectionId='+this.props.connectionId:
+              currentDb+'/gridfs/'+currentItem+'/getfiles?connectionId='+this.props.connectionId;
 
+    this.setState({skipValue:skipValue});
+    var queryData = {};
+    queryData['query'] = this.state.query;
+    queryData['fields'] = this.props.queryType == "collection" ? attributes : "";
+    queryData['limit'] = this.state.limit;
+    queryData['skip'] = skipValue;
+    queryData['sortBy'] =  "{" + "'" + this.state.sort.split(':')[0] + "'" + ':' + parseInt(this.state.sort.split(':')[1]) + "}";
+    queryData['allKeys'] = allSelected;
     var that = this;
-    var queryExecutorCall4 = service('GET', partialUrl, '');
+    var queryExecutorCall4 = service('POST', partialUrl, JSON.stringify(queryData), 'query');
     queryExecutorCall4.then(this.success4.bind(this , currentDb, currentItem, connectionId), this.failure4.bind(this));
   }
 
@@ -618,7 +565,7 @@ class QueryExecutorComponent extends React.Component {
     var that = this;
     var items =null;
     var items = this.state.collectionObjects.map(function (collection ,i) {
-      return <Document  key={collection._id } uId={collection._id} key1={collection._id} value={JSON.stringify(collection,null,4)} onChange={this.hand.bind(this)} currentDb={this.props.currentDb} currentItem={this.props.currentItem} connectionId={this.props.connectionId} refresh={this.refresh.bind(this)} queryType = {this.props.queryType} ></Document>
+      return <Document  key={collection._id + i } uId={collection._id} key1={collection._id} value={JSON.stringify(collection,null,4)} onChange={this.hand.bind(this)} currentDb={this.props.currentDb} currentItem={this.props.currentItem} connectionId={this.props.connectionId} refresh={this.refresh.bind(this)} queryType = {this.props.queryType} ></Document>
     }.bind(this));
 
     return(
@@ -675,8 +622,8 @@ class QueryExecutorComponent extends React.Component {
             <div className={queryExecutorStyles.queryAttributesDiv}>
               <ol id="attributesList" className={queryExecutorStyles.attributeList}>
                 { this.state.fields.map(function(result) {
-                  return <li key={result.value} className={queryExecutorStyles.attributesItems}>
-                  <span className={queryExecutorStyles.checkboxSpan}><input type="checkbox" id={result.value} checked={result.selected} onChange = {that.attributeHandler({result}).bind(that)}></input></span>{result.value}</li>;
+                  return <li key={result.value} onClick = {that.attributeHandler({result}).bind(that)} className={queryExecutorStyles.attributesItems}>
+                  <span className={queryExecutorStyles.checkboxSpan}><input type="checkbox" id={result.value} checked={result.selected} ></input></span>{result.value}</li>;
                 }) }
               </ol>
             </div>
@@ -696,12 +643,12 @@ class QueryExecutorComponent extends React.Component {
         <div className={queryExecutorStyles.resultContainer} key={this.props.currentItem}>
           <div className={queryExecutorStyles.errorContainer}>{this.state.errorMessage}</div>
           <div id='paginator' className={queryExecutorStyles.paginator}>
-          <a id='first' className = {(this.state.skipValue == 0 || this.state.skipValue >= this.state.totalCount)? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '')} href='javascript:void(0)' data-search_name='First'><i className="fa fa-angle-double-left" aria-hidden="true"></i> First</a>
-          <a id='prev'  className = {(this.state.skipValue >= this.state.totalCount || this.state.skipValue + this.state.limitValue <= this.state.limitValue)? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '')}  href='javascript:void(0)' data-search_name='Previous'><i className="fa fa-angle-left" aria-hidden="true"></i> Previous</a>
+          <a id='first' className = {(this.state.skipValue == 0 || this.state.skipValue >= this.state.totalCount)? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '', '')} href='javascript:void(0)' data-search_name='First'><i className="fa fa-angle-double-left" aria-hidden="true"></i> First</a>
+          <a id='prev'  className = {(this.state.skipValue >= this.state.totalCount || this.state.skipValue + this.state.limitValue <= this.state.limitValue)? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '', '')}  href='javascript:void(0)' data-search_name='Previous'><i className="fa fa-angle-left" aria-hidden="true"></i> Previous</a>
           <label>Showing</label><label id='startLabel'></label>{this.state.startLabel}<label> - </label>
           <label id='endLabel'>{this.state.endLabel}</label><label> of </label><label id='countLabel'>{this.state.totalCount}</label>
-          <a id='next' className = {(this.state.skipValue >= this.state.totalCount - this.state.limitValue)? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '')} href='javascript:void(0)' data-search_name='Next'>Next <i className="fa fa-angle-right" aria-hidden="true"></i></a>
-          <a id='last' className = {(this.state.skipValue + this.state.limitValue >= this.state.totalCount )? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '')} href='javascript:void(0)' data-search_name='Last'>Last <i className="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          <a id='next' className = {(this.state.skipValue >= this.state.totalCount - this.state.limitValue)? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '', '')} href='javascript:void(0)' data-search_name='Next'>Next <i className="fa fa-angle-right" aria-hidden="true"></i></a>
+          <a id='last' className = {(this.state.skipValue + this.state.limitValue >= this.state.totalCount )? queryExecutorStyles.disabled : ''} onClick = {this.paginationHandler.bind(this, '' , '')} href='javascript:void(0)' data-search_name='Last'>Last <i className="fa fa-angle-double-right" aria-hidden="true"></i></a>
           </div>
           <Tabs selectedIndex={this.state.selectedTab} onSelect={this.handleSelect.bind(this)}>
             <TabList className={queryExecutorStyles.treeTab + ' documentNav'}>

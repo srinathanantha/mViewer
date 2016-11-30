@@ -1,7 +1,7 @@
 import React from 'react'
 import serverStatsStyles from './serverstats.css'
 import $ from 'jquery'
-import TreeView from 'react-json-tree'
+import TreeView from '../../../dependencies/react-json-tree'
 import service from '../../gateway/service.js';
 
 class ServerStatsComponent extends React.Component {

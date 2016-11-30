@@ -32,6 +32,19 @@ function service(typex, serviceName, req , component, data) {
   else if(component == 'download') {
   	window.open(path + serviceName);
   }
+  else if(component == 'query'){
+  	return $.ajax({
+      type: typex,
+      cache: false,
+      dataType: 'json',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      crossDomain: true,
+      url: path + serviceName,
+      data : req
+    });
+  }
   else{
   	return $.ajax({
       type: typex,

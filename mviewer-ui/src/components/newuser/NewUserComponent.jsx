@@ -50,11 +50,10 @@ class NewUserComponent extends React.Component {
     this.setForm();
     var ds = ["Please select a DbSource"];
     var dbList = [];
-    dbList = JSON.parse(localStorage.getItem('dbNames') || '{}');
+    dbList = JSON.parse(sessionStorage.getItem('dbNames') || '{}');
     dbList.map(function(item){
       ds.push(item);
     });
-    // this.setState({dbSourceList: ds});
     if(this.props.modifyUser) {
       this.setState({dbSource : this.props.currentDb});
       ds=[];

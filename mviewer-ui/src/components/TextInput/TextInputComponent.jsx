@@ -23,6 +23,10 @@ Formsy.addValidationRule('maxSize', (values, value, otherField) => {
   return (value != '' ? parseInt(value) <= parseInt("9223372036854774784") : true);
 });
 
+Formsy.addValidationRule('checkZero', (values, value, otherField) => {
+  return (value != '' ? parseInt(value) > 0 : true);
+});
+
 Formsy.addValidationRule('maxDocs', (values, value, otherField) => {
   return (value != '' ? parseInt(value) <= parseInt("2147483647") : true);
 });

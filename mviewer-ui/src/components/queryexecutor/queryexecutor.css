@@ -231,6 +231,7 @@
 .attributesItems {
   margin-bottom: 2%;
   word-break: break-all;
+  cursor: pointer;
 }
 
 .resultContainer {
