@@ -1,0 +1,224 @@
+.addFile
+{
+  border: 1px solid #3679f8;
+  background-color: #26344e;
+  font-size: 13px;
+  color: white;
+  border-radius: 3px;
+  height: 30px;
+  width: 80px !important;
+  cursor: pointer !important;
+}
+
+.addFile:hover,
+.addFile:active {
+    background-color: #576d96;
+    border: 1px solid #576d96;
+    cursor: pointer;
+}
+
+.addFile {
+  font-family: 'Arial';
+  text-align: center;
+}
+
+.submit,
+.cancel
+ {
+    border: none !important;
+    background-color: inherit;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.cancel {
+  color: #484848;
+  font-family: 'Brandon-Light';
+}
+
+.submit {
+  color: #2494d0;
+  font-family: 'Brandon-Light';
+  padding-left: 20px;
+}
+.submit:hover:enabled,
+.submit:active:enabled {
+    color: #3c5563;
+    cursor: pointer;
+}
+
+.cancel:hover,
+.cancel:active {
+    color: #191717;
+    cursor: pointer;
+}
+
+.selectedFiles {
+    background-color: white;
+    border: 1px solid #dcdcdc;
+    font-weight: bold;
+    overflow-y: hidden;
+    padding: 4px 4px 4px 8px;
+    position: relative;
+    top: 10px;
+    font-size: 13px;
+    max-height: 100px;
+    overflow: auto;
+    margin: 5px 10px;
+    width: 90%;
+    color: #808285;
+    font-family: 'Brandon-Light';
+}
+.errorMessage {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+.errorMessage.hidden {
+    display: none;
+}
+
+.errorMessage.show {
+  color: red;
+  text-align: center;
+  border: 1px solid red;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+
+.successMessage {
+  color: green;
+  text-align: center;
+  border: 1px solid green;
+  width: 90%;
+  border-radius: 0px;
+  font-size: 12px;
+  margin: 5px auto;
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+.two h3{
+    font: 110%;
+    text-align: center;
+    margin-bottom: -10%;
+}
+
+.eachFile {
+   margin-bottom: 5px;
+}
+
+.name {
+   text-overflow: ellipsis;
+   max-width: 140px;
+   max-width: 140px;
+   display: block;
+   float: left;
+   overflow: hidden;
+   white-space: nowrap;
+}
+
+.lineProgress  {
+    width: 35%;
+    height: 10px;
+    position: relative;
+    top: 2px;
+    float: right;
+}
+
+.addLabel {
+    margin-top: 58px;
+    position: absolute;
+    color: white;
+    font: 13.3333px Arial;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+
+.addButton {
+ display: inline-block;
+ font-size: 14px;
+ padding-right: 10px;
+ cursor: pointer;
+}
+
+.addButton i {
+ padding-right: 5px;
+}
+
+.addButton span {
+ display: inline;
+}
+
+.closeSpan {
+  float: right;
+  margin-top: 5%;
+  margin-right: 3%;
+  cursor: pointer;
+}
+
+.header{
+  background-color: #2294d2;
+  font-size: 14px;
+  height: 50px;
+  color: white;
+  margin-bottom: 5%;
+}
+
+.text{
+  top: 30%;
+  position: relative;
+  left: 5%;
+  font-size: 17px;
+}
+
+.buttonContainer{
+  margin-top: 4%;
+  margin-bottom: 5%;
+}
+
+.addMore {
+    font-size: 13px;
+    font-weight: bold;
+    color: 484848;
+    margin-top: 5%;
+    position: absolute;
+    margin-left: 62%;
+}
+
+button:disabled{
+  color: #9fc7dc;
+}
+
+.clear {
+  clear: both;
+}
+
+.buttons {
+  float: right;
+  padding: 10px 20px;
+}
+
+.fileDiv{
+  height: 100px;
+  overflow: auto;
+}

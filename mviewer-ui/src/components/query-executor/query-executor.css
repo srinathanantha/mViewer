@@ -1,0 +1,351 @@
+.mainContainer,
+.mainContainerCollapsed{
+  display: inline-block;
+  padding: 5px;
+  height: calc(100vh - 155px);
+  overflow: auto;
+  float: right;
+  padding-right: 3%;
+
+}
+
+.actionsContainer {
+  float: right;
+  display: inline-block;
+}
+
+.actionsContainer>div{
+  padding-top: 10px;
+  display: inline-block;
+}
+
+.buffer {
+   font-size: 15px;
+}
+
+.tab{
+   font-size: 15px;
+   font-weight: 600;
+   border: 0;
+  background: #fff;
+  border-radius: 0;
+}
+
+.tab label {
+  padding: 10px;
+  display: inline-block;
+}
+
+.textAreaContainer {
+  display: inline-block;
+  width: 100%;
+  height: 222px;
+}
+
+.queryBoxDiv,
+.queryBoxDiv1 {
+  display: inline-block;
+  padding: 10px;
+  position: relative;
+}
+
+.queryBoxDiv1 {
+  float: left;
+}
+
+.queryBoxDiv1 .textAreaContainer {
+  height: 213px !important;
+}
+
+.queryBoxlabels {
+  padding-bottom: 5px;
+}
+
+.queryBox {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  resize: none;
+  border: 1.5px solid #bababa;
+  transition: all ease-in-out .2s;
+  font-family: 'Brandon-Light';
+  font-weight: 300;
+  background: #edf1f4;
+  padding: 5px;
+}
+
+.parametersDiv,
+.parametersDiv1{
+  display: inline-block;
+}
+
+.parametersDiv{
+  padding: 10px;
+}
+
+.parametersDiv1{
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+
+}
+
+.parametersDiv label:first-child {
+  padding-bottom: 2% !important;
+  padding-top: 0 !important;
+}
+
+
+.queryAttributesDiv {
+  display: inline-block;
+    padding-left: 1%;
+    width: 100%;
+    margin-left: 0;
+    border: 1.5px solid #bababa;
+    height: 222px;
+    overflow-y: auto;
+}
+
+.parametersDiv input[type=text],
+.parametersDiv1 input[type=text]{
+    padding: 10px;
+    border: 1.5px solid #bababa;
+    background-color: inherit;
+    color: white;
+    font-size: 11px;
+    height: 30px;
+    background: #edf1f4;
+    width: 100%;
+}
+
+.parametersDiv label {
+  display: inline-block;
+  padding-top: 5px;
+  padding-bottom: 2%;
+}
+
+
+.parametersDiv1 label:first-child {
+  padding-top: 0 !important;
+  margin-bottom: 1% !important;
+}
+
+.parametersDiv1 label {
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.parametersDiv1 .selectOptions label{
+  width: 100%;
+}
+
+.parametersDiv input,
+.parametersDiv1 input {
+  color: inherit !important;
+  transition: all ease-in-out .2s;
+  margin-top: 1%;
+}
+
+.parametersDiv input:focus,
+.parametersDiv select:focus,
+.parametersDiv1 input:focus,
+.parametersDiv1 select:focus,
+.queryBox:focus {
+  box-shadow: 0 0 5px #bababa;
+  border: 1px solid #bababa;
+}
+
+.attributeList{
+    list-style-type: none;
+    margin-top: 4%;
+}
+
+.attributesLabel {
+    margin-left: 0;
+    padding-bottom: 5px;
+    display: inline-block !important;
+    width: 100%;
+}
+
+.attributesSpan {
+  margin-left: 5%;
+}
+
+.bttnNavigable {
+    padding: 10px 30px;
+    border: 0;
+    width: 150px;
+    font-size: 13px;
+    margin-left: 0px;
+    transition: background-color .2s, border .2s;
+    width: 100%;
+}
+
+.bttnNavigable:enabled{
+  background-color: #2494d0;
+  color: white;
+  cursor: pointer;
+}
+
+.bttnNavigable:disabled {
+  background-color: #9fc7dc;
+}
+
+.bttnNavigable:hover:enabled {
+  background-color: #576d96;
+}
+
+.parametersDiv select,
+.parametersDiv1 select {
+  padding: 6px;
+  width: 150px;
+  border-radius: 2px;
+  height: 30px;
+  border: 1.5px solid #bababa;
+  background-color: inherit;
+  color: inherit;
+  font-size: 11px;
+  width: 100%;
+}
+
+.checkboxSpan {
+  margin-right: 2%;;
+}
+
+.attributesItems {
+  margin-bottom: 2%;
+  word-break: break-all;
+  cursor: pointer;
+}
+
+.resultContainer {
+  padding-left: 10px;
+  padding-top: 10px;
+  width: 100%;
+}
+
+.results
+{
+  width: 93%;
+  height: 30%;
+  display: block;
+  overflow: auto;
+  resize: none;
+  font-family: 'Brandon-Light';
+  font-weight: 300;
+  background: #ccc;
+}
+
+.disabled {
+      pointer-events: none;
+      cursor: default;
+      text-decoration: none;
+      color: #a08eb0;
+}
+
+.paginator {
+  font-size: 14px;
+  float: right;
+  padding: 10px;
+  padding-right: 20px;
+}
+
+.paginator label {
+  padding: 0 3px;
+}
+
+.paginator a {
+  text-decoration: none;
+  padding: 0 3px;
+}
+
+.paginator a:hover {
+  text-decoration: underline;
+}
+
+.deleteButton {
+display: inline-block;
+font-size: 15px;
+cursor: pointer;
+padding-right: 10px;
+}
+
+.deleteButton i {
+  padding-right: 5px;
+}
+
+.deleteButton span {
+  display: inline;
+}
+
+
+.deleteButtonGridfs {
+display: inline-block;
+font-size: 14px;
+cursor: pointer;
+}
+
+.deleteButtonGridfs i {
+  padding-right: 5px;
+}
+
+.deleteButtonGridfs span {
+  display: inline-block;
+  padding-right: 10px;
+}
+
+.treeTab {
+  border-top: 1px solid #bababa;
+  border-bottom: 1px solid #bababa;
+  margin-right: 10px;
+}
+
+.treeTab li {
+  display: inline;
+}
+
+.treeTab li span {
+  display: inline-block;
+  font-size: 14px;
+  text-align: center;
+  font-family: 'Brandon';
+  cursor: pointer;
+  padding: 12px;
+}
+
+.activeTab {
+   background: #2494d0;
+   color: #fff;
+}
+
+.exceptionContainer {
+  font-size: 15px;
+  font-family: 'Brandon-Light';
+  display: block;
+  margin-left: 2%;
+  margin-top: 1%;
+}
+
+
+.attrDiv {
+  position: relative;
+  display: inline-block;
+  padding: 10px;
+}
+
+.attrDivCollapsed {
+  display: none;
+}
+
+.errorContainer {
+  color: red;
+  padding: 0 10px 10px 0;
+  font-size: 15px;
+}
+
+.navBar {
+  list-style-type: none;
+  padding-top: 10px;
+  margin: 0;
+  padding-left: 10px;
+}

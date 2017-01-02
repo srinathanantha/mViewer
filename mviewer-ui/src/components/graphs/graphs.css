@@ -1,7 +1,5 @@
 .mainContainer {
   display: inline-block;
-  /*width: calc( 100vw - 95px);
-  height: 100%;*/
   height: calc(100vh - 60px);
   width: calc(100% - 66px);
   background: #fff;
@@ -55,9 +53,7 @@
 }
 
 .tabs li {
-  /*display: inline-block;*/
   cursor: pointer;
-  /*width: 10%;*/
   min-width: 100px;
   text-align: center;
   font-family: 'Brandon';

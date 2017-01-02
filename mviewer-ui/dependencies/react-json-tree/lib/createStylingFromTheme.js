@@ -144,7 +144,7 @@ var getDefaultThemeStyling = function getDefaultThemeStyling(theme) {
 
     arrowSign: {
       color: colors.ARROW_COLOR,
-      backgroundImage: "url('./images/right-arrow.png')",
+      backgroundImage: "url('/images/right-arrow.png')",
       backgroundSize: 'contain',
       width: '10px',
       height: '10px'
@@ -154,7 +154,7 @@ var getDefaultThemeStyling = function getDefaultThemeStyling(theme) {
       position: 'absolute',
       top: 0,
       left: '-0.4em',
-      backgroundImage: "url('./images/right-arrow.png')",
+      backgroundImage: "url('/images/right-arrow.png')",
       backgroundSize: 'contain',
       width: '10px',
       height: '10px'

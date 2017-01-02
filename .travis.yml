@@ -1,5 +1,5 @@
 language: java
-script: mvn -Prelease
+script: travis_wait mvn -Prelease
 jdk:
 - oraclejdk8
 deploy:

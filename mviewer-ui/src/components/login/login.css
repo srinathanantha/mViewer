@@ -3,12 +3,12 @@
 /*----------------------------------------*/
 @font-face {
 font-family: Brandon;
-src: url("../../assets/fonts/Brandon_reg.otf") format("opentype");
+src: url("../../assets/fonts/brandon-reg.otf") format("opentype");
 }
 
 @font-face {
 font-family: Brandon-Light;
-src: url("../../assets/fonts/Brandon_light.otf") format("opentype");
+src: url("../../assets/fonts/brandon-light.otf") format("opentype");
 }
 
 
@@ -104,14 +104,12 @@ div.parentDiv {
 }
 .two input[type=text],
 .two input[type=password] {
-    /*padding: 10px;*/
     padding: 21px 10px 10px 10px;
     border-radius: 0px;
     border: 1.5px solid #bababa;
     background-color: inherit;
     color: #808285;
     font-size: 15px;
-    /*height: 47px;*/
     width: 100%;
     margin-top: -1px;
     border-radius: 1px;
@@ -187,11 +185,6 @@ h2:after {
     border: 0;
     background-color: #2494d0;
     color: white;
-}
-
-.two input[type=submit]:enabled {
-  
-  
 }
 
 .two input[type=submit]:enabled:hover,

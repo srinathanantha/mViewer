@@ -1,0 +1,182 @@
+
+.menu {
+  padding-right: 0;
+  padding-left: 0;
+  max-width: 170px;
+}
+
+.menu>div {
+    display:inline-block;
+    z-index:2;
+    top:0;
+    width: 100%;
+    height: calc(100vh - 155px);
+    transition: transform ease 0.3s;
+    color: #ccc;
+    background:#fff;
+    border-right: solid 1px #bababa;
+    overflow: hidden;
+    float: left;
+}
+
+.visible {
+    transform:translate3d(320px, 0, 0);
+    overflow-y: auto;
+}
+
+.menu>div>div:last-child {
+}
+
+.left {
+    background:#0e1d5d;
+    transform:translate3d(-500px,0,0);
+    position: relative;;
+}
+
+
+.menuItem {
+    margin:0;
+    padding: 3% 15px;
+    border-bottom:solid 1px #bababa;
+    cursor:pointer;
+    color:#484848;
+    transition: background-color 0.2s;
+    font-size: 17px;
+    min-width: 102px;
+}
+
+.menuItem:hover {
+     background-color:#2494d0;
+     color : #fff;
+}
+
+.highlight {
+    background-color:#2494d0;
+    color: #fff;
+}
+
+.trash {
+  font-size: 13px;
+  padding-top: 17px;
+  padding-bottom: 15px;
+  display: inline-block;
+  float: right;
+}
+
+.collectionIcon {
+  float: left;
+  padding-top: 15px;
+}
+
+.menuItem .button {
+  color: inherit;
+  border: 0;
+  font-family: 'Brandon-Light';
+  padding: 10px;
+  cursor: pointer;
+  width: 70%;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 400;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menuItem i {
+  color: inherit;
+}
+
+.menuTitle {
+    text-align: center;
+    padding: 1%;
+    background-color: #fff;
+    color: #484848;
+    font-family: 'Brandon-Light';
+    font-size: 17px;
+    border-bottom: 1px solid #bababa;
+    height: auto;
+    margin: 0;
+}
+
+.menuTitle div {
+  padding: 10px;
+}
+
+.removeIcon {
+  color: #85adad;
+  text-align: center;
+  font-size: 70%;
+  margin-top: -20%;
+  margin-left: 90%;
+}
+
+.searchInput input {
+    outline: none;
+    padding: 10px 5px 10px 25px;
+    border: 3px solid #ccc;
+    width: 100%;
+}
+
+.searchInput::before {
+  content: "\26b2";
+  display: block;
+  position: absolute;
+  width: 15px;
+  z-index: 3;
+  height: 15px;
+  transform: rotate(-45deg);
+  font-size: 20px;
+  top: 8px;
+  left: 5px;
+  line-height: 32px;
+  color: #484848;
+
+}
+
+.searchInput {
+  position: relative;
+}
+
+.searchInput {
+    background-color:#070F30;
+}
+
+
+.listBody{
+  /*height: calc(100vh - 205px);*/
+  height: calc(100vh - 240px);
+  overflow: auto
+}
+
+.listBodyExpanded{
+  /*height: calc(100vh - 254px);*/
+  height: calc(100vh - 289px);
+  overflow: hidden;
+}
+
+.viewMoreContainer {
+  text-align: center;
+  border-top: solid 1px #ccc;
+}
+
+.viewMore {
+  padding: 15px 0px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.displayNone {
+  display: none;
+}
+
+.gridListBody {
+  height: calc(100vh - 259px);
+  overflow: auto
+}
+
+.gridListBodyExpanded {
+  height: calc(100vh - 300px);
+  overflow: hidden;
+}
