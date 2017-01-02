@@ -1,0 +1,101 @@
+.mainContainer,
+.collapsedContainer {
+	padding: 0 !important;
+	height: calc(100vh - 60px);
+}
+
+.collapsedContainer{
+  
+}
+
+.myWrapper{
+
+}
+
+.myTabBar{
+
+}
+
+.myTabBarAfter{
+	background-color: #bababa !important;
+	border-bottom-color: #bababa !important;
+	height: 1px !important;
+	top: 35px !important;
+	display: none;
+}
+
+.myTab{
+	background-image: linear-gradient(rgb(244,249,252), rgb(239,244,248)) !important;
+	height: 35px !important;
+	cursor: pointer;
+}
+
+.myTabBefore{
+	background-image: linear-gradient(rgb(244,249,252), rgb(239,244,248)) !important;
+	box-shadow: rgb(244,249,252) 1px 1px 0px inset, rgba(0, 0, 0, 0.0980392) -4px 0px 4px !important;
+	transform: skewX(0deg) !important;
+	height: 35px !important;
+	/*border-radius: 0 !important;*/
+
+}
+
+.myTabAfter{
+	background-image: linear-gradient(rgb(244,249,252), rgb(239,244,248)) !important;
+	box-shadow: rgb(244,249,252) -1px 1px 0px inset, rgba(0, 0, 0, 0.0980392) 4px 0px 4px !important;
+	transform: skewX(0deg) !important;
+	height: 35px !important;
+	/*border-radius: 0 !important;*/
+}
+
+.myTabTitle{
+	color: #555 !important;
+	font-family: 'Brandon' !important;
+	font-size: 17px !important;
+	margin-top: 0 !important;
+	padding-top: 4px;
+	cursor: pointer !important;
+}
+
+.myTabAfterTitle{
+	top: 10px !important;
+}
+
+.tabCloseIcon{
+
+}
+
+
+.myTabActive{
+	/*background-image: linear-gradient(rgb(85,85,85), rgb(85,85,85)) !important;*/
+	
+}
+
+.myTabActive > .myTabTitle {
+	/*color: rgb(244,249,252) !important;*/
+	font-family: 'Brandon' !important;
+	font-size: 17px !important;
+}
+
+
+.myTabActive > .myTabAfter {
+	/*background-image: linear-gradient(rgb(85,85,85), rgb(85,85,85)) !important;*/
+	/*box-shadow: rgb(85,85,85) -1px 1px 0px inset, rgba(0, 0, 0, 0.0980392) 4px 0px 4px !important;*/
+}
+
+.myTabActive > .myTabBefore {
+	/*background-image: linear-gradient(rgb(85,85,85), rgb(85,85,85)) !important;*/
+	/*box-shadow: rgb(85,85,85) 1px 1px 0px inset, rgba(0, 0, 0, 0.0980392) -4px 0px 4px !important;*/
+}
+
+
+/*Close Button component styles*/
+.buttonContainer {
+	cursor: pointer;
+	color: #555 !important;
+}
+
+.buttonContainer:hover {
+	filter: none;
+    background-color: 'red';
+    color: #bababa;
+}

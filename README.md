@@ -22,7 +22,7 @@ in a simpler and user-friendly way.
    6. Better Look-n-Feel
    
 ### Working with mViewer-0.9.2 beta:
-   You can checkout the code or download the zip and make a release build using maven/ant as described below.
+   You can checkout the code or download the zip and make a release build using maven as described below.
 Extract the generated mViewer-0.9.2-release.zip & mViewer-0.9.2-release.tar.gz and run start_mViewer.bat/start_mViewer.sh.
  
 ### Raising feature requests and issues:
@@ -93,10 +93,6 @@ Detailed documentation on mViewer features & usage can be found at http://imagin
 
 > $mvn -Prelease
 
-  Using ant:-  
-
-> $ant release
-
  Building a release will generate mViewer-<version>-release.zip & mViewer-<version>-release.tar.gz files in the target folder
  which has the mViewer.war bundled with winstone servlet container and start-up scripts from scripts folder. 
    
@@ -104,9 +100,6 @@ Detailed documentation on mViewer features & usage can be found at http://imagin
  
  Using maven:-
 > $mvn -Pserver
-
- Using ant:-
-> $ant start
 
 It will create mViewer.war and run it using the winstone server. 
 Once started, the application can be accessed at http://localhost:port. 
@@ -132,9 +125,6 @@ Other server integration will be provided on demand.
 
 Using maven:-
 > $mvn clean package
-
-Using ant:-
-> $mvn dist
 
 Once the war is deployed go to the url http://<server-ip>:<http-port>/mViewer
 

@@ -1,0 +1,107 @@
+.mainContainer {
+  display: inline-block;
+}
+
+.modal{
+  margin-left: 5%;
+  width: 90%;
+  margin-right: auto;
+  margin-top: 5%;
+  border: none;
+}
+
+.modal div {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  border: none;
+}
+
+.modal>div {
+  height: 80%;
+  border: none;
+}
+
+.modal div div {
+  overflow: auto;
+  height: 90%;
+}
+
+.tableBody {
+  padding-top: 20px;
+}
+
+.modal table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+  line-height: 25px;
+  font-size: 13px;
+}
+
+.modal td, .modal th {
+  font-size: 13px;
+}
+
+.modal tr:first-child th {
+  text-align: left;
+}
+
+.modal tr td:first-child,
+.modal tr th:first-child {
+  border-left: 0;
+}
+.modal tr td:last-child,
+.modal tr th:last-child {
+  border-right: 0;
+}
+
+.modal tr td  {
+    padding: 5px 50px;
+    text-transform: capitalize;
+}
+
+.modal th {
+  padding: 5px 50px;
+}
+
+
+.statsButton {
+    display: inline-block;
+    width: 100%;
+    font-size: 15px;
+    cursor: pointer;
+    padding-right: 10px;
+}
+
+.statsButton i {
+  padding-right: 5px;
+  display: inline;
+  width: 100%;
+}
+
+.statsButton span {
+  display: inline;
+}
+.closeSpan {
+  float: right;
+  margin-top: -4%;
+  margin-right: -2.5%;
+  cursor: pointer;
+}
+
+.header{
+  background-color: #2294d2 !important;
+  font-size: 14px !important ;
+  height: 50px !important;
+  color: white !important;
+}
+
+.text{
+  height: auto;
+  display: inline-block;
+  position: relative !important;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: 600;
+}

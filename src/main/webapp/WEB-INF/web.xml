@@ -27,13 +27,22 @@
 		<load-on-startup>1</load-on-startup>
 
 	</servlet>
+
+	<servlet>
+		<servlet-name>Dashboard Servlet</servlet-name>
+		<servlet-class>com.imaginea.mongodb.controllers.DashboardURLController</servlet-class>
+	</servlet>
 	
 	<!-- Servlet Mapping -->
 	<servlet-mapping>
 		<servlet-name>Jersey Servlet</servlet-name>
 		<url-pattern>/services/*</url-pattern>
 	</servlet-mapping>
-	
+
+	<servlet-mapping>
+		<servlet-name>Dashboard Servlet</servlet-name>
+		<url-pattern>/dashboard/*</url-pattern>
+	</servlet-mapping>
 	<!-- Swagger Configuration -->
 
 	<servlet>

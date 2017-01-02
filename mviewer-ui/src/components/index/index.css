@@ -75,7 +75,6 @@ padding-right: 10px;
 .cancel1
  {
     border: none !important;
-    width: 20%;
     background-color: inherit;
     font-size: 13px;
     font-weight: 600;
@@ -95,8 +94,8 @@ padding-right: 10px;
 }
 
 .submit {
-  float: right;
   font-family: 'Brandon-Light';
+  float: right;
 }
 
 .submit:enabled {
@@ -192,6 +191,7 @@ padding-right: 10px;
   text-align: center;
   margin-bottom: 3%;
   margin-top: 5%;
+  float: right;
 }
 
 .ascCheckboxSpan {
@@ -201,7 +201,6 @@ padding-right: 10px;
 }
 
 .orderLabel {
-  /*margin-left: 53% !important;*/
   float: right;
   padding-right: 10px;
   padding-bottom: 5px;
