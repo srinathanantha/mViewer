@@ -104,7 +104,7 @@ div.parentDiv {
 }
 .two input[type=text],
 .two input[type=password] {
-    padding: 21px 10px 10px 10px;
+    padding: 15px 10px 10px 10px;
     border-radius: 0px;
     border: 1.5px solid #bababa;
     background-color: inherit;
@@ -309,4 +309,15 @@ h2:after {
 .password.input input,
 .database.input input {
   border-top: none !important ;
+}
+
+.connections {
+  width: 100%;
+  margin-bottom: 4px;
+  height: 40px;
+  font-size: 15px;
+  padding-left: 10px;
+  -webkit-appearance: none;
+  background: #fff;
+  border-radius: 0;
 }

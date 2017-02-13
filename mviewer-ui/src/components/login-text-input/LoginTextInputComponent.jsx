@@ -53,6 +53,7 @@ const LoginTextInput = React.createClass({
     placeholder : React.PropTypes.string,
     type : React.PropTypes.string,
     name : React.PropTypes.string,
+    value : React.PropTypes.string,
     shouldBeDisabled : React.PropTypes.bool
   },
 
@@ -96,9 +97,9 @@ const LoginTextInput = React.createClass({
   },
 
 
-  componentDidMount () {
-    if(typeof(localStorage.getItem('loginData')) != 'undefined' && localStorage.getItem('loginData') != null) {
-      let loginObject = JSON.parse(localStorage.getItem('loginData'));
+  componentWillReceiveProps (nextProps) {
+    /*if(typeof(localStorage.getItem('loginData')) != 'undefined' && localStorage.getItem('loginData') != null) {
+      let loginObject = JSON.parse(localStorage.getItem('loginData'))[0];
       for (let key in loginObject) {
         if (this.props.name === key && loginObject[key]) {
           this.setState({hoverClass : 'floating-label-hovered'});
@@ -106,6 +107,13 @@ const LoginTextInput = React.createClass({
       }
     } else{
       this.setState({hoverClass : 'floating-label'});
+    }*/
+    if (this.props.value !== nextProps.value) {
+      if (nextProps.value) {
+        this.setState({hoverClass : 'floating-label-hovered'});
+      } else {
+        this.setState({hoverClass : 'floating-label'});
+      }
     }
   },
 
