@@ -26,7 +26,8 @@ class LoginComponent extends React.Component {
       connectionId : '',
       authEnabled : false,
       loading : false,
-      rememberMe : false
+      rememberMe : false,
+      connections : []
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.success = this.success.bind(this);
@@ -53,11 +54,13 @@ class LoginComponent extends React.Component {
   }
 
   loadLoginData() {
-    if(typeof(localStorage.getItem('loginData')) != 'undefined' && localStorage.getItem('loginData') != null) {
+    if(localStorage.getItem('loginData')) {
       let loginObject = JSON.parse(localStorage.getItem('loginData'));
-      this.setState(loginObject);
-      this.setState({rememberMe : true});
-
+      if (loginObject && loginObject.length > 0) {
+        this.setState(loginObject[0]);
+        this.setState({rememberMe : true});
+        this.setState({connections : loginObject});
+      }
     }
   }
 
@@ -70,6 +73,7 @@ class LoginComponent extends React.Component {
     let userNameError = false;
     let passwordError = false;
     let dbError = false;
+    let loginDataArr = [];
 
     if(this.state.host == null || this.state.host === '')
       hostError = true;
@@ -106,13 +110,35 @@ class LoginComponent extends React.Component {
       loading : true,
       message : ''
     });
+
+    loginData = { 'host' : this.state.host, 'port' : this.state.port, 'username' : this.state.username,
+      'password' : this.state.password, 'databases' : this.state.databases, 'authEnabled' : this.state.authEnabled};
     if(this.state.rememberMe) {
-      loginData = { 'host' : this.state.host, 'port' : this.state.port, 'username' : this.state.username,
-        'password' : this.state.password, 'databases' : this.state.databases, 'authEnabled' : this.state.authEnabled};
-      localStorage.setItem('loginData', JSON.stringify(loginData));
+      let found = false;
+      if (localStorage.getItem('loginData')) {
+        loginDataArr = JSON.parse(localStorage.getItem('loginData'));
+        loginDataArr = loginDataArr.map(function(eachItem) {
+          if (eachItem.host === loginData.host) {
+            found = true;
+            return loginData;
+          }
+          return eachItem;
+        });
+      }
+      if (!found) {
+        loginDataArr.push(loginData);
+      }
+      localStorage.setItem('loginData', JSON.stringify(loginDataArr));
     } else {
-      localStorage.removeItem('loginData');
+      if (localStorage.getItem('loginData')) {
+        loginDataArr = JSON.parse(localStorage.getItem('loginData'));
+        loginDataArr = loginDataArr.filter(function(eachItem) {
+          return (eachItem.host !== loginData.host);
+        });
+      }
+      localStorage.setItem('loginData', JSON.stringify(loginDataArr));
     }
+
     let loginCall = service('POST', 'login', obj);
     loginCall.then(this.success, this.failure);
 
@@ -174,7 +200,26 @@ class LoginComponent extends React.Component {
     this.loadLoginData();
   }
 
+  connectionChange(e) {
+    this.setState(this.state.connections[e.target.selectedIndex]);
+  }
+
+  getConnections() {
+    if (this.state.connections.length > 0) {
+      let options = this.state.connections.map((eachConn, index) => {
+        return <option key={index}>{eachConn.host}
+        </option>;
+      });
+
+      return <select className={styles.connections} onChange={this.connectionChange.bind(this)}>{options}</select>;
+    } else {
+      return '';
+    }
+  }
+
   render() {
+    let connections = this.getConnections();
+
     return (
       <section className={styles.loginForm}>
         <div className={styles.parentDiv + ' ' + styles.clearfix}>
@@ -183,6 +228,11 @@ class LoginComponent extends React.Component {
              <div className ={styles.one}> <img src={'/images/logo.png'} className={styles.logo}></img></div>
             <Form method='POST' onValid={this.enableButton()} onSubmit={this.onSubmit} onInvalid={this.disableButton()} >
               <div className={ styles.formContainer}>
+                {connections &&
+                  <div>
+                    {connections}
+                  </div>
+                }
                 <div className={styles.inputBoxLogin}>
                   <TextInput type="text" name="host" id="host" placeholder="host" value={this.state.host} onChange={this.handleChange( 'host')} validations={'isRequired1:' + this.state.hostError} validationErrors={{isRequired1 : 'Host must not be empty' }} shouldBeDisabled ={this.state.loading} checked={this.state.rememberMe} />
                 </div>

@@ -5,6 +5,10 @@ mViewer(Micro/Mongo Viewer) is a light web-based GUI for managing MongoDB withou
 mViewer allows managing databases, collections, gridfs, users & indexes as an alternative to the mongoDB native shell
 in a simpler and user-friendly way.
 
+### Whats new in mViewer-1.0.0?
+   1. Introduced tabs to open and work on individual db's simultaneously.
+   2. Added support to run multiple db queries based on selection.
+
 ### Whats new in mViewer-1.0.0 beta?
    1. Redesigned complete user interface with enhananced ease.
    2. New login interface which supports mongodb started with/without auth mode.
@@ -44,9 +48,9 @@ Extract the generated mViewer-0.9.2-release.zip & mViewer-0.9.2-release.tar.gz a
 
 ### Download mViewer-1.0.0 beta
 
-Windows :- https://github.com/Imaginea/mViewer/releases/download/1.0.0-beta/mViewer-1.0-release.zip
+Windows :- https://github.com/Imaginea/mViewer/releases/download/1.0.0/mViewer-1.0-release.zip
 
-Mac/Linux :- https://github.com/Imaginea/mViewer/releases/download/1.0.0-beta/mViewer-1.0-release.tar.gz
+Mac/Linux :- https://github.com/Imaginea/mViewer/releases/download/1.0.0/mViewer-1.0-release.tar.gz
 
 Download previous versions from https://github.com/Imaginea/mViewer/downloads
     
